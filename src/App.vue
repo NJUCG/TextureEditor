@@ -1,17 +1,34 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <editor-view ref= "EditorView"/>
+  <library-view ref= "LibraryView"/>
+  <view-2D ref= "View2D"/>
+  <view-3D ref= "View3D"/>
+  <property-view ref= "PropertyView"/>
+  <!-- <hello-world msg="Welcome to Your Vue.js + TypeScript App" ref="HelloWorld"/> -->
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import { defineComponent } from 'vue';
+// import HelloWorld from '@/components/HelloWorld.vue';
+import EditorView from "@/views/editor.vue";
+import LibraryView from "@/views/library.vue";
+import View2D from "@/views/view2D.vue";
+import View3D from "@/views/view3D.vue";
+import PropertyView from "@/views/property.vue";
+// import { MenuCommands } from "./menu";
 
-export default {
-  name: 'App',
+export default defineComponent({
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    // HelloWorld,
+    EditorView,
+    LibraryView,
+    View2D,
+    View3D,
+    PropertyView
+  },
+})
 </script>
 
 <style>
