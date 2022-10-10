@@ -1,4 +1,6 @@
-const { Menu } = require("electron");
+import { app } from "electron";
+
+const { BrowserWindow, Menu } = require("electron");
 
 
 export enum MenuCommands {
@@ -45,15 +47,15 @@ export function setupMenu(){
 				{
 					label: "新建文件",
 					accelerator: "CmdOrCtrl+N",
-					click: (item, focusedWindow) => {
-						focusedWindow.webContents.send(MenuCommands.FileNew);
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.FileNew);
 					}
 				},
 				{
 					label: "打开文件",
 					accelerator: "CmdOrCtrl+O",
-					click: (item, focusedWindow) => {
-						focusedWindow.webContents.send(MenuCommands.FileOpen);
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.FileOpen);
 					}
 				},
 				// {
@@ -66,15 +68,15 @@ export function setupMenu(){
 				{
 					label: "保存",
 					accelerator: "CmdOrCtrl+S",
-					click: (item, focusedWindow) => {
-						focusedWindow.webContents.send(MenuCommands.FileSave);
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.FileSave);
 					}
 				},
 				{
 					label: "另存为",
 					accelerator: "CmdOrCtrl+Shift+S",
-					click: (item, focusedWindow) => {
-						focusedWindow.webContents.send(MenuCommands.FileSaveAs);
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.FileSaveAs);
 					}
 				},
                 {
@@ -82,13 +84,80 @@ export function setupMenu(){
                 },
 				{
 					label: "退出",
-					click: (item, focusedWindow) => {
-						focusedWindow.webContents.send(MenuCommands.FileExit);
+					click: () => {
+						if (process.platform !== "darwin") {
+							app.quit();
+						}
 					}
 				}
 			]
 		},
-    ]
+		{
+			label: '编辑',
+			submenu: [
+				{
+					label: '撤销',
+					accelerator: "CmdOrCtrl+Z",
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.EditUndo);
+					}
+				},
+				{
+					label: '重做',
+					accelerator: "CmdOrCtrl+Shift+Z",
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.EditRedo);
+					}
+				},
+				{
+					label: "剪切",
+					accelerator: "CmdOrCtrl+X",
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.EditCut);
+					}
+				},
+				{
+					label: "复制",
+					accelerator: "CmdOrCtrl+C",
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.EditCopy);
+					}
+				},
+				{
+					label: "粘贴",
+					accelerator: "CmdOrCtrl+V",
+					click: () => {
+						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.EditPaste);
+					}
+				}
+			]
+		},
+		{
+			label: '工具',
+			submenu: [
+				{label: '没想好'},
+				{label: '没想好'}
+			]
+		},
+		{
+			label: '窗口',
+			submenu: [
+				{label: '浏览窗口'},
+				{label: '2D 视图'},
+				{label: '3D 视图'},
+				{label: '资源库'},
+				{label: '属性栏'},
+				{label: '结点图'},
+			]
+		},
+		{
+			label: '帮助',
+			submenu: [
+				{label: '没想好'},
+				{label: '没想好'}
+			]
+		}
+    ];
 
 
 

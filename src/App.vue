@@ -1,34 +1,37 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
-  <editor-view ref= "EditorView"/>
-  <library-view ref= "LibraryView"/>
-  <view-2D ref= "View2D"/>
-  <view-3D ref= "View3D"/>
-  <property-view ref= "PropertyView"/>
+  <EditorView />
+  <LibraryView />
+  <View2D />
+  <View3D />
+  <PropertyView />
+  <ExplorerView />
   <!-- <hello-world msg="Welcome to Your Vue.js + TypeScript App" ref="HelloWorld"/> -->
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+// import { defineComponent, onMounted } from 'vue';
 // import HelloWorld from '@/components/HelloWorld.vue';
 import EditorView from "@/views/editor.vue";
 import LibraryView from "@/views/library.vue";
-import View2D from "@/views/view2D.vue";
+import View2D from "@/views/view2D.vue"; 
 import View3D from "@/views/view3D.vue";
 import PropertyView from "@/views/property.vue";
-// import { MenuCommands } from "./menu";
+import ExplorerView from "@/views/explorer.vue";
+import { MenuCommands } from "./menu";
+const { ipcRenderer } = require('electron')
 
-export default defineComponent({
-  name: "App",
-  components: {
-    // HelloWorld,
-    EditorView,
-    LibraryView,
-    View2D,
-    View3D,
-    PropertyView
-  },
+
+// 处理menu指令
+ipcRenderer.on(MenuCommands.FileOpen, ()=>{
+  console.log(111);
+  openProject();
 })
+
+const openProject = () =>{
+  
+};
+
 </script>
 
 <style>

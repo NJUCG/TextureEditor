@@ -15,6 +15,7 @@
   "dependencies": {
     "@electron/remote": "^2.0.8",
     "core-js": "^3.8.3",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0"
   },
@@ -48,8 +49,7 @@
     "parserOptions": {
       "parser": "@typescript-eslint/parser"
     },
-    "rules": {
-    }
+    "rules": {}
   },
   "browserslist": [
     "> 1%",
