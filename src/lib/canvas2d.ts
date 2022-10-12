@@ -46,7 +46,7 @@ export class CanvasMonitor {
 		this.context = this.myCanvas.getContext("2d");
 		this.mousePos = new Vector2(0, 0);
 
-		this.myCanvas.addEventListener("mousemove", this.onMouseMove);
+		// this.myCanvas.addEventListener("mousemove", this.onMouseMove);
 	}
 
 	public draw(): void {
@@ -66,15 +66,21 @@ export class CanvasMonitor {
 		this.image = image;
 	}
 
-	onMouseMove(event: MouseEvent): Vector2 {
-		this.mousePos = _getMousePos(this.myCanvas, event);
-		return this.mousePos;
-		// console.log(pos.x);
-		// console.log(pos.y);
+	setMousePos(x,y){
+		this.mousePos=new Vector2(x,y);
+		console.log(this.mousePos);
+		
+
 	}
+	// onMouseMove(event: MouseEvent): Vector2 {
+	// 	this.mousePos = _getMousePos(this.myCanvas, event);
+	// 	return this.mousePos;
+	// 	// console.log(pos.x);
+	// 	// console.log(pos.y);
+	// }
 
 
-	onUnmounted(){
-		this.myCanvas.removeEventListener('mousemove', this.onMouseMove);
-	}
+	// onUnmounted(){
+	// 	this.myCanvas.removeEventListener('mousemove', this.onMouseMove);
+	// }
 }
