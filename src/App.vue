@@ -2,7 +2,7 @@
   <img alt="Vue logo" src="./assets/logo.png">
   <EditorView />
   <LibraryView />
-  <View2D />
+  <View2D width="30" height="40"/>
   <View3D />
   <PropertyView />
   <ExplorerView />
