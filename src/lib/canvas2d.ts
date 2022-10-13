@@ -1,5 +1,3 @@
-import { onUnmounted } from 'vue';
-
 
 const IMAGE_RENDER_SIZE = 1000;
 
@@ -80,7 +78,4 @@ export class CanvasMonitor {
 	// }
 
 
-	// onUnmounted(){
-	// 	this.myCanvas.removeEventListener('mousemove', this.onMouseMove);
-	// }
 }

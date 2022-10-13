@@ -7,30 +7,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { CanvasMonitor } from '@/lib/canvas2d';
 // import img1 from '../assets/1.jpg';
 
 const image = ref(0);
-const myCanvas = ref<HTMLCanvasElement>();
+const myCanvas = ref<HTMLCanvasElement | null>(null);
+const canvasMonitor = ref<CanvasMonitor | null>(null);
 
 onMounted(() => {
 
-	let canvasMonitor = new CanvasMonitor(myCanvas.value);
+	canvasMonitor.value = new CanvasMonitor(myCanvas.value);
 	//在类外加入鼠标事件监听器
-	myCanvas.value.addEventListener('mousemove',function(e){
-		var rect=myCanvas.value.getBoundingClientRect();
-		canvasMonitor.setMousePos(e.clientX - rect.left, e.clientY - rect.top);
+	myCanvas.value.addEventListener('mousemove', onMouseMove);
 
-	})
-	
 	// canvasMonitor.setImage(img1);
-	
+
 	const draw = () => {
-		canvasMonitor.draw();
+		canvasMonitor.value.draw();
 		requestAnimationFrame(draw);
 	};
 	requestAnimationFrame(draw);
 })
+
+onBeforeUnmount(() => {
+
+})
+
+const onMouseMove = (event: MouseEvent) => {
+	let rect = myCanvas.value.getBoundingClientRect();
+	canvasMonitor.value.setMousePos(event.clientX - rect.left, event.clientY - rect.top);
+};
 
 </script>
