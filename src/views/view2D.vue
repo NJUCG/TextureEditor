@@ -31,7 +31,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-
+	myCanvas.value.removeEventListener('mousemove', onMouseMove);
 })
 
 const onMouseMove = (event: MouseEvent) => {
