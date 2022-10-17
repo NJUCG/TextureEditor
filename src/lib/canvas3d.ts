@@ -8,26 +8,10 @@ class Vector2 {
 	}
 }
 
-//记录边界
-class Box {
-	posX: number = 0;
-	posY: number = 0;
-	width: number = 1;
-	height: number = 1;
-	bgColor: number[] = [255, 50, 50];
-
-	public setSize(w: number, h: number) {
-		this.width = w;
-		this.height = h;
-	}
-}
-
-//画布
-export class CanvasMonitor2D {
-	myCanvas: HTMLCanvasElement;
+export class CanvasMonitor3D{
+    myCanvas: HTMLCanvasElement;
 	image: HTMLImageElement;
 	context: CanvasRenderingContext2D;
-	box: Box;
 	mousePos: Vector2;//鼠标位置
 	zoomFactor: number;//缩放参数
 	focus: Boolean;//鼠标位于2dview界面
