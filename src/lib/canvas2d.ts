@@ -1,3 +1,11 @@
+
+const IMAGE_RENDER_SIZE = 1000;
+
+function _getMousePos(canvas: HTMLCanvasElement, evt: MouseEvent) {
+	const rect = canvas.getBoundingClientRect();
+	return new Vector2(evt.clientX - rect.left, evt.clientY - rect.top);
+}
+
 class Vector2 {
 	x: number;
 	y: number;
@@ -23,59 +31,51 @@ class Box {
 }
 
 //画布
-export class CanvasMonitor2D {
+export class CanvasMonitor {
 	myCanvas: HTMLCanvasElement;
-	image: HTMLImageElement;
+	image: HTMLCanvasElement;
 	context: CanvasRenderingContext2D;
 	box: Box;
 	mousePos: Vector2;//鼠标位置
 	zoomFactor: number;//缩放参数
-	focus: Boolean;//鼠标位于2dview界面
-	offsetX:number;//鼠标拖动界面x位移
-	offsetY:number;//鼠标拖动界面y位移
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.myCanvas = canvas;
 		this.context = this.myCanvas.getContext("2d");
 		this.mousePos = new Vector2(0, 0);
-		this.focus = false;
-		this.zoomFactor = 1.0;
-		this.offsetX = 0;
-		this.offsetY = 0;
 
 		// this.myCanvas.addEventListener("mousemove", this.onMouseMove);
 	}
 
 	public draw(): void {
-		const ctx = this.context;
-
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
-		ctx.fillStyle = "rgb(50,50,50)";
-		ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-
 		if (this.image) {
-			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width*this.zoomFactor, this.myCanvas.height*this.zoomFactor);
+			this.context.drawImage(this.image, 0, 0, this.myCanvas.width, this.myCanvas.height);
+		} else {
+			const ctx = this.context;
+
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+			ctx.fillStyle = "rgb(50,50,50)";
+			ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
 		}
+
 	}
 
-	setImage(image: HTMLImageElement) {
+	setImage(image: HTMLCanvasElement) {
 		this.image = image;
 	}
 
-	getMousePos(evt:MouseEvent){
-		const rect = this.myCanvas.getBoundingClientRect();
-		return new Vector2(evt.clientX - rect.left, evt.clientY - rect.top);
-	}
-
-	setMousePos(x: number, y: number) {
-		this.mousePos = new Vector2(x, y);
+	setMousePos(x,y){
+		this.mousePos=new Vector2(x,y);
 		console.log(this.mousePos);
-	}
+		
 
-	zoom(factor: number, pos:Vector2) {
-		this.zoomFactor *= factor;
-		this.offsetX = pos.x - (pos.x - this.offsetX) * factor;
-		this.offsetY = pos.y - (pos.y - this.offsetY) * factor;
 	}
+	// onMouseMove(event: MouseEvent): Vector2 {
+	// 	this.mousePos = _getMousePos(this.myCanvas, event);
+	// 	return this.mousePos;
+	// 	// console.log(pos.x);
+	// 	// console.log(pos.y);
+	// }
+
 
 }

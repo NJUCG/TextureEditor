@@ -8,23 +8,20 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { CanvasMonitor2D } from '@/lib/canvas2d';
+import { CanvasMonitor } from '@/lib/canvas2d';
+// import img1 from '../assets/1.jpg';
 
+const image = ref(0);
 const myCanvas = ref<HTMLCanvasElement | null>(null);
-const canvasMonitor = ref<CanvasMonitor2D | null>(null);
+const canvasMonitor = ref<CanvasMonitor | null>(null);
 
 onMounted(() => {
 
-	canvasMonitor.value = new CanvasMonitor2D(myCanvas.value);
+	canvasMonitor.value = new CanvasMonitor(myCanvas.value);
 	//在类外加入鼠标事件监听器
-	myCanvas.value.addEventListener('mouseover', onMouseOver);
-	myCanvas.value.addEventListener('mouseleave', onMouseLeave);
 	myCanvas.value.addEventListener('mousemove', onMouseMove);
-	myCanvas.value.addEventListener('wheel', onWheel);
 
-	const img = new Image();          
-    img.src = "https://pic2.zhimg.com/v2-3f3533b2e479e2a17cc96654024a8b41_r.jpg";
-	canvasMonitor.value.setImage(img);
+	// canvasMonitor.setImage(img1);
 
 	const draw = () => {
 		canvasMonitor.value.draw();
@@ -34,32 +31,12 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-	myCanvas.value.removeEventListener('mouseover', onMouseOver);
-	myCanvas.value.removeEventListener('mouseleave', onMouseLeave);
 	myCanvas.value.removeEventListener('mousemove', onMouseMove);
-	myCanvas.value.removeEventListener('wheel', onWheel);
 })
 
 const onMouseMove = (event: MouseEvent) => {
-	// let rect = myCanvas.value.getBoundingClientRect();
-	// canvasMonitor.value.setMousePos(event.clientX - rect.left, event.clientY - rect.top);
-};
-
-const onMouseOver = (event: MouseEvent) => {
-	canvasMonitor.value.focus = true;
-	console.log(canvasMonitor.value.focus);
-};
-
-const onMouseLeave = (event: MouseEvent) => {
-	canvasMonitor.value.focus = false;
-	console.log(canvasMonitor.value.focus);
-};
-
-const onWheel = (event: WheelEvent) => {
-	let pos = canvasMonitor.value.getMousePos(event);
-	// console.log(event.deltaY);
-	let factor = event.deltaY < 0 ? 1.1 : 0.9;
-	canvasMonitor.value.zoom(factor, pos);
+	let rect = myCanvas.value.getBoundingClientRect();
+	canvasMonitor.value.setMousePos(event.clientX - rect.left, event.clientY - rect.top);
 };
 
 </script>

@@ -3,7 +3,7 @@
   <EditorView />
   <LibraryView />
   <View2D width="30" height="40"/>
-  <View3D width="30" height="40"/>
+  <View3D />
   <PropertyView />
   <ExplorerView />
   <!-- <hello-world msg="Welcome to Your Vue.js + TypeScript App" ref="HelloWorld"/> -->
