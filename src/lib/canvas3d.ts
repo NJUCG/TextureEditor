@@ -1,35 +1,22 @@
 class Vector2 {
 	x: number;
 	y: number;
+
 	constructor(x: number, y: number) {
 		this.x = x;
 		this.y = y;
 	}
 }
-//记录边界
-class Box {
-	posX: number = 0;
-	posY: number = 0;
-	width: number = 1;
-	height: number = 1;
-	bgColor: number[] = [255, 50, 50];
-	public setSize(w: number, h: number) {
-		this.width = w;
-		this.height = h;
-	}
-}
 
-//画布
-export class CanvasMonitor2D {
-	myCanvas: HTMLCanvasElement;
+export class CanvasMonitor3D{
+    myCanvas: HTMLCanvasElement;
 	image: HTMLImageElement;
 	context: CanvasRenderingContext2D;
-	box: Box;
 	mousePos: Vector2;//鼠标位置
 	zoomFactor: number;//缩放参数
 	focus: Boolean;//鼠标位于2dview界面
-	offsetX: number;//鼠标拖动界面x位移
-	offsetY: number;//鼠标拖动界面y位移
+	offsetX:number;//鼠标拖动界面x位移
+	offsetY:number;//鼠标拖动界面y位移
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.myCanvas = canvas;
@@ -59,7 +46,7 @@ export class CanvasMonitor2D {
 		this.image = image;
 	}
 
-	getMousePos(evt: MouseEvent) {
+	getMousePos(evt:MouseEvent){
 		const rect = this.myCanvas.getBoundingClientRect();
 		return new Vector2(evt.clientX - rect.left, evt.clientY - rect.top);
 	}
@@ -69,7 +56,7 @@ export class CanvasMonitor2D {
 		console.log(this.mousePos);
 	}
 
-	zoom(factor: number, pos: Vector2) {
+	zoom(factor: number, pos:Vector2) {
 		this.zoomFactor *= factor;
 		this.offsetX = pos.x - (pos.x - this.offsetX) * factor;
 		this.offsetY = pos.y - (pos.y - this.offsetY) * factor;
