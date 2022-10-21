@@ -5,6 +5,9 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { setupMenu } from "./menu";
+import path from "path";
+const remote = require('@electron/remote/main')
+remote.initialize()
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -22,12 +25,19 @@ async function createWindow() {
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: true, // 是否集成 Nodejs
       contextIsolation: false,
-      enableRemoteModule: true // Electron10以后的版本，取消 Remote 模块警告
+      enableRemoteModule: true, // Electron10以后的版本，取消 Remote 模块警告
+      webSecurity: false
     }
   })
   win.maximize();
 
   setupMenu();
+
+
+  // const startUrl =
+  //   process.env.NODE_ENV === 'dev'
+  //     ? 'http://localhost:3000'
+  //     : path.join(__dirname, "/build/index.html");
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development loaderContext.getOptions
@@ -38,6 +48,7 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
+
 }
 
 // Quit when all windows are closed.
