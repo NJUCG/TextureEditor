@@ -10,7 +10,6 @@
     <View2D height="40" ref="view2d" />|
     <View3D height="40" ref="view3d" />
   </div>
-
   <PropertyView />
   <ExplorerView />
   <!-- <hello-world msg="Welcome to Your Vue.js + TypeScript App" ref="HelloWorld"/> -->
