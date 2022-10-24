@@ -1,17 +1,19 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
+  <ExplorerView />
   <div width="50" class="flex-div">
+    EditorView
     <EditorView ref="editorView">
       <canvas width="400" height="400" ref="editorCanvas"></canvas>
     </EditorView>
   </div>
-  <LibraryView height="40" width="30" />
+  <LibraryView />
   <div width="30" class="flex-div">
     <View2D height="40" ref="view2d" />|
     <View3D height="40" ref="view3d" />
   </div>
   <PropertyView />
-  <ExplorerView />
+
   <!-- <hello-world msg="Welcome to Your Vue.js + TypeScript App" ref="HelloWorld"/> -->
 </template>
 

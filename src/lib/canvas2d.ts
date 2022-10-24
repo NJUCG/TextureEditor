@@ -66,13 +66,18 @@ export class CanvasMonitor2D {
 
 	setMousePos(x: number, y: number) {
 		this.mousePos = new Vector2(x, y);
-		console.log(this.mousePos);
 	}
 
 	zoom(factor: number, pos: Vector2) {
 		this.zoomFactor *= factor;
 		this.offsetX = pos.x - (pos.x - this.offsetX) * factor;
 		this.offsetY = pos.y - (pos.y - this.offsetY) * factor;
+	}
+
+	resetImage(){//图片复位
+		this.offsetX = 0;
+		this.offsetY = 0;
+		this.zoomFactor = 1.0;
 	}
 
 }

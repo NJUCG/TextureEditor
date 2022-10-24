@@ -53,13 +53,12 @@ export class CanvasMonitor3D{
 
 	setMousePos(x: number, y: number) {
 		this.mousePos = new Vector2(x, y);
-		console.log(this.mousePos);
 	}
 
-	zoom(factor: number, pos:Vector2) {
+	zoom(factor: number) {
 		this.zoomFactor *= factor;
-		this.offsetX = pos.x - (pos.x - this.offsetX) * factor;
-		this.offsetY = pos.y - (pos.y - this.offsetY) * factor;
+		this.offsetX = this.myCanvas.width *0.5 - (this.myCanvas.width *0.5 - this.offsetX) * factor;
+		this.offsetY = this.myCanvas.height *0.5 - (this.myCanvas.height *0.5 - this.offsetY) * factor;
 	}
 
 }
