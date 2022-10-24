@@ -40,7 +40,7 @@ const editorCanvas = ref<HTMLCanvasElement | null>(null);
 
 onMounted(() => {
 
-  editor.value = new Editor(editorCanvas.value);
+  editor.value = new Editor(editorCanvas.value);//包含setCanvas setGraph
 
 
   //2d.setEditor

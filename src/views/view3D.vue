@@ -52,9 +52,10 @@ const onMouseLeave = (event: MouseEvent) => {
 	canvasMonitor.value.focus = false;
 };
 
-const onWheel = (event: WheelEvent) => {
+const onWheel = (event: WheelEvent) => {//原生事件未关闭
     let factor = event.deltaY < 0 ? 1.1 : 0.9;
     canvasMonitor.value.zoom(factor);
+    event.preventDefault();
 };
 
 </script>

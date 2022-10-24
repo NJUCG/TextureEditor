@@ -70,6 +70,7 @@ const onWheel = (event: WheelEvent) => {
 	// console.log(event.deltaY);
 	let factor = event.deltaY < 0 ? 1.1 : 0.9;
 	canvasMonitor.value.zoom(factor, pos);
+	event.preventDefault();
 };
 
 const setEditor = (editor) => {

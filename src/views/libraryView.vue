@@ -30,7 +30,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { LibraryMonitor } from '@/lib/library';
-import { domainToASCII } from 'url';
 const remote = require("@electron/remote");
 const { dialog } = remote;
 
@@ -47,9 +46,15 @@ const libraryItems = ref(null);
 // }
 
 const LibraryItemType = ["utils", "atomicnodes", "functionnodes", "generators", "filters", "view3d"];
+var library = [];
+
 
 onMounted(() => {
-	var libraryMonitor = new LibraryMonitor();
+	
+	// for(let items in LibraryItemType){
+	// 	library.push(new LibraryItem(items, ));
+	// }
+	
 	// for (let i = 0; i < Object.values(LibraryItemType).length; i++) {
 	// 	let btn = document.getElementsByClassName("items")[i] as HTMLElement
 	// 	btn.style.height = '0px';
@@ -79,7 +84,10 @@ const showHide = (index) => {//items列表展开收起
 }
 
 
-const createNewItem = () => {//添加自定义文件夹
+const createNewItem = () => {//添加自定义文件夹，没有实现重命名h4、删除、添加子节点等功能
+	//可能要建一个别的类来添加事件LibraryMonitor
+	// library.push(new LibraryItem(items, ));
+
 	let nodeList = document.getElementById("nodeList");
 	let item = document.createElement("div");
 	item.className = "node-items";
