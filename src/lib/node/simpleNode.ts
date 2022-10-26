@@ -18,28 +18,17 @@ export class TestNode {
         this.vertexSource = `
         attribute vec4 aVertexPosition;
         attribute vec2 aTexCoord;
-
         varying vec2 v_texcoord;
-
-
         void main(){
-            gl_Position = vec4(aVertexPosition,1.0) ;
-
-            v_texcoord = aTexCoord;
+            gl_Position=aVertexPosition;
         }
         `;
         this.fragmentSource = `
         precision mediump float;
- 
-        // 从顶点着色器中传入的值
         varying vec2 v_texcoord;
-         
-        // 纹理
         uniform sampler2D u_texture;
-         
-        void main() {
-           gl_FragColor = texture2D(u_texture, v_texcoord);
-        
+        void main(){
+            gl_FragColor= texture2D(u_texture,v_texcoord);
         }
         `;
 
@@ -67,14 +56,14 @@ export class TestNode {
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
         new Uint8Array([0, 0, 255, 255]));
         const image = new Image();
+        image.src = "https://webglfundamentals.org/webgl/resources/f-texture.png";
         image.addEventListener("load",loadImage);
-        image.src = "./pic256.jpg";
         function loadImage(){
-        // 现在图像加载完成，拷贝到纹理中
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
-        gl.generateMipmap(gl.TEXTURE_2D);
-        this.drawScene();
+            // 现在图像加载完成，拷贝到纹理中
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            // this.drawScene(this.gl,programInfo,this.buffers);
         }
 
         this.drawScene(this.gl,programInfo,this.buffers);
@@ -130,10 +119,13 @@ export class TestNode {
 
 
     initShaderProgram(gl,vsSource,fsSource) {
+        console.log("vertex");
         const vertexShader = this.loadShader(gl, gl.VERTEX_SHADER, vsSource);
+        console.log("fragment");
         const fragmentShader = this.loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
         // 创建着色器程序
         const shaderProgram = gl.createProgram();
+        console.log(vertexShader);
         gl.attachShader(shaderProgram, vertexShader);
         gl.attachShader(shaderProgram, fragmentShader);
         gl.linkProgram(shaderProgram);
@@ -163,9 +155,11 @@ export class TestNode {
         gl.compileShader(shader);
     
         // See if it compiled successfully
-    
+        console.log("load shader");
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
         alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+        console.log(type);
+        console.log('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
         return null;
         }
