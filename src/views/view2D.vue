@@ -73,9 +73,12 @@ const onWheel = (event: WheelEvent) => {
 	event.preventDefault();
 };
 
-const setEditor = (editor) => {
-	//只需关联editor事件
-}
+
+//使用vuex全局状态 可能不需要再关联
+// const setEditor = (editor) => {
+// 	//只需关联editor事件
+
+// }
 
 
 const saveImage = () => {

@@ -1,11 +1,11 @@
 //将输入的图片颜色取反
 export class TestNode {
-    public id:string;
-    public type:string;
-    private vertexSource:string;
-    private fragmentSource:String;
-    private canvas:HTMLCanvasElement;
-    private gl:WebGLRenderingContext;
+    public id: string;
+    public type: string;
+    private vertexSource: string;
+    private fragmentSource: String;
+    private canvas: HTMLCanvasElement;
+    private gl: WebGLRenderingContext;
     private buffers;
 
     //在节点内创建画布
@@ -42,29 +42,29 @@ export class TestNode {
         }
         `;
 
-        const shaderProgram = this.initShaderProgram(this.gl,this.vertexSource,this.fragmentSource);
+        const shaderProgram = this.initShaderProgram(this.gl, this.vertexSource, this.fragmentSource);
 
         const programInfo = {
-            program:shaderProgram,
+            program: shaderProgram,
             attribLocations: {
                 vertexPosition: this.gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-                texCoordLocation:this.gl.getAttribLocation(shaderProgram,"aTexCoord"),
+                texCoordLocation: this.gl.getAttribLocation(shaderProgram, "aTexCoord"),
             },
             uniformLocations: {
-            textureLocation: this.gl.getUniformLocation(
-                shaderProgram,
-                "u_texture"
-            ),
+                textureLocation: this.gl.getUniformLocation(
+                    shaderProgram,
+                    "u_texture"
+                ),
             },
-            
+
         }
         this.initBuffers(this.gl);
-    
+
         //创建纹理
         const texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D,texture);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-        new Uint8Array([0, 0, 255, 255]));
+            new Uint8Array([0, 0, 255, 255]));
         const image = new Image();
         image.src = "https://webglfundamentals.org/webgl/resources/f-texture.png";
         (function(gl,programInfo,buffers,texture,image){
@@ -81,14 +81,14 @@ export class TestNode {
     initBuffers(gl) {
 
         // Create a buffer for the square's positions.
-      
+
         const positionBuffer = gl.createBuffer();
-      
+
         // Select the positionBuffer as the one to apply buffer
         // operations to from here out.
-      
+
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-      
+
         // Now create an array of positions for the square.
         //由两个三角形构造一个矩形
         const positions = [
@@ -101,11 +101,11 @@ export class TestNode {
         // Now pass the list of positions into WebGL to build the
         // shape. We do this by creating a Float32Array from the
         // JavaScript array, then use it to fill the current buffer.
-      
+
         gl.bufferData(gl.ARRAY_BUFFER,
-                      new Float32Array(positions),
-                      gl.STATIC_DRAW);
-        
+            new Float32Array(positions),
+            gl.STATIC_DRAW);
+
         const texpositions = [
             1.0,  1.0,
             -1.0,  1.0,
@@ -114,16 +114,16 @@ export class TestNode {
         ];
         //纹理坐标缓冲区
         const texBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER,texBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
         gl.bufferData(gl.ARRAY_BUFFER,
             new Float32Array(texpositions),
             gl.STATIC_DRAW);
 
-        this.buffers =  {
-          position: positionBuffer,
-          texture:texBuffer,
+        this.buffers = {
+            position: positionBuffer,
+            texture: texBuffer,
         };
-      }
+    }
 
 
     initShaderProgram(gl,vsSource,fsSource) {
@@ -151,25 +151,25 @@ export class TestNode {
     //
     loadShader(gl, type, source) {
         const shader = gl.createShader(type);
-    
+
         // Send the source to the shader object
-    
+
         gl.shaderSource(shader, source);
-    
+
         // Compile the shader program
-    
+
         gl.compileShader(shader);
-    
+
         // See if it compiled successfully
         console.log("load shader");
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-        console.log(type);
-        console.log('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-        gl.deleteShader(shader);
-        return null;
+            alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+            console.log(type);
+            console.log('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
         }
-    
+
         return shader;
     }
 

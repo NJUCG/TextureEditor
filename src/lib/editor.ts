@@ -8,7 +8,9 @@ export class Editor{
 
     canvas: HTMLCanvasElement;
     graph: NodeGraph;
+    // focuedNode:Node;//node类还没定义
     node:TestNode;
+    // view2D:
 
 
 
@@ -29,6 +31,6 @@ export class Editor{
     public setGraph(canvas:HTMLCanvasElement){
         this.graph = new NodeGraph(canvas);
         //为graph添加事件
-        // this.graph
+        // this.graph.onNodeFouced = 
     }
 }
