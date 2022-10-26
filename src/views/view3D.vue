@@ -1,5 +1,6 @@
 <template>
     <div style="height:100%">
+        3dView
         <div style="height:2em;">
         </div>
         <canvas id="_view3d" ref="myCanvas" style="display:block;"></canvas>
@@ -45,19 +46,16 @@ const onMouseMove = (event: MouseEvent) => {
 
 const onMouseOver = (event: MouseEvent) => {
 	canvasMonitor.value.focus = true;
-	console.log(canvasMonitor.value.focus);
 };
 
 const onMouseLeave = (event: MouseEvent) => {
 	canvasMonitor.value.focus = false;
-	console.log(canvasMonitor.value.focus);
 };
 
-const onWheel = (event: WheelEvent) => {
-    let pos = canvasMonitor.value.getMousePos(event);
-    // console.log(event.deltaY);
+const onWheel = (event: WheelEvent) => {//原生事件未关闭
     let factor = event.deltaY < 0 ? 1.1 : 0.9;
-    canvasMonitor.value.zoom(factor, pos);
+    canvasMonitor.value.zoom(factor);
+    event.preventDefault();
 };
 
 </script>

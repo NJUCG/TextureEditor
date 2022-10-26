@@ -9,7 +9,7 @@ export enum LibraryItemType {
     View3D = "view3d",//环境参数
 }
 
-export class LibraryItem {
+export class LibraryItem {//新建节点模块
 	type: LibraryItemType;
 	name: string;
 	displayName: string;

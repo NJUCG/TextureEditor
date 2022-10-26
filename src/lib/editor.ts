@@ -28,6 +28,7 @@ export class Editor{
 
     public setGraph(canvas:HTMLCanvasElement){
         this.graph = new NodeGraph(canvas);
-
+        //为graph添加事件
+        // this.graph
     }
 }

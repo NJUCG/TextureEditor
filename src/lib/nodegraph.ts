@@ -10,6 +10,8 @@ export class NodeGraph{
     }
 
     public draw(){
-        
+        //每个下属节点都设置draw
     }
+
+    onNodeFouced:()=>void;
 }

@@ -1,7 +1,9 @@
 <template>
 	<div style="height:100%">
+		2DView
 		<div style="height:2em;">
 			<button v-on:click="saveImage">保存</button>
+			<button v-on:click="resetImage">复位</button>
 		</div>
 		<canvas id="_view2d" ref="myCanvas" style="display:block;"></canvas>
 	</div>
@@ -20,7 +22,7 @@ const canvasMonitor = ref<CanvasMonitor2D | null>(null);
 const hasImage = computed(() => { return canvasMonitor.value && canvasMonitor.value.image != null });
 
 onMounted(() => {
-	
+
 	canvasMonitor.value = new CanvasMonitor2D(myCanvas.value);
 	//在类外加入鼠标事件监听器
 	myCanvas.value.addEventListener('mouseover', onMouseOver);
@@ -63,11 +65,12 @@ const onMouseLeave = (event: MouseEvent) => {
 };
 
 const onWheel = (event: WheelEvent) => {
-	
+
 	let pos = canvasMonitor.value.getMousePos(event);
 	// console.log(event.deltaY);
 	let factor = event.deltaY < 0 ? 1.1 : 0.9;
 	canvasMonitor.value.zoom(factor, pos);
+	event.preventDefault();
 };
 
 const setEditor = (editor) => {
@@ -99,7 +102,9 @@ const saveImage = () => {
 
 }
 
-
+const resetImage = () => {//图片复位
+	canvasMonitor.value.resetImage();
+}
 
 defineExpose({
 	canvasMonitor
