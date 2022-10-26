@@ -12,6 +12,9 @@
   </div>
   <PropertyView />
   <ExplorerView />
+  <div id="node-canvas">
+    <p>Node Canvas</p>
+  </div>
   <!-- <hello-world msg="Welcome to Your Vue.js + TypeScript App" ref="HelloWorld"/> -->
 </template>
 
@@ -125,6 +128,7 @@ function setWindowTitle(newTitle: string) {
 
 
 </script>
+
 
 <style>
 #app {

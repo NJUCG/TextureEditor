@@ -2,17 +2,19 @@
 
 import { group } from "console";
 import { NodeGraph } from "./nodegraph";
+import {TestNode} from "./node/simpleNode";
 
 export class Editor{
 
     canvas: HTMLCanvasElement;
     graph: NodeGraph;
-
+    node:TestNode;
 
 
 
     constructor(canvas:HTMLCanvasElement){
         this.setCanvas(canvas);
+        this.node= new TestNode();
     }
 
     public draw(): void {
