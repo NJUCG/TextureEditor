@@ -1,17 +1,17 @@
 //结点图
 
-export class NodeGraph{
+export class NodeGraph {
 
-    canvas:HTMLCanvasElement;
+    canvas: HTMLCanvasElement;
 
 
-    constructor(canvas: HTMLCanvasElement){
+    constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
     }
 
-    public draw(){
+    public draw() {
         //每个下属节点都设置draw
     }
 
-    onNodeFouced:()=>void;
+    onNodeFouced: (node) => void;
 }
