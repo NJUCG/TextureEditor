@@ -1,3 +1,6 @@
+import { useStore } from 'vuex'
+import { key } from '@/store'
+
 class Vector2 {
 	x: number;
 	y: number;
@@ -27,15 +30,18 @@ export class CanvasMonitor2D {
 	box: Box;
 	mousePos: Vector2;//鼠标位置
 	zoomFactor: number;//缩放参数
-	focus: Boolean;//鼠标位于2dview界面
+	focusNode: any;//鼠标位于2dview界面
 	offsetX: number;//鼠标拖动界面x位移
 	offsetY: number;//鼠标拖动界面y位移
+	protected store;
 
 	constructor(canvas: HTMLCanvasElement) {
+		
+		this.store = useStore(key);
 		this.myCanvas = canvas;
 		this.context = this.myCanvas.getContext("2d");
 		this.mousePos = new Vector2(0, 0);
-		this.focus = false;
+		this.focusNode = this.store.state.focusedNode;
 		this.zoomFactor = 1.0;
 		this.offsetX = 0;
 		this.offsetY = 0;
@@ -49,12 +55,22 @@ export class CanvasMonitor2D {
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		ctx.fillStyle = "rgb(50,50,50)";
 		ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-
-		if (this.image) {
+		// console.log(this.focusNode);
+		if(this.focusNode){
+			// this.setFocusNode(this.store.state.focusedNode);
+			this.myCanvas = this.focusNode;
+			
+			ctx.drawImage(this.focusNode, this.offsetX, this.offsetY, this.myCanvas.width*this.zoomFactor, this.myCanvas.height*this.zoomFactor);
+		}else if (this.image) {
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width*this.zoomFactor, this.myCanvas.height*this.zoomFactor);
 		}
 	}
 
+	setFocusNode(node){
+		this.focusNode = node;
+		console.log(this.focusNode);
+	}
+	
 	setImage(image: HTMLImageElement) {
 		this.image = image;
 	}

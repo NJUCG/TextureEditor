@@ -1,7 +1,7 @@
 
 import { GraphState } from "./type"
 
-export const state: GraphState = {
-    nodeGraph: null,
-    focusedNode: ""
-}
+// export const states: GraphState = {
+//     nodeGraph: null,
+//     focusedNode: null
+// }

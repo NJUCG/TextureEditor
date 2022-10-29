@@ -3,9 +3,9 @@
   <ExplorerView />
   <div width="50" class="flex-div">
     EditorView
-    <EditorView ref="editorView">
-      <canvas width="400" height="400" ref="editorCanvas"></canvas>
-    </EditorView>
+    <!-- <EditorView ref="editorView"> -->
+    <canvas width="400" height="400" ref="editorCanvas"></canvas>
+    <!-- </EditorView> -->
   </div>
   <LibraryView />
   <div width="30" class="flex-div">
@@ -33,12 +33,16 @@ const { ipcRenderer } = require('electron')
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
 
+
+
+
+
 var project = new Project();
 const editor = ref<Editor | null>(null);
 const editorCanvas = ref<HTMLCanvasElement | null>(null);
 
 onMounted(() => {
-
+  console.log(editorCanvas.value);
   editor.value = new Editor(editorCanvas.value);//包含setCanvas setGraph
 
 

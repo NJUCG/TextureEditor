@@ -47,7 +47,7 @@ const libraryItems = ref(null);
 
 const LibraryItemType = ["utils", "atomicnodes", "functionnodes", "generators", "filters", "view3d"];
 var library = [];
-
+const libraryMonitor = new LibraryMonitor();
 
 onMounted(() => {
 	

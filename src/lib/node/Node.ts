@@ -1,18 +1,43 @@
-export class Node{
+import { useStore } from 'vuex'
+import { key } from '@/store'
+
+export class Node {
     public id: string;
     public type: string;
     protected vertexSource: string;
     protected fragmentSource: string;
     public canvas: HTMLCanvasElement;
     protected gl: WebGLRenderingContext;
-    protected buffers:Object;
-    protected programInfo:Object;
+    protected buffers: Object;
+    protected programInfo: Object;
+    protected store;
 
-    constructor(){
-       console.log("this is father node");
+    constructor(canvas: HTMLCanvasElement) {
+        console.log("this is father node");
+        this.canvas = canvas;
+        const self = this;
+        canvas.addEventListener("mousedown", function(evt: MouseEvent) {
+			self.onMouseDown(evt);
+		});
+        // console.log(this.canvas);
+
+        this.store = useStore(key);
+        // console.log(this.store.state.count);
+        // this.store.commit('add');
+        // console.log(this.store.state.count);
     }
-    
-    protected initBuffers(gl:WebGLRenderingContext):void{
+
+    onMouseDown(evt:MouseEvent) {
+        console.log("click");
+        // console.log(this.canvas);
+        // console.log(this.canvas.id);
+        this.store.commit('displayNodeOnComponents', this.canvas);
+        // console.log(this.store.state.count);
+        // this.store.commit('add');
+        // console.log(this.store.state.count);
+    }
+
+    protected initBuffers(gl: WebGLRenderingContext): void {
         // Create a buffer for the square's positions.
         const positionBuffer = gl.createBuffer();
 
@@ -24,12 +49,12 @@ export class Node{
         // Now create an array of positions for the square.
         //由两个三角形构造一个矩形
         const positions = [
-            1.0,  1.0,
-            -1.0,  1.0,
-             1.0, -1.0,
+            1.0, 1.0,
+            -1.0, 1.0,
+            1.0, -1.0,
             -1.0, -1.0,
-         ];
-      
+        ];
+
         // Now pass the list of positions into WebGL to build the
         // shape. We do this by creating a Float32Array from the
         // JavaScript array, then use it to fill the current buffer.
@@ -39,8 +64,8 @@ export class Node{
             gl.STATIC_DRAW);
 
         const texpositions = [
-            1.0,  1.0,
-            -1.0,  1.0,
+            1.0, 1.0,
+            -1.0, 1.0,
             1.0, -1.0,
             -1.0, -1.0,
         ];
@@ -56,9 +81,9 @@ export class Node{
             texture: texBuffer,
         };
     }
-    
-    protected initShaderProgram(gl:WebGLRenderingContext,
-        vsSource:string,fsSource:string):WebGLProgram{
+
+    protected initShaderProgram(gl: WebGLRenderingContext,
+        vsSource: string, fsSource: string): WebGLProgram {
         const vertexShader = this.loadShader(gl, gl.VERTEX_SHADER, vsSource);
         const fragmentShader = this.loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
         // 创建着色器程序
@@ -77,7 +102,7 @@ export class Node{
         return shaderProgram;
     }
 
-    protected loadShader(gl:WebGLRenderingContext,type:number,source:string){
+    protected loadShader(gl: WebGLRenderingContext, type: number, source: string) {
         const shader = gl.createShader(type);
 
         // Send the source to the shader object

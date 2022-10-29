@@ -4,13 +4,16 @@ import {Node} from "./Node"
 export class TestNode extends Node{
 
     //在节点内创建画布
-    constructor(){
-        super();
-        this.canvas=<HTMLCanvasElement>document.getElementById('mycanvas');
-        if(this.canvas == null){
-            this.canvas = <HTMLCanvasElement>document.createElement("canvas");
-            this.canvas.id='mycanvas';
-        }
+    constructor(canvas:HTMLCanvasElement){
+        super(canvas);
+        this.type = "generators";
+        // this.canvas=<HTMLCanvasElement>document.getElementById('mycanvas');
+        // if(this.canvas == null){
+        //     this.canvas = <HTMLCanvasElement>document.createElement("canvas");
+        //     this.canvas.id='patternNode';
+        // }
+        this.canvas = canvas;
+        this.canvas.id='patternNode';
         
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
@@ -73,7 +76,7 @@ export class TestNode extends Node{
         )(gl,programInfo,this.buffers,texture,image)
 
         drawScene(gl,programInfo,this.buffers);
-        document.body.appendChild(this.canvas);
+        // document.body.appendChild(this.canvas);
     }
 
 
@@ -105,7 +108,7 @@ function drawScene(gl, programInfo, buffers) {
       const stride = 0;         // how many bytes to get from one set of values to the next
                                 // 0 = use type and numComponents above
       const offset = 0;         // how many bytes inside the buffer to start from
-      
+
       gl.vertexAttribPointer(
           programInfo.attribLocations.vertexPosition,
           numComponents,

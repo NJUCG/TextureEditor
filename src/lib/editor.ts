@@ -1,6 +1,5 @@
 //节点编辑器
 
-import { group } from "console";
 import { NodeGraph } from "./nodegraph";
 import {TestNode} from "./node/simpleNode";
 
@@ -9,14 +8,15 @@ export class Editor{
     canvas: HTMLCanvasElement;
     graph: NodeGraph;
     // focuedNode:Node;//node类还没定义
-    node:TestNode;
+    // node:TestNode;
     // view2D:
 
 
 
     constructor(canvas:HTMLCanvasElement){
         this.setCanvas(canvas);
-        this.node= new TestNode();
+        console.log(canvas);
+        // this.node= new TestNode();
     }
 
     public draw(): void {

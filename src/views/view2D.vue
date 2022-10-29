@@ -16,6 +16,9 @@ import { Editor } from '@/lib/editor';
 const electron = require("electron");
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
+// import { useStore } from 'vuex'
+// import { key } from '@/store'
+// const store = useStore(key);
 
 const myCanvas = ref<HTMLCanvasElement | null>(null);
 const canvasMonitor = ref<CanvasMonitor2D | null>(null);
@@ -34,6 +37,7 @@ onMounted(() => {
 	const img = new Image();
 	img.src = "https://pic2.zhimg.com/v2-3f3533b2e479e2a17cc96654024a8b41_r.jpg";
 	canvasMonitor.value.setImage(img);
+	// canvasMonitor.value.setFocusNode(store.state.focusedNode);
 
 	const draw = () => {
 		canvasMonitor.value.draw();
