@@ -5518,6 +5518,11 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
+golden-layout@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.npmmirror.com/golden-layout/-/golden-layout-2.6.0.tgz#aff90f77262c7fd6b6d8fbe2a2d222e24999b9a9"
+  integrity sha512-sIVQCiRWOymHbVD1Aw/T9/ijbPYAVGBlgGYd1N9MRKfcyBNSpjr87Vg9nSHm+RCT8ELrvK8IJYJV0QRJuVUkCQ==
+
 got@^9.6.0:
   version "9.6.0"
   resolved "https://mirrors.huaweicloud.com/repository/npm/got/-/got-9.6.0.tgz"

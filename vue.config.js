@@ -5,6 +5,7 @@ module.exports = defineConfig({
     electronBuilder:{
         nodeIntegration:true
     }
-  }
+  },
+  lintOnSave: false,
 })
 
