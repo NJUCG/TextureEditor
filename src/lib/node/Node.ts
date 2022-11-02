@@ -1,5 +1,5 @@
-import { useStore } from 'vuex'
-import { key } from '@/store'
+import {storeToRefs} from 'pinia'
+import { useMainStore } from '@/store/index';
 
 export class Node {
     public id: string;
@@ -21,20 +21,12 @@ export class Node {
 		});
         // console.log(this.canvas);
 
-        this.store = useStore(key);
-        // console.log(this.store.state.count);
-        // this.store.commit('add');
-        // console.log(this.store.state.count);
+        this.store = useMainStore();
     }
 
     onMouseDown(evt:MouseEvent) {
         console.log("click");
-        // console.log(this.canvas);
-        // console.log(this.canvas.id);
-        this.store.commit('displayNodeOnComponents', this.canvas);
-        // console.log(this.store.state.count);
-        // this.store.commit('add');
-        // console.log(this.store.state.count);
+        this.store.displayNodeOnComponents(this.canvas);
     }
 
     protected initBuffers(gl: WebGLRenderingContext): void {

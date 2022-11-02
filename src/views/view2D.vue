@@ -16,9 +16,6 @@ import { Editor } from '@/lib/editor';
 const electron = require("electron");
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
-// import { useStore } from 'vuex'
-// import { key } from '@/store'
-// const store = useStore(key);
 
 const myCanvas = ref<HTMLCanvasElement | null>(null);
 const canvasMonitor = ref<CanvasMonitor2D | null>(null);
