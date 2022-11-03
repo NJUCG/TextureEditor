@@ -39,7 +39,7 @@ import {
   VirtualLayout,
   ResolvedLayoutConfig,
 } from "golden-layout";
-import GlComponent from "@/components/GlComponent.vue";
+import GlComponent from "@/views/GlComponent.vue";
 /*******************
  * Prop
  *******************/

@@ -43,7 +43,7 @@ import { Project, ProjectManager } from "@/lib/project"
 import { onMounted, ref } from "vue";
 
 /** vue-golden-layout */
-import GoldenLayout from "@/components/GoldenLayout.vue";
+import GoldenLayout from "@/views/GoldenLayout.vue";
 import { predefinedLayout } from "./lib/layout/predefined-layout";
 
 const GoldenLayoutRoot = ref<null | HTMLElement>(null);
@@ -187,8 +187,10 @@ function setWindowTitle(newTitle: string) {
 
 </script>
 
-
 <style>
+@import "golden-layout/dist/css/goldenlayout-base.css";
+@import "golden-layout/dist/css/themes/goldenlayout-dark-theme.css";
+
 html {
     height: 100%;
 }
@@ -224,6 +226,3 @@ body {
 }
 */
 </style>
-<style src="golden-layout/dist/css/goldenlayout-base.css"></style>
-<style src="golden-layout/dist/css/themes/goldenlayout-dark-theme.css"></style>
-

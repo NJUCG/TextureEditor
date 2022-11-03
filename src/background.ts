@@ -5,7 +5,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { setupMenu } from "./menu";
-import path from "path";
+
 const remote = require('@electron/remote/main')
 remote.initialize()
 

@@ -13,7 +13,6 @@ const miniRowConfig: LayoutConfig = {
                 type: "component",
                 title: "Title 1st",
                 header: { show: "top" },
-                isClosable: false,
                 componentType: "Content1",
                 width: 10,
                 componentState: undefined,
