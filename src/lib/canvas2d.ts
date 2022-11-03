@@ -1,5 +1,5 @@
-import { useStore } from 'vuex'
-import { key } from '@/store'
+import {storeToRefs} from 'pinia'
+import { useMainStore } from '@/store/index';
 
 class Vector2 {
 	x: number;
@@ -33,15 +33,17 @@ export class CanvasMonitor2D {
 	focusNode: any;//鼠标位于2dview界面
 	offsetX: number;//鼠标拖动界面x位移
 	offsetY: number;//鼠标拖动界面y位移
-	protected store;
 
 	constructor(canvas: HTMLCanvasElement) {
 		
-		this.store = useStore(key);
 		this.myCanvas = canvas;
 		this.context = this.myCanvas.getContext("2d");
 		this.mousePos = new Vector2(0, 0);
-		this.focusNode = this.store.state.focusedNode;
+		const mainStore = useMainStore();
+		// const {focusedNode} = storeToRefs(mainStore);
+		// this.focusNode = focusedNode.value;
+
+		console.log(this.focusNode);
 		this.zoomFactor = 1.0;
 		this.offsetX = 0;
 		this.offsetY = 0;
@@ -55,12 +57,13 @@ export class CanvasMonitor2D {
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		ctx.fillStyle = "rgb(50,50,50)";
 		ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-		// console.log(this.focusNode);
-		if(this.focusNode){
-			// this.setFocusNode(this.store.state.focusedNode);
-			this.myCanvas = this.focusNode;
+
+		const mainStore = useMainStore();
+		if(mainStore.focusedNode){
+			this.myCanvas = mainStore.focusedNode;
+			// console.log(this.myCanvas);
 			
-			ctx.drawImage(this.focusNode, this.offsetX, this.offsetY, this.myCanvas.width*this.zoomFactor, this.myCanvas.height*this.zoomFactor);
+			ctx.drawImage(this.myCanvas, 0, 0, this.myCanvas.width, this.myCanvas.height);
 		}else if (this.image) {
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width*this.zoomFactor, this.myCanvas.height*this.zoomFactor);
 		}
@@ -68,7 +71,7 @@ export class CanvasMonitor2D {
 
 	setFocusNode(node){
 		this.focusNode = node;
-		console.log(this.focusNode);
+		// console.log(this.focusNode);
 	}
 	
 	setImage(image: HTMLImageElement) {
