@@ -1,5 +1,5 @@
 import { Node } from "./Node"
-import { TestNode,drawScene } from "./simpleNode";
+import { TestNode} from "./simpleNode";
 export  class InvertNode extends Node{
     private InputNode:any;
     private texture:WebGLTexture;
@@ -7,18 +7,13 @@ export  class InvertNode extends Node{
 
     constructor(canvas:HTMLCanvasElement){
         super(canvas);
-        //创建输入节点
-        // this.setInputNode(new TestNode(canvas));
 
+        // this.setCanvas(512,512);
         this.type = "filter";
         this.canvas = canvas;
         this.canvas.id='invertNode';
-        this.setCanvas(300,400);
-        // loadInput(this.InputNode).then(
-        //     result=>{
-        //         console.log("then");
-        //     }
-        // );
+        this.setCanvas(512,512);
+
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
         if(!this.gl){
@@ -38,10 +33,10 @@ export  class InvertNode extends Node{
         varying vec2 v_texcoord;
         uniform sampler2D u_texture;
         void main(){
-            // vec4 col = 1.0 -  texture2D(u_texture,v_texcoord);
-            // col.a = 1.0;
-            // gl_FragColor= col;
-            gl_FragColor = vec4(1,0,0.5,1);
+            vec4 col = 1.0 -  texture2D(u_texture,v_texcoord);
+            col.a = 1.0;
+            gl_FragColor= col;
+            // gl_FragColor = vec4(1,0,0.5,1);
         }
         `;
 
@@ -61,33 +56,51 @@ export  class InvertNode extends Node{
             },
 
         }
-        
+        this.programInfo = programInfo;
         const buffers = this.initBuffers(this.gl);
-
+        this.buffers = buffers;
         //创建纹理
         const texture = gl.createTexture();
+        this.texture = texture;
         // const inputTex = this.InputNode.getPixelData();
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER,null);
         gl.bindTexture(gl.TEXTURE_2D, texture);
+        const data =null;
         //绑定输入节点的结果到texture
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-            new Uint8Array([0, 0, 255, 255]));
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, 
+            gl.RGBA, gl.UNSIGNED_BYTE,
+            data);//粉色new Uint8Array([0, 0, 255, 255]
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        this.texture = texture;
-        //绘画
         
-        drawScene(gl,programInfo,buffers);
+        //绘画        
+        
+        // this.drawScene();
+        gl.bindTexture(gl.TEXTURE_2D,null);
         console.log("invert draw");
     }
 
-    //获取该节点的结果
-    public getTexture():WebGLTexture{
-        return this.texture;
+    public setInputNode(node1: TestNode): void {
+        const data = node1.getPixelData();
+        const gl = this.gl;
+        const texture = node1.targetTexture;
+        console.log("input tex");
+        console.log(data);
+        gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+        gl.bindTexture(gl.TEXTURE_2D,texture);
+        //绑定输入节点的结果到texture
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+        //      1 , 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+        //     data);
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, node.image);
+        console.log(this.texture);
+        this.drawScene();
+        
     }
+
+
 
 
 }

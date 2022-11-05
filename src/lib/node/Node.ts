@@ -7,13 +7,14 @@ export class Node {
     protected vertexSource: string;
     protected fragmentSource: string;
     public canvas: HTMLCanvasElement;
-    protected gl: WebGLRenderingContext;
+    public gl: WebGLRenderingContext;
     // protected buffers: any;
     // protected programInfo: any;
     protected size:GLuint;//图片分辨率
     protected store;
     protected inputNode:Node;
-
+    protected buffers:any;
+    protected programInfo:any;
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.size = 512;
@@ -30,6 +31,8 @@ export class Node {
         console.log("click");
         this.store.displayNodeOnComponents(this.canvas);
     }
+
+    
 
     protected initBuffers(gl: WebGLRenderingContext) {
         // Create a buffer for the square's positions.
@@ -126,24 +129,25 @@ export class Node {
      
         // 将帧缓冲区绑定到程序上
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-     
+        
         // The WebGLRenderingContext.framebufferTexture2D() method of the WebGL API attaches a texture to a WebGLFramebuffer.
-        //将framebufer渲染到一个纹理附件中
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
 
         // 创建渲染缓冲区 深度缓冲区
-        const colorBuffer = gl.createRenderbuffer(); // Create a renderbuffer object
-        gl.bindRenderbuffer(gl.RENDERBUFFER, colorBuffer); // Bind the object to target
+        const depthBuffer = gl.createRenderbuffer(); // Create a renderbuffer object
+        gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer); // Bind the object to target
         //根据size创建buffer
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA4, this.size,this.size);
+        gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16, this.size,this.size);
         //将帧缓冲区绑定到渲染缓冲区上
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, colorBuffer);
-     
-     
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
+        
+        gl.bindTexture(gl.TEXTURE_2D,texture);
+        //纹理对象作为帧缓冲区的颜色缓冲区对象
+        gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texture,0);
         // 解除帧缓冲区绑定
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         //解除纹理
         gl.bindTexture(gl.TEXTURE_2D, null);
+
         //解除 渲染缓冲区
         gl.bindRenderbuffer(gl.RENDERBUFFER, null);
      
@@ -160,6 +164,71 @@ export class Node {
         this.canvas.height = height;
     }
     public drawScene() {
-        
-      }
+        const gl = this.gl;
+        const programInfo = this.programInfo;
+        const buffers = this.buffers;
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+        gl.clearDepth(1.0);                 // Clear everything
+        gl.enable(gl.DEPTH_TEST);           // Enable depth testing
+        gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
+      
+        // Clear the canvas before we start drawing on it.
+      
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+        // Tell WebGL to use our program when drawing
+        gl.useProgram(programInfo.program);
+        //设置如何从位置缓冲区取数据到vertexPosition属性
+        {
+          gl.enableVertexAttribArray(
+              programInfo.attribLocations.vertexPosition);
+          gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+          const numComponents = 2;  // pull out 3 values per iteration
+          const type = gl.FLOAT;    // the data in the buffer is 32bit floats
+          const normalize = false;  // don't normalize
+          const stride = 0;         // how many bytes to get from one set of values to the next
+                                    // 0 = use type and numComponents above
+          const offset = 0;         // how many bytes inside the buffer to start from
+    
+          gl.vertexAttribPointer(
+              programInfo.attribLocations.vertexPosition,
+              numComponents,
+              type,
+              normalize,
+              stride,
+              offset);
+    
+        }
+    
+        {
+            gl.enableVertexAttribArray(
+                programInfo.attribLocations.texCoordLocation);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
+            const numComponents = 2;  // 每次迭代从缓冲区取出的数目
+            const type = gl.FLOAT;    // the data in the buffer is 32bit floats
+            const normalize = false;  // don't normalize
+            const stride = 0;         // how many bytes to get from one set of values to the next
+                                      // 0 = use type and numComponents above
+            const offset = 0;         // how many bytes inside the buffer to start from
+            
+            gl.vertexAttribPointer(
+                programInfo.attribLocations.texCoordLocation,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
+    
+          }
+    
+          
+        //u_texture使用纹理单位0
+        gl.uniform1i(programInfo.texture,0);
+        {
+          const offset = 0;
+          const vertexCount = 4;
+          gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+        }
+    }
 }
