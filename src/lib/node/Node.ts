@@ -1,6 +1,17 @@
-import {storeToRefs} from 'pinia'
+// import {storeToRefs} from 'pinia'
 import { useMainStore } from '@/store/index';
 
+import {
+    Property,
+    FloatProperty,
+    IntProperty,
+    BoolProperty,
+    EnumProperty,
+    StringProperty,
+    IPropertyHolder,
+    PropertyType,
+    PropertyGroup
+} from "./NodeProperty";
 export class Node {
     public id: string;
     public type: string;
@@ -17,6 +28,12 @@ export class Node {
 
     protected frameBuffer:WebGLFramebuffer;
     protected targetTexture:WebGLTexture;
+
+    properties: Property[] = [];
+    propertyGroups: PropertyGroup[] = [];
+
+
+
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.size = 512;
@@ -269,5 +286,78 @@ export class Node {
     public getTargetTexture(){
         return this.targetTexture;
     }
+
+    addIntProperty(
+        id: string,
+        displayName: string,
+        defaultVal = 1,
+        minVal = 1,
+        maxVal = 100,
+        increment = 1
+    ): IntProperty {
+        const prop = new IntProperty(id, displayName, defaultVal);
+        prop.minValue = minVal;
+        prop.maxValue = maxVal;
+        prop.step = increment;
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+    addFloatProperty(
+        id: string,
+        displayName: string,
+        defaultVal = 1,
+        minVal = 1,
+        maxVal = 100,
+        increment = 1
+    ): FloatProperty {
+        const prop = new FloatProperty(id, displayName, defaultVal);
+        prop.minValue = minVal;
+        prop.maxValue = maxVal;
+        prop.step = increment;
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+    addBoolProperty(
+        id: string,
+        displayName: string,
+        defaultVal = false
+    ): BoolProperty {
+        const prop = new BoolProperty(id, displayName, defaultVal);
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+    addEnumProperty(
+        id: string,
+        displayName: string,
+        defaultVal: string[] = []
+    ): EnumProperty {
+        const prop = new EnumProperty(id, displayName, defaultVal);
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+
+
+    addStringProperty(
+        id: string,
+        displayName: string,
+        defaultVal = ""
+    ): StringProperty {
+        const prop = new StringProperty(id, displayName, defaultVal);
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+
+
+
 
 }

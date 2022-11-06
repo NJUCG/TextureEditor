@@ -7804,7 +7804,7 @@ pify@^4.0.1:
 
 pinia@^2.0.23:
   version "2.0.23"
-  resolved "https://registry.yarnpkg.com/pinia/-/pinia-2.0.23.tgz#570f5f82160b656b412602789683faa95502d227"
+  resolved "https://registry.npmmirror.com/pinia/-/pinia-2.0.23.tgz#570f5f82160b656b412602789683faa95502d227"
   integrity sha512-N15hFf4o5STrxpNrib1IEb1GOArvPYf1zPvQVRGOO1G1d74Ak0J0lVyalX/SmrzdT4Q0nlEFjbURsmBmIGUR5Q==
   dependencies:
     "@vue/devtools-api" "^6.4.4"

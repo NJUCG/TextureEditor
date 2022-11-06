@@ -55,7 +55,6 @@ async function connect(node1:PatternNode,node2:InvertNode) {
 		
 	})
 	await promise;
-
 	//创建第二个节点
 	node2.setInputNode(node1);	
     node2.drawScene();
