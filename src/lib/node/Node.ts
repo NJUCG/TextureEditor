@@ -8,13 +8,15 @@ export class Node {
     protected fragmentSource: string;
     public canvas: HTMLCanvasElement;
     public gl: WebGLRenderingContext;
-    // protected buffers: any;
-    // protected programInfo: any;
+
     protected size:GLuint;//图片分辨率
     protected store;
     protected inputNode:Node;
     protected buffers:any;
     protected programInfo:any;
+
+    protected frameBuffer:WebGLFramebuffer;
+    protected targetTexture:WebGLTexture;
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.size = 512;
@@ -155,10 +157,6 @@ export class Node {
     }
 
 
-    public setInputNode(node:Node){
-        this.inputNode = node;
-    }
-
     protected setCanvas(width,height){
         this.canvas.width = width;
         this.canvas.height = height;
@@ -231,4 +229,45 @@ export class Node {
           gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
         }
     }
+
+    public getPixelData():Uint8Array{
+		const gl = this.gl as WebGL2RenderingContext;
+        const texture = this.targetTexture;
+        //4代表rgba四个通道
+		const data = new Uint8Array(this.size * this.size * 4);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+		gl.framebufferTexture2D(
+			gl.FRAMEBUFFER,
+			gl.COLOR_ATTACHMENT0,
+			gl.TEXTURE_2D,
+			texture,
+			0
+		);
+
+		if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE) {
+            //512*512*4
+			gl.readPixels(0, 0, this.size, this.size, gl.RGBA, gl.UNSIGNED_BYTE, data);
+		} else {
+			alert("getPixelData: unable to read from framebuffer");
+		}      
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+		return data;
+    }
+
+
+    //return TargetTexture
+    public getTexture(){
+        return this.targetTexture;
+    }
+
+    public getFrameBuffer(){
+        return this.frameBuffer;
+    }
+
+    //return targetTexture
+    public getTargetTexture(){
+        return this.targetTexture;
+    }
+
 }

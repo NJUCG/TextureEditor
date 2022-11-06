@@ -1,12 +1,12 @@
 import { Node } from "./Node"
 
 //Pattern节点
-export class TestNode extends Node{
+export class PatternNode extends Node{
     public flag:boolean = false;
     public image:HTMLImageElement;
     public texture:WebGLTexture;
-    public targetTexture:WebGLTexture;
-    public frameBuffer:WebGLFramebuffer;
+    // public targetTexture:WebGLTexture;
+    // public frameBuffer:WebGLFramebuffer;
 
     //在节点内创建画布
     constructor(canvas: HTMLCanvasElement) {
@@ -45,10 +45,7 @@ export class TestNode extends Node{
         varying vec2 v_texcoord;
         uniform sampler2D u_texture;
         void main(){
-            // vec4 col = 1.0 -  texture2D(u_texture,v_texcoord);
-            // col.a = 1.0;
             gl_FragColor= texture2D(u_texture,v_texcoord);
-            // gl_FragColor = vec4(1,0,0,1);
         }
         `;
 
@@ -114,57 +111,7 @@ export class TestNode extends Node{
         return this.flag;
     }
 
-    //加载图片
-    public setImage(name:string):boolean{
-        // console.log(require(src));
-        const gl =this.gl;
-        this.image.src = require("../../assets/"+name);
-        console.log(this.image.src);
-        this.image.onload =()=>{
-            loadImage(gl,this.texture,this.image);
-            // gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frameBuffer);
-            // gl.framebufferTexture2D(gl.FRAMEBUFFER,
-            //     gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,this.texture,0);
-            console.log("status in setIMage");
-            console.log(gl.checkFramebufferStatus(gl.FRAMEBUFFER));
-            this.drawScene();
-            // gl.bindFramebuffer(this.gl.FRAMEBUFFER,null);
-            gl.bindTexture(this.gl.TEXTURE_2D,null);
-            this.flag = true;
-        }
-        return true;
-    }
 
-
-
-    // public execShader(): void {
-    //     drawScene(this.gl,this.programInfo,this.buffers);
-    // }
-    
-    public getPixelData():Uint8Array{
-		const gl = this.gl as WebGL2RenderingContext;
-        const texture = this.targetTexture;
-        //4代表rgba四个通道
-		const data = new Uint8Array(this.size * this.size * 4);
-		gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-		gl.framebufferTexture2D(
-			gl.FRAMEBUFFER,
-			gl.COLOR_ATTACHMENT0,
-			gl.TEXTURE_2D,
-			texture,
-			0
-		);
-
-		if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE) {
-            //512*512*4
-			gl.readPixels(0, 0, this.size, this.size, gl.RGBA, gl.UNSIGNED_BYTE, data);
-		} else {
-			alert("getPixelData: unable to read from framebuffer");
-		}      
-		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-		return data;
-    }
     public drawScene(): void {
         const gl = this.gl;
         const programInfo = this.programInfo;
@@ -233,14 +180,14 @@ export class TestNode extends Node{
 }
 
 // 现在图像加载完成，拷贝到纹理中
-export function loadImage(gl, texture, image) {
-    //反转y轴
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+// export function loadImage(gl, texture, image) {
+//     //反转y轴
+//     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+//     gl.bindTexture(gl.TEXTURE_2D, texture);
+//     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 
-}
+// }
 

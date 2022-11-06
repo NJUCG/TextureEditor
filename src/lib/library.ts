@@ -1,4 +1,7 @@
-import {TestNode} from "./node/simpleNode";
+import { resolveComponent } from "vue";
+import {PatternNode} from "./node/simpleNode";
+import { InvertNode } from "./node/invertNode";
+import { Connection } from "./node/connection";
 
 export enum LibraryItemType {
 	Utils = "utils",//comment frame pin...
@@ -31,9 +34,16 @@ export class LibraryMonitor {
 	constructor() {
 		this.generators = [];
 		const canvas = <HTMLCanvasElement>document.createElement("canvas");
-		const tmp = new TestNode(canvas);
+		
+		const pattern = new PatternNode(canvas);
+		const invert = new InvertNode(canvas);
+		//建立节点连接
+		const connect = new Connection(pattern,invert);
+
 		document.body.appendChild(canvas);
-		this.addNode(tmp.type, tmp.id, tmp);
+		this.addNode(pattern.type, pattern.id, pattern);
+		// testAsync(pattern,invert);
+		// console.log('3');
 	}
 
 	public addNode(//向libraryItem中添加节点

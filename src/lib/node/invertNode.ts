@@ -1,9 +1,9 @@
 import { Node } from "./Node"
-import { TestNode} from "./simpleNode";
+import { PatternNode} from "./simpleNode";
 export  class InvertNode extends Node{
     private InputNode:any;
     private texture:WebGLTexture;
-    private frameBuffer:WebGLFramebuffer;
+    // private frameBuffer:WebGLFramebuffer;
 
     constructor(canvas:HTMLCanvasElement){
         super(canvas);
@@ -82,10 +82,11 @@ export  class InvertNode extends Node{
         console.log("invert draw");
     }
 
-    public setInputNode(node1: TestNode): void {
+    //将输入节点的结果绑定到当前节点的texture
+    public setInputNode(node1: PatternNode): void {
         const data = node1.getPixelData();
         const gl = this.gl;
-        const texture = node1.targetTexture;
+        const texture = node1.getTargetTexture();
         console.log("input tex");
         console.log(data);
         gl.bindFramebuffer(gl.FRAMEBUFFER,null);
@@ -95,17 +96,11 @@ export  class InvertNode extends Node{
         //      1 , 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
         //     data);
         // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, node.image);
-        console.log(this.texture);
-        this.drawScene();
-        
     }
 
 
 
 
 }
-// async function loadInput(node:TestNode) {
-//     console.log(node.flag);
-//     console.log("intput node finshed return true");
-//     return true;
-// }
+
+
