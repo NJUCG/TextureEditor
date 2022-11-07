@@ -30,7 +30,7 @@ export class Connection {
 
 
 async function connect(node1:PatternNode,node2:InvertNode) {
-	console.log('make input node');
+
 	const gl =node1.gl;
 	const image = node1.image;
 	const tex = node1.texture;
@@ -56,17 +56,25 @@ async function connect(node1:PatternNode,node2:InvertNode) {
 		
 	})
 	await promise;
-
-	drawFbo(node2);
+	gl.bindFramebuffer(gl.TEXTURE_2D,null);
+	gl.bindTexture(gl.TEXTURE_2D,tex);
+	node1.drawScene();
 	//创建第二个节点
-	node2.setInputNode(node1);	
-    node2.drawScene();
+	//将输入节点结果绑定到texture
+	// node2.setInputNode(node1);
+	//画布中绘画
+    // node2.drawScene();
 
-	
+	//缓冲区绘画
+	// gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+	// gl.bindTexture(gl.TEXTURE_2D,null);
+	// drawFbo(node2);
+	// console.log("check pixel data ");
+	// console.log(node2.getPixelData());
 
 }
 
-function drawFbo(node){
+function drawFbo(node:InvertNode){
 	const gl = node.gl;
 	const tex = node.getTexture();
 	const fb = node.getFrameBuffer();
@@ -80,9 +88,8 @@ function drawFbo(node){
 	gl.bindTexture(gl.TEXTURE_2D,tex);
 	gl.viewport(0,0,512,512);
 	node.drawScene();
+	node.calPixelData();
 	gl.bindFramebuffer(gl.FRAMEBUFFER,null);
 	gl.bindTexture(gl.TEXTURE_2D,null);
 
-	console.log("invert pixel");
-	console.log(node.calPixelData());
 }

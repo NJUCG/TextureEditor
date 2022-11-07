@@ -85,15 +85,14 @@ export  class InvertNode extends Node{
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        
         //创建Fbo
         const frameBuffer = gl.createFramebuffer();
         this.frameBuffer = frameBuffer;        
         gl.bindFramebuffer(gl.FRAMEBUFFER,frameBuffer);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTexture, 0);
         // this.drawScene();
-        gl.bindTexture(gl.TEXTURE_2D,null);
-        console.log("invert draw");
+
     }
 
     //将输入节点的结果绑定到当前节点的texture
