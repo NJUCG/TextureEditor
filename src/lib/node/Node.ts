@@ -14,6 +14,7 @@ export class Node {
     protected inputNode:Node;
     protected buffers:any;
     protected programInfo:any;
+    protected pixelData;
 
     protected frameBuffer:WebGLFramebuffer;
     protected targetTexture:WebGLTexture;
@@ -31,7 +32,9 @@ export class Node {
 
     onMouseDown(evt:MouseEvent) {
         console.log("click");
-        this.store.displayNodeOnComponents(this.canvas);
+        // this.store.displayNodeOnComponents(this.canvas);
+        this.store.displayNodeOnComponents(this.getPixelData);
+        console.log(this.getPixelData());
     }
 
     
@@ -230,7 +233,7 @@ export class Node {
         }
     }
 
-    public getPixelData():Uint8Array{
+    public calPixelData():Uint8Array{
 		const gl = this.gl as WebGL2RenderingContext;
         const texture = this.targetTexture;
         //4代表rgba四个通道
@@ -252,6 +255,7 @@ export class Node {
 		}      
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
+        this.pixelData = data;
 		return data;
     }
 
@@ -268,6 +272,11 @@ export class Node {
     //return targetTexture
     public getTargetTexture(){
         return this.targetTexture;
+    }
+
+    //return Pixeldata
+    public getPixelData(){
+        return this.pixelData;
     }
 
 }
