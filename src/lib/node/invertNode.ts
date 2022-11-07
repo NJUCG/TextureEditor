@@ -5,9 +5,9 @@ export  class InvertNode extends Node{
     private texture:WebGLTexture;
     // private frameBuffer:WebGLFramebuffer;
 
-    constructor(canvas:HTMLCanvasElement){
-        super(canvas);
-
+    constructor(){
+        super();
+        const canvas = this.canvas;
         // this.setCanvas(512,512);
         this.type = "filter";
         this.canvas = canvas;

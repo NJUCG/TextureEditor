@@ -18,8 +18,13 @@ export class Node {
 
     protected frameBuffer:WebGLFramebuffer;
     protected targetTexture:WebGLTexture;
-    constructor(canvas: HTMLCanvasElement) {
-        this.canvas = canvas;
+    constructor() {
+        this.canvas=<HTMLCanvasElement>document.getElementById('mycanvas');
+        if(this.canvas == null){
+            this.canvas = <HTMLCanvasElement>document.createElement("canvas");
+            
+        }
+        const canvas = this.canvas; 
         this.size = 512;
         const self = this;
         canvas.addEventListener("mousedown", function(evt: MouseEvent) {

@@ -35,14 +35,18 @@ export class LibraryMonitor {
 		this.generators = [];
 		const canvas = <HTMLCanvasElement>document.createElement("canvas");
 		
-		const pattern = new PatternNode(canvas);
-		loadImage(pattern);
+		const pattern = new PatternNode();
+		//绘制到fbo和canvas上
+		loadImage(pattern,canvas);
+		document.body.appendChild(pattern.canvas);	
+		document.body.appendChild(canvas);	
+
 		// const invert = new InvertNode(canvas);
 		//建立节点连接
 		// const connect = new Connection(pattern,invert);
 		
 		
-		document.body.appendChild(canvas);
+	
 		this.addNode(pattern.type, pattern.id, pattern);
 		// testAsync(pattern,invert);
 		// console.log('3');
@@ -60,14 +64,14 @@ export class LibraryMonitor {
 	}
 }
 
-async function loadImage(node1){
+async function loadImage(node1,targetcanvas){
 	const gl =node1.gl;
 	const image = node1.image;
 	const tex = node1.texture;
 	const targetTex = node1.getTargetTexture();
 	const fb = node1.getFrameBuffer();
 	const promise = new Promise((reslove)=>{
-		//加载图片
+		//加载图片 绘制到缓冲区 drawFbo
 		node1.image.src = require("../assets/1.jpg");
 		node1.image.onload = async function () {
 			gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -86,13 +90,29 @@ async function loadImage(node1){
 		
 	})
 	await promise;
+	console.log('loading finshed');
+	//绘制到画布上
 	drawCanvas(node1);
+	//尝试将node canvas绘制到另一个canvas上
+	// copyFromCanvas(node1.canvas,targetcanvas);
+	copyFromCanvas(node1.canvas,targetcanvas);
+
 
 }
 function drawCanvas(node){
 	const gl = node.gl;
 	const tex = node.getTexture();
-	gl.bindFramebuffer(gl.TEXTURE_2D,null);
 	gl.bindTexture(gl.TEXTURE_2D,tex);
 	node.drawScene();
+}
+
+//把画布上的内容转移到另一个画布
+function copyFromCanvas(src, dest:HTMLCanvasElement) {
+	console.log(src);
+	const context = dest.getContext("2d");
+	dest.width = 512;
+	dest.height = 512;
+	//console.log("copying from " + src.width + " to " + dest.width);
+	context.clearRect(0, 0, dest.width, dest.height);
+	context.drawImage(src, 0, 0, dest.width, dest.height);
 }

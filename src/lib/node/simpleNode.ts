@@ -9,17 +9,15 @@ export class PatternNode extends Node{
     // public frameBuffer:WebGLFramebuffer;
 
     //在节点内创建画布
-    constructor(canvas: HTMLCanvasElement) {
+    constructor() {
         //对可视化canvas的处理
-        super(canvas);
+
+        super();
+        const canvas = this.canvas;
         this.type = "generators";
         
         this.setCanvas(512,512);
-        // this.canvas=<HTMLCanvasElement>document.getElementById('mycanvas');
-        // if(this.canvas == null){
-        //     this.canvas = <HTMLCanvasElement>document.createElement("canvas");
-        //     this.canvas.id='patternNode';
-        // }
+
         this.canvas = canvas;
         // this.canvas.id = 'patternNode';
 
