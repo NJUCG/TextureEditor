@@ -8,9 +8,9 @@
     <!-- </EditorView> -->
   </div>
   <LibraryView />
-  <div width="30" class="flex-div">
-    <View2D height="40" ref="view2d" />|
-    <View3D height="40" ref="view3d" />
+  <div width="50" class="flex-div">
+    <View2D height="50" ref="view2d" />|
+    <View3D height="50" ref="view3d" />
   </div>
   <PropertyView />
   <!-- <hello-world msg="Welcome to Your Vue.js + TypeScript App" ref="HelloWorld"/> -->
