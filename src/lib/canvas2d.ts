@@ -1,4 +1,3 @@
-import {storeToRefs} from 'pinia'
 import { useMainStore } from '@/store/index';
 
 class Vector2 {
@@ -35,10 +34,11 @@ export class CanvasMonitor2D {
 	offsetY: number;//鼠标拖动界面y位移
 
 	constructor(canvas: HTMLCanvasElement) {
-		
+
 		this.myCanvas = canvas;
 		this.context = this.myCanvas.getContext("2d");
 		this.mousePos = new Vector2(0, 0);
+		this.image = new Image();
 		const mainStore = useMainStore();
 		// const {focusedNode} = storeToRefs(mainStore);
 		// this.focusNode = focusedNode.value;
@@ -48,7 +48,6 @@ export class CanvasMonitor2D {
 		this.offsetX = 0;
 		this.offsetY = 0;
 
-		// this.myCanvas.addEventListener("mousemove", this.onMouseMove);
 	}
 
 	public draw(): void {
@@ -57,25 +56,39 @@ export class CanvasMonitor2D {
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		ctx.fillStyle = "rgb(50,50,50)";
 		ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-
+		// console.log(this.myCanvas.height);
 		const mainStore = useMainStore();
-		if(mainStore.focusedNode){
-			this.myCanvas = mainStore.focusedNode;
-			// console.log(this.myCanvas);
-			
-			ctx.drawImage(this.myCanvas, 0, 0, this.myCanvas.width, this.myCanvas.height);
-		}else if (this.image) {
-			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width*this.zoomFactor, this.myCanvas.height*this.zoomFactor);
+		
+		if (mainStore.focusedNode) {
+			const dataImage = ctx.createImageData(512, 512);
+			if (dataImage.data.set) {
+				dataImage.data.set(mainStore.focusedNode);
+			}
+			const canvas2: HTMLCanvasElement = document.createElement('canvas');
+			canvas2.width = 512;
+			canvas2.height = 512;
+			const cavans2Ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
+			cavans2Ctx.putImageData(dataImage, 0, 0);
+
+			this.myCanvas = canvas2;
+			this.image.src = canvas2.toDataURL("image/png");
+			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
+		} else if (this.image) {
+			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
 		}
 	}
 
-	setFocusNode(node){
+	setFocusNode(node) {
 		this.focusNode = node;
-		// console.log(this.focusNode);
 	}
-	
+
 	setImage(image: HTMLImageElement) {
 		this.image = image;
+	}
+
+	setSize(width:number, height:number){
+		this.myCanvas.width = width;
+		this.myCanvas.height = height;
 	}
 
 	getMousePos(evt: MouseEvent) {
@@ -93,7 +106,7 @@ export class CanvasMonitor2D {
 		this.offsetY = pos.y - (pos.y - this.offsetY) * factor;
 	}
 
-	resetImage(){//图片复位
+	resetImage() {//图片复位
 		this.offsetX = 0;
 		this.offsetY = 0;
 		this.zoomFactor = 1.0;

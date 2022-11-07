@@ -24,6 +24,7 @@ const hasImage = computed(() => { return canvasMonitor.value && canvasMonitor.va
 onMounted(() => {
 
 	canvasMonitor.value = new CanvasMonitor2D(myCanvas.value);
+	canvasMonitor.value.setSize(512, 512);
 	//在类外加入鼠标事件监听器
 	myCanvas.value.addEventListener('mouseover', onMouseOver);
 	myCanvas.value.addEventListener('mouseleave', onMouseLeave);
@@ -31,9 +32,9 @@ onMounted(() => {
 	myCanvas.value.addEventListener('wheel', onWheel);
 
 
-	const img = new Image();
-	img.src = "https://pic2.zhimg.com/v2-3f3533b2e479e2a17cc96654024a8b41_r.jpg";
-	canvasMonitor.value.setImage(img);
+	// const img = new Image();
+	// img.src = "https://pic2.zhimg.com/v2-3f3533b2e479e2a17cc96654024a8b41_r.jpg";
+	// canvasMonitor.value.setImage(img);
 	// canvasMonitor.value.setFocusNode(store.state.focusedNode);
 
 	const draw = () => {
@@ -56,12 +57,12 @@ const onMouseMove = (event: MouseEvent) => {
 };
 
 const onMouseOver = (event: MouseEvent) => {
-	canvasMonitor.value.focus = true;
+	// canvasMonitor.value.focus = true;
 	// console.log(canvasMonitor.value.focus);
 };
 
 const onMouseLeave = (event: MouseEvent) => {
-	canvasMonitor.value.focus = false;
+	// canvasMonitor.value.focus = false;
 	// console.log(canvasMonitor.value.focus);
 };
 

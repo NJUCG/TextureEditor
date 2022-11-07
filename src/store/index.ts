@@ -10,8 +10,8 @@ export const useMainStore = defineStore('main', {
     },
     getters: {},
     actions: {
-        displayNodeOnComponents (focusedNode){//editor中选中node，展示在2d视图
-            this.focusedNode = focusedNode;
+        displayNodeOnComponents (data:Uint8Array){//editor中选中node，展示在2d视图
+            this.focusedNode = data;
             // console.log(state.focusedNode);
         }
     }
