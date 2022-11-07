@@ -36,10 +36,12 @@ export class LibraryMonitor {
 		const canvas = <HTMLCanvasElement>document.createElement("canvas");
 		
 		const pattern = new PatternNode(canvas);
-		const invert = new InvertNode(canvas);
+		loadImage(pattern);
+		// const invert = new InvertNode(canvas);
 		//建立节点连接
-		const connect = new Connection(pattern,invert);
-
+		// const connect = new Connection(pattern,invert);
+		
+		
 		document.body.appendChild(canvas);
 		this.addNode(pattern.type, pattern.id, pattern);
 		// testAsync(pattern,invert);
@@ -56,4 +58,41 @@ export class LibraryMonitor {
 			this.generators.push(node);
 		}
 	}
+}
+
+async function loadImage(node1){
+	const gl =node1.gl;
+	const image = node1.image;
+	const tex = node1.texture;
+	const targetTex = node1.getTargetTexture();
+	const fb = node1.getFrameBuffer();
+	const promise = new Promise((reslove)=>{
+		//加载图片
+		node1.image.src = require("../assets/1.jpg");
+		node1.image.onload = async function () {
+			gl.bindTexture(gl.TEXTURE_2D, tex);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+			gl.bindFramebuffer(gl.FRAMEBUFFER,fb);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,targetTex,0);
+			gl.bindTexture(gl.TEXTURE_2D,tex);
+			gl.viewport(0,0,512,512);
+			node1.drawScene();
+			node1.calPixelData();
+			gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+			gl.bindTexture(gl.TEXTURE_2D,null);
+			reslove(1);
+		}
+		
+	})
+	await promise;
+	drawCanvas(node1);
+
+}
+function drawCanvas(node){
+	const gl = node.gl;
+	const tex = node.getTexture();
+	gl.bindFramebuffer(gl.TEXTURE_2D,null);
+	gl.bindTexture(gl.TEXTURE_2D,tex);
+	node.drawScene();
 }
