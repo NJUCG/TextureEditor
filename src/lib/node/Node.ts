@@ -15,6 +15,7 @@ export class Node {
     protected buffers:any;
     protected programInfo:any;
     protected pixelData;
+    protected texture:WebGLTexture;
 
     protected frameBuffer:WebGLFramebuffer;
     protected targetTexture:WebGLTexture;
@@ -26,6 +27,52 @@ export class Node {
         }
         const canvas = this.canvas; 
         this.size = 512;
+
+        //获取上下文
+        this.gl = this.canvas.getContext("webgl");
+        const gl = this.gl;
+
+        //创建缓冲区
+        const buffers = this.initBuffers(this.gl);
+        this.buffers = buffers;
+
+        //创建纹理
+        const texture = gl.createTexture();
+        this.texture = texture;
+
+        //绑定framebuffer到上下文
+        // this.frameBuffer = this.initFrameBufferObject(gl,texture);
+
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        
+        // image.src = "../../assets/1.jpg";
+        const targetTexture = gl.createTexture();
+        this.targetTexture = targetTexture;
+        const data = null;
+        gl.bindTexture(gl.TEXTURE_2D,targetTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+            512, 512, 0,
+            gl.RGBA, gl.UNSIGNED_BYTE, data);
+        // 反置y轴
+        // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        //创建fb
+        const frameBuffer = gl.createFramebuffer();
+        this.frameBuffer = frameBuffer;
+        gl.bindFramebuffer(gl.FRAMEBUFFER,frameBuffer);
+        //将targettexture作为fb的第一个颜色绑定
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTexture, 0);
+
+
+
         const self = this;
         canvas.addEventListener("mousedown", function(evt: MouseEvent) {
 			self.onMouseDown(evt);
@@ -169,15 +216,16 @@ export class Node {
         this.canvas.width = width;
         this.canvas.height = height;
     }
-    public drawScene() {
+
+    public drawScene(): void {
         const gl = this.gl;
         const programInfo = this.programInfo;
         const buffers = this.buffers;
-
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-        gl.clearDepth(1.0);                 // Clear everything
-        gl.enable(gl.DEPTH_TEST);           // Enable depth testing
-        gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
+        gl.viewport(0,0,this.size,this.size);
+        gl.clearColor(0.0, 1.0, 0.0, 1.0);  // Clear to black, fully opaque
+        // gl.clearDepth(1.0);                 // Clear everything
+        // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
+        // gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
       
         // Clear the canvas before we start drawing on it.
       
@@ -208,23 +256,15 @@ export class Node {
         }
     
         {
-            gl.enableVertexAttribArray(
-                programInfo.attribLocations.texCoordLocation);
+            gl.enableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
             gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
             const numComponents = 2;  // 每次迭代从缓冲区取出的数目
             const type = gl.FLOAT;    // the data in the buffer is 32bit floats
             const normalize = false;  // don't normalize
-            const stride = 0;         // how many bytes to get from one set of values to the next
-                                      // 0 = use type and numComponents above
+            const stride = 0;         // how many bytes to get from one set of values to the next                
             const offset = 0;         // how many bytes inside the buffer to start from
             
-            gl.vertexAttribPointer(
-                programInfo.attribLocations.texCoordLocation,
-                numComponents,
-                type,
-                normalize,
-                stride,
-                offset);
+            gl.vertexAttribPointer(programInfo.attribLocations.texCoordLocation,numComponents,type,normalize,stride,offset);
     
           }
     
@@ -236,7 +276,13 @@ export class Node {
           const vertexCount = 4;
           gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
         }
+		//清除
+		gl.disableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+		gl.disableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
+
     }
+    
+
 
     public calPixelData():Uint8Array{
 		const gl = this.gl as WebGL2RenderingContext;
@@ -267,7 +313,7 @@ export class Node {
 
     //return TargetTexture
     public getTexture(){
-        return this.targetTexture;
+        return this.texture;
     }
 
     public getFrameBuffer(){

@@ -3,13 +3,21 @@ import {PatternNode} from "./simpleNode"
 import { InvertNode } from "./invertNode"
 
 export class Connection {
-    private input:Node;
-    private output:Node;
+    private input:any;
+    private output:any;
     private id:string;
     constructor(node1,node2){
         this.setInput(node1);
         this.setOutput(node2);
-        connect(node1,node2);
+        // connect(node1,node2);
+		console.log("connect");
+		//setTimeout 4s
+		setTimeout(function(){
+			// connect(node1,node2);
+			//将node1的结果输入给node2
+			setConnectInfo(node1,node2);
+			console.log("set input finshed");
+		},1000);
     }
     public setInput(node:Node){
         this.input = node;
@@ -26,14 +34,21 @@ export class Connection {
         return this.output;
     }
 
+
 }
 
+//将node1的渲染结果传递给node2
+function setConnectInfo(node1,node2){
+	node2.calPixelData();
+	node2.setInputNode(node1);
+}
 
+//既加载node1又加载node2
 async function connect(node1:PatternNode,node2:InvertNode) {
 
 	const gl =node1.gl;
 	const image = node1.image;
-	const tex = node1.texture;
+	const tex = node1.getTexture();
 	const targetTex = node1.getTargetTexture();
 	const fb = node1.getFrameBuffer();
 	const promise = new Promise((reslove)=>{
@@ -45,7 +60,6 @@ async function connect(node1:PatternNode,node2:InvertNode) {
 			gl.bindFramebuffer(gl.FRAMEBUFFER,fb);
             gl.framebufferTexture2D(gl.FRAMEBUFFER,
                 gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,targetTex,0);
-			gl.bindTexture(gl.TEXTURE_2D,tex);
 			gl.viewport(0,0,512,512);
 			node1.drawScene();
 			node1.calPixelData();
@@ -56,9 +70,7 @@ async function connect(node1:PatternNode,node2:InvertNode) {
 		
 	})
 	await promise;
-	gl.bindFramebuffer(gl.TEXTURE_2D,null);
-	gl.bindTexture(gl.TEXTURE_2D,tex);
-	node1.drawScene();
+
 	//创建第二个节点
 	//将输入节点结果绑定到texture
 	// node2.setInputNode(node1);
@@ -74,22 +86,4 @@ async function connect(node1:PatternNode,node2:InvertNode) {
 
 }
 
-function drawFbo(node:InvertNode){
-	const gl = node.gl;
-	const tex = node.getTexture();
-	const fb = node.getFrameBuffer();
-	const targetTex = node.getTargetTexture();
-	//绘制到fbo中
-	gl.bindTexture(gl.TEXTURE_2D, tex);
-	// gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
-	gl.bindFramebuffer(gl.FRAMEBUFFER,fb);
-	gl.framebufferTexture2D(gl.FRAMEBUFFER,
-		gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,targetTex,0);
-	gl.bindTexture(gl.TEXTURE_2D,tex);
-	gl.viewport(0,0,512,512);
-	node.drawScene();
-	node.calPixelData();
-	gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-	gl.bindTexture(gl.TEXTURE_2D,null);
 
-}

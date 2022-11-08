@@ -2,17 +2,16 @@ import { Node } from "./Node"
 import { PatternNode} from "./simpleNode";
 export  class InvertNode extends Node{
     private InputNode:any;
-    private texture:WebGLTexture;
     // private frameBuffer:WebGLFramebuffer;
 
     constructor(){
         super();
         const canvas = this.canvas;
-        // this.setCanvas(512,512);
+        this.setCanvas(512,512);
         this.type = "filter";
         this.canvas = canvas;
         this.canvas.id='invertNode';
-        this.setCanvas(512,512);
+
 
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
@@ -57,40 +56,8 @@ export  class InvertNode extends Node{
 
         }
         this.programInfo = programInfo;
-        const buffers = this.initBuffers(this.gl);
-        this.buffers = buffers;
-        //创建纹理
-        const texture = gl.createTexture();
-        this.texture = texture;
-        // const inputTex = this.InputNode.getPixelData();
 
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        const data =null;
-        //绑定输入节点的结果到texture
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, 
-            gl.RGBA, gl.UNSIGNED_BYTE,
-            data);//粉色new Uint8Array([0, 0, 255, 255]
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-    
-        const targetTexture = gl.createTexture();
-        this.targetTexture = targetTexture;
-        gl.bindTexture(gl.TEXTURE_2D,targetTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
-            512, 512, 0,
-            gl.RGBA, gl.UNSIGNED_BYTE, data);
-        // set the filtering so we don't need mips
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        
-        //创建Fbo
-        const frameBuffer = gl.createFramebuffer();
-        this.frameBuffer = frameBuffer;        
-        gl.bindFramebuffer(gl.FRAMEBUFFER,frameBuffer);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTexture, 0);
+
         // this.drawScene();
 
     }
@@ -99,15 +66,15 @@ export  class InvertNode extends Node{
     public setInputNode(node1: PatternNode): void {
         const data = node1.getPixelData();
         const gl = this.gl;
-        const texture = node1.getTargetTexture();
-        console.log("input tex");
-        console.log(data);
-        gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+        const texture = this.texture;
+
+        // gl.bindFramebuffer(gl.FRAMEBUFFER,null);
         gl.bindTexture(gl.TEXTURE_2D,texture);
         //绑定输入节点的结果到texture
-        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
-        //      1 , 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-        //     data);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+             512 , 512, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+            data);
+           
         // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, node.image);
     }
 
