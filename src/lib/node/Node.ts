@@ -49,9 +49,10 @@ export class Node {
     onMouseDown(evt:MouseEvent) {
         console.log("click");
         this.store.displayNodeOnComponents(this.canvas);
+        this.store.storeFocusNode(this.properties);
     }
 
-    
+
 
     protected initBuffers(gl: WebGLRenderingContext) {
         // Create a buffer for the square's positions.
@@ -142,13 +143,13 @@ export class Node {
     }
 
     protected initFrameBufferObject(gl:WebGLRenderingContext,texture:WebGLTexture){
-        
+
         // 创建FBO 帧缓冲区
         const framebuffer = gl.createFramebuffer();
-     
+
         // 将帧缓冲区绑定到程序上
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-        
+
         // The WebGLRenderingContext.framebufferTexture2D() method of the WebGL API attaches a texture to a WebGLFramebuffer.
 
         // 创建渲染缓冲区 深度缓冲区
@@ -158,7 +159,7 @@ export class Node {
         gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16, this.size,this.size);
         //将帧缓冲区绑定到渲染缓冲区上
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
-        
+
         gl.bindTexture(gl.TEXTURE_2D,texture);
         //纹理对象作为帧缓冲区的颜色缓冲区对象
         gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texture,0);
@@ -169,7 +170,7 @@ export class Node {
 
         //解除 渲染缓冲区
         gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-     
+
         return framebuffer;
     }
 
@@ -187,11 +188,11 @@ export class Node {
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-      
+
         // Clear the canvas before we start drawing on it.
-      
+
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
+
         // Tell WebGL to use our program when drawing
         gl.useProgram(programInfo.program);
         //设置如何从位置缓冲区取数据到vertexPosition属性
@@ -205,7 +206,7 @@ export class Node {
           const stride = 0;         // how many bytes to get from one set of values to the next
                                     // 0 = use type and numComponents above
           const offset = 0;         // how many bytes inside the buffer to start from
-    
+
           gl.vertexAttribPointer(
               programInfo.attribLocations.vertexPosition,
               numComponents,
@@ -213,9 +214,9 @@ export class Node {
               normalize,
               stride,
               offset);
-    
+
         }
-    
+
         {
             gl.enableVertexAttribArray(
                 programInfo.attribLocations.texCoordLocation);
@@ -226,7 +227,7 @@ export class Node {
             const stride = 0;         // how many bytes to get from one set of values to the next
                                       // 0 = use type and numComponents above
             const offset = 0;         // how many bytes inside the buffer to start from
-            
+
             gl.vertexAttribPointer(
                 programInfo.attribLocations.texCoordLocation,
                 numComponents,
@@ -234,10 +235,10 @@ export class Node {
                 normalize,
                 stride,
                 offset);
-    
+
           }
-    
-          
+
+
         //u_texture使用纹理单位0
         gl.uniform1i(programInfo.texture,0);
         {
@@ -266,7 +267,7 @@ export class Node {
 			gl.readPixels(0, 0, this.size, this.size, gl.RGBA, gl.UNSIGNED_BYTE, data);
 		} else {
 			alert("getPixelData: unable to read from framebuffer");
-		}      
+		}
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
 		return data;
@@ -303,7 +304,6 @@ export class Node {
         this.properties.push(prop);
         return prop;
     }
-
     addFloatProperty(
         id: string,
         displayName: string,

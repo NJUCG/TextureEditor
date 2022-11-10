@@ -13,11 +13,13 @@ export  class InvertNode extends Node{
         this.canvas = canvas;
         this.canvas.id='invertNode';
         this.setCanvas(512,512);
-
+        this.addBoolProperty("testbool","testbool");
+        this.addEnumProperty("testEnum","testEnum",["1","2","3"]);
+        this.addFloatProperty("testf","testf",1,1,100,1);
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
         if(!this.gl){
-            console.log('fail to get context'); 
+            console.log('fail to get context');
         }
         this.vertexSource = `
         attribute vec4 aVertexPosition;
@@ -67,16 +69,16 @@ export  class InvertNode extends Node{
         gl.bindTexture(gl.TEXTURE_2D, texture);
         const data =null;
         //绑定输入节点的结果到texture
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, 
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0,
             gl.RGBA, gl.UNSIGNED_BYTE,
             data);//粉色new Uint8Array([0, 0, 255, 255]
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        
-        //绘画        
-        
+
+        //绘画
+
         // this.drawScene();
         gl.bindTexture(gl.TEXTURE_2D,null);
         console.log("invert draw");

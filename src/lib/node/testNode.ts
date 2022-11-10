@@ -1,6 +1,6 @@
 import { Node } from "./Node"
 import { PatternNode} from "./simpleNode";
-export  class InvertNode extends Node{
+export  class testNode extends Node{
     private InputNode:any;
     private texture:WebGLTexture;
     // private frameBuffer:WebGLFramebuffer;
@@ -13,11 +13,8 @@ export  class InvertNode extends Node{
         this.canvas = canvas;
         this.canvas.id='invertNode';
         this.setCanvas(512,512);
-
-        this.addBoolProperty("test","test");
-
+        this.addBoolProperty("testbool","testbool");
         this.addEnumProperty("testEnum","testEnum",["1","2","3"]);
-
         this.addFloatProperty("testf","testf",1,1,100,1);
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;

@@ -36,7 +36,6 @@ const { dialog, app, BrowserWindow, Menu } = remote;
 
 
 
-
 var project = new Project();
 const editor = ref<Editor | null>(null);
 const editorCanvas = ref<HTMLCanvasElement | null>(null);

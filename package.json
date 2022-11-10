@@ -19,6 +19,7 @@
     "pinia": "^2.0.23",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
+    "vue-property-decorator": "^9.1.2",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
