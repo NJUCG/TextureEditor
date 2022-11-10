@@ -58,7 +58,7 @@ export class Node {
             512, 512, 0,
             gl.RGBA, gl.UNSIGNED_BYTE, data);
         // 反置y轴
-        // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+        
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -86,6 +86,7 @@ export class Node {
         console.log("click");
         // this.store.displayNodeOnComponents(this.canvas);
         this.store.displayNodeOnComponents(this.getPixelData());
+        
         // console.log(this.getPixelData());
     }
 

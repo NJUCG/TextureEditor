@@ -15,13 +15,12 @@ export class PatternNode extends Node{
         super();
         const canvas = this.canvas;
         this.type = "generators";
-
-
         this.setCanvas(512,512);
-
         this.canvas = canvas;
-        // this.canvas.id = 'patternNode';
+        this.canvas.id = 'patternNode';
 
+        const gl =this.gl;
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
 
 
         if (!this.gl) {
@@ -73,16 +72,4 @@ export class PatternNode extends Node{
 
     
 }
-
-// 现在图像加载完成，拷贝到纹理中
-// export function loadImage(gl, texture, image) {
-//     //反转y轴
-//     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-//     gl.bindTexture(gl.TEXTURE_2D, texture);
-//     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
-//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-
-// }
 

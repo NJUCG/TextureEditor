@@ -74,8 +74,6 @@ export  class InvertNode extends Node{
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
              512 , 512, 0, gl.RGBA, gl.UNSIGNED_BYTE,
             data);
-           
-        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, node.image);
     }
 
 

@@ -1,5 +1,5 @@
 import { useMainStore } from '@/store/index';
-
+import { copyFromCanvas } from '@/lib/library';
 class Vector2 {
 	x: number;
 	y: number;
@@ -32,6 +32,8 @@ export class CanvasMonitor2D {
 	focusNode: any;//鼠标位于2dview界面
 	offsetX: number;//鼠标拖动界面x位移
 	offsetY: number;//鼠标拖动界面y位移
+	t:boolean;
+	
 
 	constructor(canvas: HTMLCanvasElement) {
 
@@ -47,6 +49,8 @@ export class CanvasMonitor2D {
 		this.zoomFactor = 1.0;
 		this.offsetX = 0;
 		this.offsetY = 0;
+		this.t = false;
+
 
 	}
 
@@ -58,6 +62,7 @@ export class CanvasMonitor2D {
 		ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
 		// console.log(this.myCanvas.height);
 		const mainStore = useMainStore();
+
 		
 		if (mainStore.focusedNode) {
 			const dataImage = ctx.createImageData(512, 512);
@@ -72,7 +77,14 @@ export class CanvasMonitor2D {
 
 			this.myCanvas = canvas2;
 			this.image.src = canvas2.toDataURL("image/png");
+			
+			ctx.clearRect(0, 0, this.myCanvas.width, this.myCanvas.height);
+			ctx.rotate(Math.PI);
+			ctx.translate(-this.myCanvas.width, -this.myCanvas.height);
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
+
+
+
 		} else if (this.image) {
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
 		}
@@ -86,7 +98,7 @@ export class CanvasMonitor2D {
 		this.image = image;
 	}
 
-	setSize(width:number, height:number){
+	setSize(width: number, height: number) {
 		this.myCanvas.width = width;
 		this.myCanvas.height = height;
 	}
