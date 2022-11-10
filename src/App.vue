@@ -1,53 +1,35 @@
 <template>
   <!-- golden layout test -->
   <div class="full-height">
-    <div id="nav" style="height: 90px">
-      <h1 style="margin: 0">Golden Layout Demo</h1>
-      <button @click="onClickInitLayoutMinRow">Init Layout MinRow</button>
-      <div style="width: 20px; display: inline-block"></div>
-      <button @click="onClickAddGLComponent1">
-        Add Simple Component
-      </button>
-      <button @click="onClickAddGLComponent2">
-        Add Widest Component
-      </button>
-      <button @click="onClickAddGLComponent3">
-        Add Highest Component
-      </button>
-      <div style="width: 20px; display: inline-block"></div>
-      <button @click="onClickSaveLayout">Save Layout</button>
-      <div style="width: 20px; display: inline-block"></div>
-      <button @click="onClickLoadLayout">Load Layout</button>
+    <div id="nav" style="height: 40px; border-style: dashed;">
+      Navigator: 作为工具栏，实现部分方法，如Redo/Undo等
     </div>
     <golden-layout
       ref="GoldenLayoutRoot"
       glc-path="./"
-      style="width: 100%; height: calc(100% - 90px)"
+      style="width: 100%; height: calc(100% - 40px)"
     ></golden-layout>
   </div>
   <!-- golden layout test -->
 </template>
 
 <script setup lang="ts">
-// import { defineComponent, onMounted } from 'vue';
-// import HelloWorld from '@/components/HelloWorld.vue';
-import EditorView from "@/views/editorView.vue";
-import LibraryView from "@/views/libraryView.vue";
-import View2D from "@/views/view2D.vue";
-import View3D from "@/views/view3D.vue";
-import PropertyView from "@/views/propertyView.vue";
-import ExplorerView from "@/views/explorerView.vue";
-import { Editor } from "@/lib/editor"
-import { MenuCommands, setupMenu } from "./menu";
-import { Project, ProjectManager } from "@/lib/project"
+
 import { onMounted, ref } from "vue";
 
-/** vue-golden-layout */
+/** vue-golden-layout test
 import GoldenLayout from "@/views/GoldenLayout.vue";
 import { predefinedLayout } from "./lib/layout/predefined-layout";
 
 const GoldenLayoutRoot = ref<null | HTMLElement>(null);
 
+onMounted(() => {
+  if (!GoldenLayoutRoot.value) return;
+  GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.defaultLayout);
+})
+ */
+
+/** Golden-Layout methods
 const onClickInitLayoutMinRow = () => {
   if (!GoldenLayoutRoot.value) return;
   GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.miniRow);
@@ -81,23 +63,27 @@ const onClickLoadLayout = () => {
   const config = JSON.parse(str as string);
   GoldenLayoutRoot.value.loadGLLayout(config);
 };
-/** vue-golden-layout */
+ */
 
-/**
-
+import GoldenLayout from "@/views/GoldenLayout.vue";
+import { predefinedLayout } from "./lib/layout/predefined-layout";
+/** former import */
+import { Editor } from "@/lib/editor"
+import { MenuCommands, setupMenu } from "./menu";
+import { Project, ProjectManager } from "@/lib/project"
 const { ipcRenderer } = require('electron')
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
 
-
-
-
-
 var project = new Project();
 const editor = ref<Editor | null>(null);
 const editorCanvas = ref<HTMLCanvasElement | null>(null);
+const GoldenLayoutRoot = ref<null | HTMLElement>(null);
 
 onMounted(() => {
+  if (!GoldenLayoutRoot.value) return;
+  GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.defaultLayout);
+
   console.log(editorCanvas.value);
   editor.value = new Editor(editorCanvas.value);//包含setCanvas setGraph
 
@@ -183,7 +169,6 @@ function setWindowTitle(newTitle: string) {
   // document.title = newTitle; //修改editor的title
 
 }
-*/
 
 </script>
 

@@ -5,29 +5,71 @@ import {
     StackItemConfig,
 } from "golden-layout";
 
-const miniRowConfig: LayoutConfig = {
+const TextureEditorLayoutConfig: LayoutConfig = {
     root: {
         type: ItemType.row,
         content: [
             {
-                type: "component",
-                title: "Title 1st",
-                header: { show: "top" },
-                componentType: "Content1",
-                width: 10,
+                type: ItemType.column,
+                content: [
+                    {
+                        type: ItemType.component,
+                        title: "2D View",
+                        header: { show: "top", popout: false },
+                        componentType: "view2D",
+                        componentState: undefined,
+                    } as ComponentItemConfig,
+                    {
+                        type: ItemType.component,
+                        title: "3D View",
+                        header: { show: "top", popout: false },
+                        componentType: "view3D",
+                        componentState: undefined,
+                    } as ComponentItemConfig,
+                ],
+            },
+            {
+                type: ItemType.component,
+                title: "Editor",
+                header: { show: "top", popout: false },
+                componentType: "editorView",
                 componentState: undefined,
             } as ComponentItemConfig,
             {
-                type: "component",
-                title: "I'm wide",
-                header: { show: "top", popout: false },
-                componentType: "Content2",
-                componentState: { abc: 123 },
-            } as ComponentItemConfig,
+                type: ItemType.column,
+                content: [
+                    {
+                        type: ItemType.component,
+                        title: "Properties",
+                        header: { show: "top", popout: false },
+                        componentType: "propertyView",
+                        componentState: undefined,
+                    } as ComponentItemConfig,
+                    {
+                        type: ItemType.stack,
+                        content: [
+                            {
+                                type: ItemType.component,
+                                title: "Library",
+                                header: { show: "top", popout: false },
+                                componentType: "libraryView",
+                                componentState: undefined,
+                            } as ComponentItemConfig,
+                            {
+                                type: ItemType.component,
+                                title: "Explorer",
+                                header: { show: "top", popout: false },
+                                componentType: "explorerView",
+                                componentState: undefined,
+                            } as ComponentItemConfig,
+                        ],
+                    },
+                ],
+            },
         ],
     },
 };
 
 export const predefinedLayout = {
-    miniRow: miniRowConfig,
+    defaultLayout: TextureEditorLayoutConfig,
 }
