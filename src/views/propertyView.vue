@@ -1,13 +1,69 @@
 <template>
-	<div style="height:100%">
-	</div>
+  <component
+      v-for="(p, index) in this.prop"
+      :is="p.componentName"
+      :prop="p.prop"
+      :key="index"
+  ></component>
+  <div>propertyView</div>
 </template>
 
-<script lang="ts">
-    import { defineComponent } from 'vue';
-    
-    export default defineComponent({
-        name: "PropertyView",
-        
-    })
+<script  setup lang="ts">
+import {Vue} from "vue-class-component";
+import floatView from "@/components/properties/PropFloat.vue";
+import boolView from "@/components/properties/PropBool.vue";
+import enumView from "@/components/properties/PropEnum.vue";
+import colorView from "@/components/properties/PropColor.vue";
+import textureChannel from "@/components/properties/PropTextureChannel.vue";
+import RandomSeedPropertyView from "@/components/properties/PropRandomSeed.vue";
+import stringView from "@/components/properties/PropString.vue";
+import {
+  IProperyUi,
+  PropertyChangeComplete
+} from "../components/properties/ipropertyui";
+import {
+  Property,
+  IPropertyHolder,
+  PropertyGroup
+} from "@/lib/designer/properties";
+import {Node} from "@/lib/node/Node";
+import { useMainStore } from '@/store/index';
+import {
+  FloatProperty,
+  IntProperty,
+  BoolProperty,
+  EnumProperty,
+  StringProperty,
+  PropertyType,
+} from "@/lib/node/NodeProperty";
+let properties:Property[]=[];
+const property1=new IntProperty("test","test",1,1);
+const property2=new BoolProperty("testbool","testbool",true);
+const property3=new EnumProperty("teste","teste",["1","2","3"]);
+properties.push(property1);
+properties.push(property2);
+properties.push(property3);
+// class PropGroup {
+//   title: string;
+//   props: PropHolder[];
+//   collapsed: boolean;
+// }
+class PropHolder {
+  prop: Property;
+  componentName: string;
+}
+const componentMap={
+  "floatView":floatView,
+  "boolView":boolView,
+  "intView":floatView,
+  "enumView":enumView
+};
+let prop: PropHolder[]=properties.map(prop =>{
+  return {
+    prop:prop,
+    componentName:componentMap[prop.type+"View"]
+  }
+})
+console.log(properties);
+
 </script>
