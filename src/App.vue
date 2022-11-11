@@ -1,47 +1,89 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <ExplorerView />
-  <div width="50" class="flex-div">
-    EditorView
-    <!-- <EditorView ref="editorView"> -->
-    <canvas width="400" height="400" ref="editorCanvas"></canvas>
-    <!-- </EditorView> -->
+  <!-- golden layout test -->
+  <div class="full-height">
+    <div id="nav" style="height: 40px; border-style: dashed;">
+      Navigator: 作为工具栏，实现部分方法，如Redo/Undo等
+    </div>
+    <golden-layout
+      ref="GoldenLayoutRoot"
+      glc-path="./"
+      style="width: 100%; height: calc(100% - 40px)"
+    ></golden-layout>
   </div>
-  <LibraryView />
-  <div width="50" class="flex-div">
-    <View2D height="50" ref="view2d" />|
-    <View3D height="50" ref="view3d" />
-  </div>
-  <PropertyView />
-  <!-- <hello-world msg="Welcome to Your Vue.js + TypeScript App" ref="HelloWorld"/> -->
+  <!-- golden layout test -->
 </template>
 
 <script setup lang="ts">
-// import { defineComponent, onMounted } from 'vue';
-// import HelloWorld from '@/components/HelloWorld.vue';
-import EditorView from "@/views/editorView.vue";
-import LibraryView from "@/views/libraryView.vue";
-import View2D from "@/views/view2D.vue";
-import View3D from "@/views/view3D.vue";
-import PropertyView from "@/views/propertyView.vue";
-import ExplorerView from "@/views/explorerView.vue";
+
+import { onMounted, ref } from "vue";
+
+/** vue-golden-layout test
+import GoldenLayout from "@/views/GoldenLayout.vue";
+import { predefinedLayout } from "./lib/layout/predefined-layout";
+
+const GoldenLayoutRoot = ref<null | HTMLElement>(null);
+
+onMounted(() => {
+  if (!GoldenLayoutRoot.value) return;
+  GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.defaultLayout);
+})
+ */
+
+/** Golden-Layout methods
+const onClickInitLayoutMinRow = () => {
+  if (!GoldenLayoutRoot.value) return;
+  GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.miniRow);
+};
+
+const onClickAddGLComponent1 = () => {
+  if (!GoldenLayoutRoot.value) return;
+  GoldenLayoutRoot.value.addGLComponent("Content1", "Title 1st");
+};
+
+const onClickAddGLComponent2 = () => {
+  if (!GoldenLayoutRoot.value) return;
+  GoldenLayoutRoot.value.addGLComponent("Content2", "I'm wide");
+};
+
+const onClickAddGLComponent3 = () => {
+  if (!GoldenLayoutRoot.value) return;
+  GoldenLayoutRoot.value.addGLComponent("Content3", "I'm high");
+};
+
+const onClickSaveLayout = () => {
+  if (!GoldenLayoutRoot.value) return;
+  const config = GoldenLayoutRoot.value.getLayoutConfig();
+  localStorage.setItem("gl_config", JSON.stringify(config));
+};
+
+const onClickLoadLayout = () => {
+  const str = localStorage.getItem("gl_config");
+  if (!str) return;
+  if (!GoldenLayoutRoot.value) return;
+  const config = JSON.parse(str as string);
+  GoldenLayoutRoot.value.loadGLLayout(config);
+};
+ */
+
+import GoldenLayout from "@/views/GoldenLayout.vue";
+import { predefinedLayout } from "./lib/layout/predefined-layout";
+/** former import */
 import { Editor } from "@/lib/editor"
 import { MenuCommands, setupMenu } from "./menu";
 import { Project, ProjectManager } from "@/lib/project"
-import { onMounted, ref } from "vue";
 const { ipcRenderer } = require('electron')
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
 
-
-
-
-
 var project = new Project();
 const editor = ref<Editor | null>(null);
 const editorCanvas = ref<HTMLCanvasElement | null>(null);
+const GoldenLayoutRoot = ref<null | HTMLElement>(null);
 
 onMounted(() => {
+  if (!GoldenLayoutRoot.value) return;
+  GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.defaultLayout);
+
   console.log(editorCanvas.value);
   editor.value = new Editor(editorCanvas.value);//包含setCanvas setGraph
 
@@ -128,11 +170,32 @@ function setWindowTitle(newTitle: string) {
 
 }
 
-
 </script>
 
-
 <style>
+@import "golden-layout/dist/css/goldenlayout-base.css";
+@import "golden-layout/dist/css/themes/goldenlayout-dark-theme.css";
+
+html {
+    height: 100%;
+}
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+.full-height, #app {
+    height: 100%;
+}
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+#nav {
+    text-align: center;
+}
+/*
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -146,4 +209,5 @@ function setWindowTitle(newTitle: string) {
   display: flex;
   width: auto;
 }
+*/
 </style>

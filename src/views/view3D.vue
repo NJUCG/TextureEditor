@@ -1,8 +1,6 @@
 <template>
     <div style="height:100%">
         3dView
-        <div style="height:2em;">
-        </div>
         <canvas id="_view3d" ref="myCanvas" style="display:block;"></canvas>
     </div>
 </template>

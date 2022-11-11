@@ -32,9 +32,9 @@ onMounted(() => {
 	myCanvas.value.addEventListener('wheel', onWheel);
 
 
-	// const img = new Image();
-	// img.src = "https://pic2.zhimg.com/v2-3f3533b2e479e2a17cc96654024a8b41_r.jpg";
-	// canvasMonitor.value.setImage(img);
+	const img = new Image();
+	img.src = "https://pic2.zhimg.com/v2-3f3533b2e479e2a17cc96654024a8b41_r.jpg";
+	canvasMonitor.value.setImage(img);
 	// canvasMonitor.value.setFocusNode(store.state.focusedNode);
 
 	const draw = () => {
