@@ -1,6 +1,16 @@
 import {storeToRefs} from 'pinia'
 import { useMainStore } from '@/store/index';
-
+import {
+    Property,
+    FloatProperty,
+    IntProperty,
+    BoolProperty,
+    EnumProperty,
+    StringProperty,
+    IPropertyHolder,
+    PropertyType,
+    PropertyGroup
+} from "./NodeProperty";
 export class Node {
     public id: string;
     public type: string;
@@ -19,13 +29,15 @@ export class Node {
 
     protected frameBuffer:WebGLFramebuffer;
     protected targetTexture:WebGLTexture;
+    properties: Property[] = [];
+    propertyGroups: PropertyGroup[] = [];
     constructor() {
         this.canvas=<HTMLCanvasElement>document.getElementById('mycanvas');
         if(this.canvas == null){
             this.canvas = <HTMLCanvasElement>document.createElement("canvas");
-            
+
         }
-        const canvas = this.canvas; 
+        const canvas = this.canvas;
         this.size = 512;
 
         //获取上下文
@@ -48,7 +60,7 @@ export class Node {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         gl.bindTexture(gl.TEXTURE_2D, null);
-        
+
         // image.src = "../../assets/1.jpg";
         const targetTexture = gl.createTexture();
         this.targetTexture = targetTexture;
@@ -58,7 +70,7 @@ export class Node {
             512, 512, 0,
             gl.RGBA, gl.UNSIGNED_BYTE, data);
         // 反置y轴
-        
+
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -86,11 +98,11 @@ export class Node {
         console.log("click");
         // this.store.displayNodeOnComponents(this.canvas);
         this.store.displayNodeOnComponents(this.getPixelData());
-        
+
         // console.log(this.getPixelData());
     }
 
-    
+
 
     protected initBuffers(gl: WebGLRenderingContext) {
         // Create a buffer for the square's positions.
@@ -181,13 +193,13 @@ export class Node {
     }
 
     protected initFrameBufferObject(gl:WebGLRenderingContext,texture:WebGLTexture){
-        
+
         // 创建FBO 帧缓冲区
         const framebuffer = gl.createFramebuffer();
-     
+
         // 将帧缓冲区绑定到程序上
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-        
+
         // The WebGLRenderingContext.framebufferTexture2D() method of the WebGL API attaches a texture to a WebGLFramebuffer.
 
         // 创建渲染缓冲区 深度缓冲区
@@ -197,7 +209,7 @@ export class Node {
         gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16, this.size,this.size);
         //将帧缓冲区绑定到渲染缓冲区上
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
-        
+
         gl.bindTexture(gl.TEXTURE_2D,texture);
         //纹理对象作为帧缓冲区的颜色缓冲区对象
         gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texture,0);
@@ -208,7 +220,7 @@ export class Node {
 
         //解除 渲染缓冲区
         gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-     
+
         return framebuffer;
     }
 
@@ -227,11 +239,11 @@ export class Node {
         // gl.clearDepth(1.0);                 // Clear everything
         // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         // gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-      
+
         // Clear the canvas before we start drawing on it.
-      
+
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
+
         // Tell WebGL to use our program when drawing
         gl.useProgram(programInfo.program);
         //设置如何从位置缓冲区取数据到vertexPosition属性
@@ -245,7 +257,7 @@ export class Node {
           const stride = 0;         // how many bytes to get from one set of values to the next
                                     // 0 = use type and numComponents above
           const offset = 0;         // how many bytes inside the buffer to start from
-    
+
           gl.vertexAttribPointer(
               programInfo.attribLocations.vertexPosition,
               numComponents,
@@ -253,23 +265,23 @@ export class Node {
               normalize,
               stride,
               offset);
-    
+
         }
-    
+
         {
             gl.enableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
             gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
             const numComponents = 2;  // 每次迭代从缓冲区取出的数目
             const type = gl.FLOAT;    // the data in the buffer is 32bit floats
             const normalize = false;  // don't normalize
-            const stride = 0;         // how many bytes to get from one set of values to the next                
+            const stride = 0;         // how many bytes to get from one set of values to the next
             const offset = 0;         // how many bytes inside the buffer to start from
-            
+
             gl.vertexAttribPointer(programInfo.attribLocations.texCoordLocation,numComponents,type,normalize,stride,offset);
-    
+
           }
-    
-          
+
+
         //u_texture使用纹理单位0
         gl.uniform1i(programInfo.texture,0);
         {
@@ -282,7 +294,7 @@ export class Node {
 		gl.disableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
 
     }
-    
+
 
 
     public calPixelData():Uint8Array{
@@ -304,7 +316,7 @@ export class Node {
 			gl.readPixels(0, 0, this.size, this.size, gl.RGBA, gl.UNSIGNED_BYTE, data);
 		} else {
 			alert("getPixelData: unable to read from framebuffer");
-		}      
+		}
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         this.pixelData = data;
@@ -329,6 +341,73 @@ export class Node {
     //return Pixeldata
     public getPixelData(){
         return this.pixelData;
+    }
+    addIntProperty(
+        id: string,
+        displayName: string,
+        defaultVal = 1,
+        minVal = 1,
+        maxVal = 100,
+        increment = 1
+    ): IntProperty {
+        const prop = new IntProperty(id, displayName, defaultVal);
+        prop.minValue = minVal;
+        prop.maxValue = maxVal;
+        prop.step = increment;
+
+        this.properties.push(prop);
+        return prop;
+    }
+    addFloatProperty(
+        id: string,
+        displayName: string,
+        defaultVal = 1,
+        minVal = 1,
+        maxVal = 100,
+        increment = 1
+    ): FloatProperty {
+        const prop = new FloatProperty(id, displayName, defaultVal);
+        prop.minValue = minVal;
+        prop.maxValue = maxVal;
+        prop.step = increment;
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+    addBoolProperty(
+        id: string,
+        displayName: string,
+        defaultVal = false
+    ): BoolProperty {
+        const prop = new BoolProperty(id, displayName, defaultVal);
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+    addEnumProperty(
+        id: string,
+        displayName: string,
+        defaultVal: string[] = []
+    ): EnumProperty {
+        const prop = new EnumProperty(id, displayName, defaultVal);
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+
+
+    addStringProperty(
+        id: string,
+        displayName: string,
+        defaultVal = ""
+    ): StringProperty {
+        const prop = new StringProperty(id, displayName, defaultVal);
+
+        this.properties.push(prop);
+        return prop;
     }
 
 }
