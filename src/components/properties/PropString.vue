@@ -8,60 +8,34 @@
 				<textarea
             v-if="prop.isMultiline"
             :value="prop.value"
-            @input="updateValue"
+            @blur="updateValue"
             style="width:100%"
             rows="5"
-            @focus="focus"
-            @blur="blur"
         ></textarea>
         <input
             v-if="!prop.isMultiline"
             type="text"
             :value="prop.value"
-            @input="updateValue"
+            @blur="updateValue"
             style="width:100%"
-            @focus="focus"
-            @blur="blur"
         />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import {  Prop, Component, Emit } from "vue-property-decorator";
-import {Vue} from"vue-class-component"
-import { IPropertyHolder } from "../../lib/designer/properties";
+<script setup lang="ts">
 
-
-
-export default class StringPropertyView extends Vue {
-  @Prop()
-  prop: any;
-
-
-  @Prop()
-  propHolder: IPropertyHolder;
-
-  oldValue: number;
-
-  @Emit()
-  propertyChanged() {
-    return this.prop.name;
-  }
-
-  updateValue(evt) {
-    this.propHolder.setProperty(this.prop.name, evt.target.value);
-    this.propertyChanged();
-  }
-
-  focus() {
-    this.oldValue = this.prop.value;
-  }
-
-
-
+import {defineProps, onMounted, ref} from 'vue'
+const props=defineProps(
+    {
+      prop:Object
+    }
+);
+const updateValue=(evt)=>{
+  console.log("修改值为"+evt.target.value);
 }
+
 </script>
 
 <style scoped>

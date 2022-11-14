@@ -15,13 +15,11 @@ export class PatternNode extends Node{
 
         const gl =this.gl;
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-
-
         if (!this.gl) {
             console.log('fail to get context');
         }
 
-        
+
         this.vertexSource = `
         attribute vec4 aVertexPosition;
         attribute vec2 aTexCoord;
@@ -69,6 +67,6 @@ export class PatternNode extends Node{
     }
 
 
-    
+
 }
 
