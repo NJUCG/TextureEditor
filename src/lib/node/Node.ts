@@ -98,6 +98,7 @@ export class Node {
         console.log("click");
         // this.store.displayNodeOnComponents(this.canvas);
         this.store.displayNodeOnComponents(this.getPixelData());
+        this.store.displayProperties(this.properties);
 
         // console.log(this.getPixelData());
     }
@@ -342,6 +343,7 @@ export class Node {
     public getPixelData(){
         return this.pixelData;
     }
+
     addIntProperty(
         id: string,
         displayName: string,
@@ -358,6 +360,7 @@ export class Node {
         this.properties.push(prop);
         return prop;
     }
+
     addFloatProperty(
         id: string,
         displayName: string,
@@ -389,9 +392,10 @@ export class Node {
     addEnumProperty(
         id: string,
         displayName: string,
-        defaultVal: string[] = []
+        defaultVal: string[] = [],
+        defaultIndex:number = 0
     ): EnumProperty {
-        const prop = new EnumProperty(id, displayName, defaultVal);
+        const prop = new EnumProperty(id, displayName, defaultVal,defaultIndex);
 
         this.properties.push(prop);
         return prop;

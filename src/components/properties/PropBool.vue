@@ -3,58 +3,31 @@
   <p></p>
   <p></p>
   <div class="field">
-
     <label>{{ prop.displayName }}</label>
-
     <label>TEST</label>
     <div>
       <button class="bool" @click="toggleValue()">
-        {{ val ? "True" : "False" }}
+<!--        {{ val ? "True" : "False" }}-->
+        {{val}}
       </button>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { Prop, Component, Emit, Model } from "vue-property-decorator";
-import { Vue } from 'vue-class-component'
-import { IPropertyHolder } from "../../lib/designer/properties";
-import { PropertyChangeComplete } from "./ipropertyui";
+<script setup lang="ts">
+let val=ref(false);
+import {defineProps, ref} from 'vue'
+const props=defineProps(
+        {
+          prop:Object
+        }
+    );
 
-export default class BoolPropertyView extends Vue {
-  @Prop()
-      // BoolProperty
-  prop: any;
-
-  // @Prop()
-  // designer: Designer;
-
-  @Prop()
-  propHolder: IPropertyHolder;
-
-  val: boolean = false;
-
-  @Emit()
-  propertyChanged() {
-    return this.prop.name;
-  }
-
-  @Emit()
-  propertyChangeCompleted(evt: PropertyChangeComplete) {
-    return evt;
-  }
-
-
-  mounted() {
-  }
-
-  toggleValue() {
-    this.val=!this.val;
-    console.log("修改为"+this.val);
-
-  }
-
+const toggleValue = () => {
+        val.value=!val.value;
+        console.log("修改为"+val.value);
 }
+
 </script>
 
 <style scoped>

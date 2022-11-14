@@ -1,7 +1,7 @@
 
 import { defineStore } from "pinia";
 // import { NodeGraph } from "@/lib/nodegraph"
-
+import {Property} from "@/lib/node/NodeProperty";
 export const useMainStore = defineStore('main', {
     state: () => {
         return {

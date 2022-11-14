@@ -16,13 +16,15 @@
 </template>
 
 
-<script lang="ts">
-
-import {Vue} from "vue-class-component";
-
-
-export default class TextureChannelPropertyView extends Vue {
-  channelNames = [
+<script setup lang="ts">
+let index=ref(0);
+import {defineProps, onMounted, ref} from 'vue'
+const props=defineProps(
+    {
+      prop:Object
+    }
+);
+  let channelNames = [
     "none",
     "albedo",
     "normal",
@@ -33,23 +35,16 @@ export default class TextureChannelPropertyView extends Vue {
     "ao",
     "alpha"
   ];
-  channelIndex: number = 0;
-  key: number = 0;
-
-
-  mounted() {
-    this.calculateChannelIndex();
-  }
-
-  calculateChannelIndex() {
-    this.channelIndex = 0;
-
-  }
-
-  updateValue(evt) {
-
-  }
+onMounted(() => {
+  index.value=props.prop.index;
+})
+let updateValue=(evt)=>{
+  console.log("修改index为"+evt.target.value);
 }
+
+
+
+
 </script>
 
 <style scoped>

@@ -9,9 +9,9 @@
             type="range"
             :min="0"
             :max="50"
-            :value="randomSeed"
+            :value="val"
             :step="1"
-            @input="updateValue"
+            @input="updateRangeValue"
             class="slider"
             @mousedown="focus"
         />
@@ -19,7 +19,7 @@
       <div style="width:70px;">
         <input
             type="number"
-            :value="randomSeed"
+            :value="val"
             :step="1"
             @input="updateValue"
             class="number"
@@ -30,30 +30,29 @@
   </div>
 </template>
 
-<script lang="ts">
-import {Vue} from "vue-class-component";
-
-export default class RandomSeedPropertyView extends Vue {
-
-
-  randomSeed: number = 0;
-  oldValue: number = 0;
-
-  mounted() {
-    this.oldValue = this.randomSeed;
-  }
-
-  updateValue(evt) {
-    this.randomSeed = evt.target.value;
-  }
-
-
-
-  focus() {
-    this.oldValue = this.randomSeed;
-  }
-
+<script setup lang="ts">
+let val=ref(0);
+import {defineProps, onMounted, ref} from 'vue'
+const props=defineProps(
+    {
+      prop:Object
+    }
+);
+onMounted(() => {
+  val.value=props.prop.value;
+})
+const blur=(evt)=> {
+  console.log("更新值为"+val.value)
 }
+const updateValue=(evt) =>{
+  val.value = evt.target.value;
+  console.log("更新值为"+val.value)
+}
+const updateRangeValue=(evt) =>{
+  val.value = evt.target.value;
+}
+
+
 </script>
 
 <style scoped>

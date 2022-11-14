@@ -11,12 +11,10 @@ export  class InvertNode extends Node{
         this.type = "filter";
         this.canvas = canvas;
         this.canvas.id='invertNode';
-
-
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
         if(!this.gl){
-            console.log('fail to get context'); 
+            console.log('fail to get context');
         }
         this.vertexSource = `
         attribute vec4 aVertexPosition;
