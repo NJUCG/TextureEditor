@@ -1,20 +1,14 @@
 import { Node } from "./Node"
-
+import { LibraryItemType } from "../library";
 //Pattern节点
 export class PatternNode extends Node{
-    public flag:boolean = false;
     public image:HTMLImageElement;
-    
-    // public targetTexture:WebGLTexture;
-    // public frameBuffer:WebGLFramebuffer;
 
-    //在节点内创建画布
     constructor() {
-        //对可视化canvas的处理
 
         super();
         const canvas = this.canvas;
-        this.type = "generators";
+        this.type = LibraryItemType.Generators;
         this.setCanvas(512,512);
         this.canvas = canvas;
         this.canvas.id = 'patternNode';
@@ -31,7 +25,9 @@ export class PatternNode extends Node{
         this.vertexSource = `
         attribute vec4 aVertexPosition;
         attribute vec2 aTexCoord;
+
         varying vec2 v_texcoord;
+        
         void main(){
             gl_Position=aVertexPosition;
             v_texcoord = aTexCoord;
@@ -39,8 +35,11 @@ export class PatternNode extends Node{
         `;
         this.fragmentSource = `
         precision mediump float;
-        varying vec2 v_texcoord;
+
         uniform sampler2D u_texture;
+
+        varying vec2 v_texcoord;
+        
         void main(){
             gl_FragColor= texture2D(u_texture,v_texcoord);
         }

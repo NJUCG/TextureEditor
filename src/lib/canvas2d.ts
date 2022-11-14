@@ -79,8 +79,9 @@ export class CanvasMonitor2D {
 			this.image.src = canvas2.toDataURL("image/png");
 			
 			ctx.clearRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-			ctx.rotate(Math.PI);
-			ctx.translate(-this.myCanvas.width, -this.myCanvas.height);
+			ctx.scale(1,-1);
+			ctx.translate(0,-this.myCanvas.height);
+			
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
 
 

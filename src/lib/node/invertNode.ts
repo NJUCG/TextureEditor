@@ -1,14 +1,14 @@
 import { Node } from "./Node"
 import { PatternNode} from "./simpleNode";
+import { LibraryItemType } from "../library";
 export  class InvertNode extends Node{
     private InputNode:any;
-    // private frameBuffer:WebGLFramebuffer;
 
     constructor(){
         super();
         const canvas = this.canvas;
         this.setCanvas(512,512);
-        this.type = "filter";
+        this.type = LibraryItemType.Filters;
         this.canvas = canvas;
         this.canvas.id='invertNode';
 
@@ -21,7 +21,9 @@ export  class InvertNode extends Node{
         this.vertexSource = `
         attribute vec4 aVertexPosition;
         attribute vec2 aTexCoord;
+
         varying vec2 v_texcoord;
+        
         void main(){
             gl_Position=aVertexPosition;
             v_texcoord = aTexCoord;
@@ -29,13 +31,15 @@ export  class InvertNode extends Node{
         `;
         this.fragmentSource = `
         precision mediump float;
-        varying vec2 v_texcoord;
+        
         uniform sampler2D u_texture;
+
+        varying vec2 v_texcoord;
+      
         void main(){
             vec4 col = 1.0 -  texture2D(u_texture,v_texcoord);
             col.a = 1.0;
             gl_FragColor= col;
-            // gl_FragColor = vec4(1,0,0.5,1);
         }
         `;
 
@@ -57,8 +61,6 @@ export  class InvertNode extends Node{
         }
         this.programInfo = programInfo;
 
-
-        // this.drawScene();
 
     }
 
