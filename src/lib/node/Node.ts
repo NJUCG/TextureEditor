@@ -98,7 +98,6 @@ export class Node {
         console.log("click");
         // this.store.displayNodeOnComponents(this.canvas);
         this.store.displayNodeOnComponents(this.getPixelData());
-        this.store.displayProperties(this.properties);
 
         // console.log(this.getPixelData());
     }
