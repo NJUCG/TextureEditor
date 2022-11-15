@@ -9,9 +9,9 @@
             type="range"
             :min="prop.minValue"
             :max="prop.maxValue"
-            :value="this.val"
+            :value="val"
             :step="prop.step"
-            @input="updateValue"
+            @input="updateRangeValue"
             class="slider"
             @mousedown="focus"
             @mouseup="blur"
@@ -20,7 +20,7 @@
       <div style="width:70px;">
         <input
             type="number"
-            :value="this.val"
+            :value="val"
             :step="prop.step"
             @input="updateValue"
             class="number"
@@ -32,57 +32,43 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Prop, Component, Emit } from "vue-property-decorator";
-import {Vue} from "vue-class-component"
-import { IPropertyHolder } from "../../lib/designer/properties";
-import { PropertyChangeComplete } from "./ipropertyui";
+<script setup lang="ts">
 
-
-export default class FloatPropertyView extends Vue {
-  @Prop()
-      // FloatProperty
-  prop: any;
-
-  // @Prop()
-  // designer: Designer;
-
-  @Prop()
-  propHolder: IPropertyHolder;
-
-  oldValue: number;
-  val: number = 0;
-
-  mounted() {
-    this.val = this.prop.value;
-  }
-
-  @Emit()
-  propertyChanged() {
-    return this.prop.name;
-  }
-
-  @Emit()
-  propertyChangeCompleted(evt: PropertyChangeComplete) {
-    return evt;
-  }
-
-  updateValue(evt) {
-    this.val = evt.target.value;
-    this.propertyChanged();
-  }
-
-
-
-  focus() {
-    this.oldValue = this.prop.value;
-  }
-
-  blur() {
-    console.log("更新值为"+this.val)
-
+let val=ref(0);
+import {defineProps, onMounted, ref} from 'vue'
+const props=defineProps(
+    {
+      prop:Object
+    }
+);
+onMounted(() => {
+val.value=props.prop.value;
+})
+const blur=(evt)=> {
+  console.log("更新值为"+val.value)
+}
+const updateValue=(evt) => {
+  let newValue = evt.target.value;
+  if (newValue == '') {
+    console.log("什么也没做")
+  } else {
+    if (newValue <= props.prop.maxValue && newValue >= props.prop.minValue) {
+      val.value = newValue;
+      console.log("更新值为" + val.value)
+    } else if (newValue > props.prop.maxValue) {
+      val.value = props.prop.maxValue;
+      console.log("更新值为" + val.value)
+    } else {
+      val.value = props.prop.minValue;
+      console.log("更新值为" + val.value)
+    }
   }
 }
+
+const updateRangeValue=(evt) =>{
+  val.value = evt.target.value;
+}
+
 </script>
 
 <style scoped>

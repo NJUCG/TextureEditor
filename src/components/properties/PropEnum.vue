@@ -15,41 +15,22 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Prop, Component, Emit } from "vue-property-decorator";
-import {Vue} from"vue-class-component";
-import { IPropertyHolder } from "@/lib/designer/properties";
+<script setup lang="ts">
 
-
-
-export default class EnumPropertyView extends Vue {
-  @Prop()
-      // EnumProperty
-  prop: any;
-
-  // @Prop()
-  // designer: Designer;
-
-  @Prop()
-  propHolder: IPropertyHolder;
-
-  enumIndex: number = 0;
-
-  @Emit()
-  propertyChanged() {
-    return this.prop.name;
-  }
-
-  mounted() {
-    this.enumIndex = this.prop.index;
-  }
-
-  updateValue(evt) {
+import {defineProps, onMounted, ref} from 'vue'
+let enumIndex=ref(0);
+const props=defineProps(
+    {
+      prop:Object
+    }
+);
+onMounted(() => {
+  enumIndex.value=props.prop.index;
+})
+const updateValue=(evt)=> {
     console.log("修改index为"+evt.target.options.selectedIndex);
   }
 
-
-}
 </script>
 
 <style scoped>

@@ -43,16 +43,13 @@ export class LibraryMonitor {
 		
 
 		const pattern = new PatternNode();
-		//绘制到fbo和canvas上
+		//loading pattern's image and draw it at fbo
 		loadImage(pattern);
 		
 		const invert = new InvertNode();
 		//建立节点连接
 		const connect = new Connection(pattern,invert);	
 		
-		//画布测试
-		// testCanavs(canvas);
-
 		//setTimeout 4s then draw invert's canvas
 		setTimeout(() => {
 			//渲染画布
@@ -98,7 +95,7 @@ export class LibraryMonitor {
 	}
 }
 
-//pattern节点读取图片并渲染fbo
+//异步加载图片并渲染fbo
 async function loadImage(node1){
 	const gl =node1.gl;
 	const image = node1.image;
@@ -119,12 +116,11 @@ async function loadImage(node1){
 	})
 	await promise;
 	console.log('loading finshed');	
-	//当前Node加载完成
-	node1.flag = true;
+
 
 
 }
-
+//结果绘画到画布上
 function drawCanvas(node){
 	const gl = node.gl;
 	const tex = node.getTexture();
@@ -134,7 +130,7 @@ function drawCanvas(node){
 	gl.bindTexture(gl.TEXTURE_2D,null);
 }
 
-//绘制到fbo上得到pixeldata结果
+//离屏渲染:结果保存为pixeldata
 function drawFbo(node:Node){
 	const gl = node.gl;
 	const tex = node.getTexture();
@@ -153,7 +149,7 @@ function drawFbo(node:Node){
 
 }
 
-//将webGL画布内容转移到2d画布
+//copy canvas result from webgl canvas to 2d canvas
 export function copyFromCanvas(src:HTMLCanvasElement, dest:HTMLCanvasElement) {
 	
 	const context = dest.getContext("2d");
@@ -170,12 +166,15 @@ export function copyFromCanvas(src:HTMLCanvasElement, dest:HTMLCanvasElement) {
 
 export function testCanvas(canvas:HTMLCanvasElement){
 	const ctx = canvas.getContext("2d");
+	canvas.width=300;
+	canvas.height=300;
 	//draw a rectangle in canvas and rotate 90 degree
 	ctx.fillStyle="green";
 	//旋转虚拟画布后再绘画
-	ctx.translate(-canvas.width, -canvas.height);
-	ctx.rotate(Math.PI / 4);
+	// ctx.translate(-canvas.width, -canvas.height);
+	// ctx.rotate(Math.PI/6);
+	ctx.translate(canvas.width, 0);
+	ctx.scale(-1,1);
 	ctx.fillRect(20,20,150,100);
 
-	// document.body.appendChild(canvas);
 }

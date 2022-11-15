@@ -1,5 +1,7 @@
 import {storeToRefs} from 'pinia'
 import { useMainStore } from '@/store/index';
+import { LibraryItemType } from '../library';
+
 import {
     Property,
     FloatProperty,
@@ -13,21 +15,25 @@ import {
 } from "./NodeProperty";
 export class Node {
     public id: string;
-    public type: string;
+    public type: LibraryItemType;
     protected vertexSource: string;
     protected fragmentSource: string;
     public canvas: HTMLCanvasElement;
     public gl: WebGLRenderingContext;
 
-    protected size:GLuint;//图片分辨率
+    //resolution
+    protected size:GLuint;
     protected store;
     protected inputNode:Node;
     protected buffers:any;
     protected programInfo:any;
+    //current node's result
     protected pixelData;
+    //input texture
     protected texture:WebGLTexture;
-
+    //用于离屏渲染
     protected frameBuffer:WebGLFramebuffer;
+    //离屏渲染的结果存储到targetTexture里
     protected targetTexture:WebGLTexture;
     properties: Property[] = [];
     propertyGroups: PropertyGroup[] = [];
@@ -51,10 +57,7 @@ export class Node {
         //创建纹理
         const texture = gl.createTexture();
         this.texture = texture;
-
-        //绑定framebuffer到上下文
-        // this.frameBuffer = this.initFrameBufferObject(gl,texture);
-
+        //设置纹理相关参数
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -62,29 +65,31 @@ export class Node {
         gl.bindTexture(gl.TEXTURE_2D, null);
 
         // image.src = "../../assets/1.jpg";
+        //创建保存节点渲染结果的目标纹理并设置相关参数
         const targetTexture = gl.createTexture();
         this.targetTexture = targetTexture;
         const data = null;
         gl.bindTexture(gl.TEXTURE_2D,targetTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
-            512, 512, 0,
+            this.size, this.size, 0,
             gl.RGBA, gl.UNSIGNED_BYTE, data);
-        // 反置y轴
-
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.bindTexture(gl.TEXTURE_2D, null);
 
-        //创建fb
+        //创建frameBufferObject
         const frameBuffer = gl.createFramebuffer();
         this.frameBuffer = frameBuffer;
         gl.bindFramebuffer(gl.FRAMEBUFFER,frameBuffer);
-        //将targettexture作为fb的第一个颜色绑定
+        /*
+        *将fbo和targetTexture绑定
+        * 通过fbo将渲染结果保存到targetTexture中
+        */
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTexture, 0);
 
 
-
+        //綁定鼠标监听事件
         const self = this;
         canvas.addEventListener("mousedown", function(evt: MouseEvent) {
 			self.onMouseDown(evt);
@@ -103,7 +108,7 @@ export class Node {
     }
 
 
-
+    //初始化缓冲区对象:顶点缓冲区、纹理缓冲区
     protected initBuffers(gl: WebGLRenderingContext) {
         // Create a buffer for the square's positions.
         const positionBuffer = gl.createBuffer();
@@ -150,17 +155,17 @@ export class Node {
         return buffers;
     }
 
+    //初始化着色程序
     protected initShaderProgram(gl: WebGLRenderingContext,
         vsSource: string, fsSource: string): WebGLProgram {
         const vertexShader = this.loadShader(gl, gl.VERTEX_SHADER, vsSource);
         const fragmentShader = this.loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
-        // 创建着色器程序
         const shaderProgram = gl.createProgram();
         gl.attachShader(shaderProgram, vertexShader);
         gl.attachShader(shaderProgram, fragmentShader);
         gl.linkProgram(shaderProgram);
 
-        // 创建失败，alert
+        // 创建失败，报错
         if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
             alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
             return null;
@@ -169,6 +174,7 @@ export class Node {
         return shaderProgram;
     }
 
+    //加载并编译着色器
     protected loadShader(gl: WebGLRenderingContext, type: number, source: string) {
         const shader = gl.createShader(type);
 
@@ -192,6 +198,7 @@ export class Node {
         return shader;
     }
 
+    //初始化fbo
     protected initFrameBufferObject(gl:WebGLRenderingContext,texture:WebGLTexture){
 
         // 创建FBO 帧缓冲区
@@ -224,12 +231,13 @@ export class Node {
         return framebuffer;
     }
 
-
+    //resize canvas
     protected setCanvas(width,height){
         this.canvas.width = width;
         this.canvas.height = height;
     }
 
+    //draw the result of this Node
     public drawScene(): void {
         const gl = this.gl;
         const programInfo = this.programInfo;
@@ -283,7 +291,7 @@ export class Node {
 
 
         //u_texture使用纹理单位0
-        gl.uniform1i(programInfo.texture,0);
+        gl.uniform1i(programInfo.uniformLocations.textureLocation,0);
         {
           const offset = 0;
           const vertexCount = 4;
@@ -324,7 +332,6 @@ export class Node {
     }
 
 
-    //return TargetTexture
     public getTexture(){
         return this.texture;
     }
@@ -333,15 +340,14 @@ export class Node {
         return this.frameBuffer;
     }
 
-    //return targetTexture
     public getTargetTexture(){
         return this.targetTexture;
     }
 
-    //return Pixeldata
     public getPixelData(){
         return this.pixelData;
     }
+
     addIntProperty(
         id: string,
         displayName: string,
@@ -358,6 +364,7 @@ export class Node {
         this.properties.push(prop);
         return prop;
     }
+
     addFloatProperty(
         id: string,
         displayName: string,
@@ -389,9 +396,10 @@ export class Node {
     addEnumProperty(
         id: string,
         displayName: string,
-        defaultVal: string[] = []
+        defaultVal: string[] = [],
+        defaultIndex:number = 0
     ): EnumProperty {
-        const prop = new EnumProperty(id, displayName, defaultVal);
+        const prop = new EnumProperty(id, displayName, defaultVal,defaultIndex);
 
         this.properties.push(prop);
         return prop;

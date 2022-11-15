@@ -176,12 +176,13 @@ export class BoolProperty extends Property {
 export class EnumProperty extends Property {
     values: string[];
     index = 0;
-    public constructor(name: string, displayName: string, values: string[]) {
+    public constructor(name: string, displayName: string, values: string[],index:number) {
         super();
         this.name = name;
         this.displayName = displayName;
         this.values = values;
         this.type = PropertyType.Enum;
+        this.index=index;
     }
 
     public getValues(): string[] {
@@ -201,7 +202,9 @@ export class EnumProperty extends Property {
         const prop = new EnumProperty(
             this.name,
             this.displayName,
-            this.values.slice(0)
+            this.values.slice(0),
+            this.index
+
         );
         prop.index = this.index;
 
