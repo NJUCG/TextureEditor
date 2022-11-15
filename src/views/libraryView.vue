@@ -9,13 +9,13 @@
 		<div class="node-list" id="nodeList">
 			<div class="node-items" v-for='(item, index) in LibraryItemType' :key="index">
 				<div class="items-name" v-on:click="showHide(index)">
-					<h4>{{item}}</h4>
+					<h4>{{ item }}</h4>
 				</div>
 				<div class="items">
 					<ul>
-						111
-						<!-- <li v-for='i in LibraryItemType' :key="i">
-							node
+						<!-- <li v-for='item of library[index]'>
+							{{loadImgFromNode(item.name)}}
+							<div class="node-name">{{ item.name }}</div>
 						</li> -->
 					</ul>
 				</div>
@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { LibraryMonitor } from '@/lib/library';
+import { it } from 'node:test';
 const remote = require("@electron/remote");
 const { dialog } = remote;
 
@@ -46,15 +47,52 @@ const libraryItems = ref(null);
 // }
 
 const LibraryItemType = ["utils", "atomicnodes", "functionnodes", "generators", "filters", "view3d"];
-var library = [];
+
 const libraryMonitor = new LibraryMonitor();
+const library = [libraryMonitor.utils, libraryMonitor.atomicNodes, libraryMonitor.functionnodes, libraryMonitor.generators, libraryMonitor.filterNodes, libraryMonitor.view3D];
 
 onMounted(() => {
-	
+	for (let i = 0; i < library.length; i++) {
+		const locateLibrary = document.getElementById("nodeList");
+		let itemsModule = locateLibrary.getElementsByClassName("items")[i];
+		if (library[i]) {
+			for (let item of library[i]) {
+				let li: HTMLLIElement = document.createElement('li');
+				//获取节点名称
+				const nodeTitle: HTMLDivElement = document.createElement('div');
+				nodeTitle.innerHTML = item.name;
+				nodeTitle.className = "node-name";
+				li.appendChild(nodeTitle);
+
+				//获取节点canvas
+				const canvas2: HTMLCanvasElement = document.createElement('canvas');
+				canvas2.id = item.name;
+				canvas2.width = 128;
+				canvas2.height = 128;
+				const cavans2Ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
+				//不显示图片
+				cavans2Ctx.drawImage(item.node.canvas, 0, 0);
+				li.appendChild(canvas2);
+
+				//用不了 getPixelData返回undefined
+				// const data = item.node.getPixelData();
+				// console.log(item.node.type);
+				// const dataImage = cavans2Ctx.createImageData(512, 512);
+				// if (dataImage.data.set) {
+				// 	dataImage.data.set(data);
+				// }
+				// cavans2Ctx.putImageData(dataImage, 0, 0);
+
+				itemsModule.appendChild(li);
+			}
+		}
+
+
+	}
 	// for(let items in LibraryItemType){
 	// 	library.push(new LibraryItem(items, ));
 	// }
-	
+
 	// for (let i = 0; i < Object.values(LibraryItemType).length; i++) {
 	// 	let btn = document.getElementsByClassName("items")[i] as HTMLElement
 	// 	btn.style.height = '0px';
@@ -98,7 +136,7 @@ const createNewItem = () => {//添加自定义文件夹，没有实现重命名h
 	name.appendChild(head);
 	item.appendChild(name);
 	let pos = document.getElementsByTagName("button")[0];
-	nodeList.insertBefore(item,pos);//自定义节点添加在button位置之前
+	nodeList.insertBefore(item, pos);//自定义节点添加在button位置之前
 	// nodeList.appendChild(item);
 }
 
@@ -121,6 +159,13 @@ const addImageNode = () => {//添加图片节点
 		// console.log(path);
 		nodeList.appendChild(img);
 	}
+}
+
+const loadImgFromNode = (nodeName: string) => {
+	const canvas2: HTMLCanvasElement = document.createElement('canvas');
+	canvas2.width = 512;
+	canvas2.height = 512;
+	const cavans2Ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
 }
 
 
