@@ -1,7 +1,4 @@
 <template>
-  <p></p>
-  <p></p>
-  <p></p>
   <div class="field">
     <label>{{ prop.displayName }}</label>
     <label>TEST</label>
