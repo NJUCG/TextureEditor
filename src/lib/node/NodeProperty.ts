@@ -1,8 +1,9 @@
+import { Color } from "../designer/color";
 export enum PropertyType {
     Float = "float",
     Int = "int",
     Bool = "bool",
-    // Color = "color",
+    Color = "color",
     Enum = "enum",
     String = "string",
     // Gradient = "gradient",
@@ -250,6 +251,48 @@ export class StringProperty extends Property {
 
     public copyValuesFrom(prop: StringProperty) {
         this.value = prop.value;
+    }
+}
+
+export class ColorProperty extends Property {
+    value: Color;
+    public constructor(name: string, displayName: string, value: Color) {
+        super();
+        this.name = name;
+        this.displayName = displayName;
+        this.value = value;
+        this.type = PropertyType.Color;
+    }
+
+    public getValue(): any {
+        return this.value;
+    }
+
+    public setValue(val: any) {
+        // todo: validate
+        //console.log("got color: " + val);
+        if (val instanceof Color) this.value = val;
+        else if (typeof val == "string") this.value = Color.parse(val);
+        else if (typeof val == "object") {
+            //console.log("setting value", val);
+            const value = new Color();
+            value.r = val.r || 0;
+            value.g = val.g || 0;
+            value.b = val.b || 0;
+            value.a = val.a || 1.0;
+
+            this.value = value;
+        }
+    }
+
+    public clone(): Property {
+        const prop = new ColorProperty(this.name, this.displayName, this.value);
+
+        return prop;
+    }
+
+    public copyValuesFrom(prop: ColorProperty) {
+        this.setValue(prop.value);
     }
 }
 

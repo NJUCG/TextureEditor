@@ -1,7 +1,7 @@
 import {storeToRefs} from 'pinia'
 import { useMainStore } from '@/store/index';
 import { LibraryItemType } from '../library';
-
+import { Color } from "../designer/color";
 import {
     Property,
     FloatProperty,
@@ -9,6 +9,7 @@ import {
     BoolProperty,
     EnumProperty,
     StringProperty,
+    ColorProperty,
     IPropertyHolder,
     PropertyType,
     PropertyGroup
@@ -413,6 +414,17 @@ export class Node {
         defaultVal = ""
     ): StringProperty {
         const prop = new StringProperty(id, displayName, defaultVal);
+
+        this.properties.push(prop);
+        return prop;
+    }
+
+    addColorProperty(
+        id: string,
+        displayName: string,
+        defaultVal: Color
+    ): ColorProperty {
+        const prop = new ColorProperty(id, displayName, defaultVal);
 
         this.properties.push(prop);
         return prop;

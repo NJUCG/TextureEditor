@@ -10,6 +10,7 @@
 
 <script  setup lang="ts">
 import {Vue} from "vue-class-component";
+import { Color } from "@/lib/designer/color";
 import floatView from "@/components/properties/PropFloat.vue";
 import boolView from "@/components/properties/PropBool.vue";
 import enumView from "@/components/properties/PropEnum.vue";
@@ -35,6 +36,7 @@ import {
   BoolProperty,
   EnumProperty,
   StringProperty,
+  ColorProperty,
   PropertyType,
 } from "@/lib/node/NodeProperty";
 let store=useMainStore();
@@ -44,10 +46,13 @@ const property1=new IntProperty("test","test",1,1);
 const property2=new BoolProperty("testbool","testbool",true);
 const property3=new EnumProperty("teste","teste",["1","2","3"],0);
 const property4=new StringProperty("tests","tests","",true);
+const defaultColor =new Color(0,0,1,1);
+const property5=new ColorProperty("testColor","testColor",defaultColor);
 properties.push(property1);
 properties.push(property2);
 properties.push(property3);
-properties.push(property4)
+properties.push(property4);
+properties.push(property5);
 class PropHolder {
   prop: Property;
   componentName: string;
@@ -57,7 +62,8 @@ const componentMap={
   "boolView":boolView,
   "intView":floatView,
   "enumView":enumView,
-  "stringView":stringView
+  "stringView":stringView,
+  "colorView":colorView
 };
 
 let prop: PropHolder[]=properties.map(prop =>{
