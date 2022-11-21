@@ -122,6 +122,7 @@ export class colorNode extends Node{
 
         }
         this.programInfo = programInfo;
+        // this.addColorProperty('color', 'Color', this.color);
     }
 
     public drawScene(): void {
@@ -158,7 +159,7 @@ export class colorNode extends Node{
               offset);
 
         }
-        console.log(this.color);
+
         gl.uniform4fv(programInfo.uniformLocations.colorLocation,this.color);
 
         const offset = 0;
@@ -170,6 +171,9 @@ export class colorNode extends Node{
 
     }
 
+    public passToStore(){
+        this.store.displayNodeOnComponents(this.getPixelData(),this);
+    }
     //set color
     public setColor(color: number[]): void {
         this.color = color;

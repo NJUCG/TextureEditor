@@ -103,7 +103,7 @@ export class Node {
     onMouseDown(evt:MouseEvent) {
         console.log("click");
         // this.store.displayNodeOnComponents(this.canvas);
-        this.store.displayNodeOnComponents(this.getPixelData());
+        this.store.displayNodeOnComponents(this.getPixelData(),this);
 
         // console.log(this.getPixelData());
     }
