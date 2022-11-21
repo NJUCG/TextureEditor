@@ -75,15 +75,18 @@ onMounted(() => {
 				li.appendChild(canvas2);
 
 				//用不了 getPixelData返回undefined
-				// const data = item.node.getPixelData();
-				// console.log(item.node.type);
-				// const dataImage = cavans2Ctx.createImageData(512, 512);
-				// if (dataImage.data.set) {
-				// 	dataImage.data.set(data);
-				// }
-				// cavans2Ctx.putImageData(dataImage, 0, 0);
+				const data = item.node.getPixelData();
+				console.log(item.node.type);
+				const dataImage = cavans2Ctx.createImageData(512, 512);
+				if (dataImage.data.set) {
+					dataImage.data.set(data);
+				}
+				cavans2Ctx.putImageData(dataImage, 0, 0);
 
 				itemsModule.appendChild(li);
+
+				
+				
 			}
 		}
 

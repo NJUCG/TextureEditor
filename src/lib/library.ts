@@ -1,5 +1,5 @@
 import { resolveComponent, withCtx } from "vue";
-import { PatternNode } from "./node/simpleNode";
+import { PatternNode,colorNode } from "./node/simpleNode";
 import { InvertNode } from "./node/invertNode";
 import { Connection } from "./node/connection";
 import { Node } from "./node/Node";
@@ -52,27 +52,37 @@ export class LibraryMonitor {
 		//loading pattern's image and draw it at fbo
 		loadImage(pattern);
 
-		const invert = new InvertNode();
-		//建立节点连接
-		const connect = new Connection(pattern, invert);
+		//create color node
+		const nodeColor = new colorNode();
+		drawCanvas(nodeColor);
+		drawFbo(nodeColor);
 
-		//setTimeout 4s then draw invert's canvas
-		setTimeout(() => {
-			//渲染画布
-			drawCanvas(pattern);
-			drawCanvas(invert);
-			//渲染fbo
-			drawFbo(invert);
-			document.body.appendChild(pattern.canvas);
-			document.body.appendChild(invert.canvas);
+		//颜色节点属性传输
+		//尽量不用 
+		// nodeColor.passToStore();
 
-		}, 3000);
+		// const invert = new InvertNode();
+		// //建立节点连接
+		// const connect = new Connection(pattern, invert);
 
-		this.addNode(pattern.type, pattern.canvas.id, pattern);
+		// //setTimeout 4s then draw invert's canvas
+		// setTimeout(() => {
+		// 	//渲染画布
+		// 	drawCanvas(pattern);
+		// 	drawCanvas(invert);
+		// 	//渲染fbo
+		// 	drawFbo(invert);
+		// 	document.body.appendChild(pattern.canvas);
+		// 	document.body.appendChild(invert.canvas);
+
+		// }, 3000);
+
+		this.addNode(nodeColor.type,nodeColor.id,nodeColor);
+		// this.addNode(pattern.type, pattern.canvas.id, pattern);
 		// add invert node
-		this.addNode(invert.type, invert.canvas.id, invert);
+		// this.addNode(invert.type, invert.canvas.id, invert);
 		//add connection
-		this.addConnection(connect);
+		// this.addConnection(connect);
 
 	}
 

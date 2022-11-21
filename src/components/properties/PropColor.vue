@@ -26,6 +26,7 @@ onMounted(() => {
 })
 const changeValue=(evt)=>{
   console.log("颜色改变"+evt.toLowerCase());
+  console.log(props.prop.value.toHex());
 }
 </script>
 
