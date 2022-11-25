@@ -9,7 +9,6 @@
 </template>
 
 <script  setup lang="ts">
-import {Vue} from "vue-class-component";
 import { Color } from "@/lib/designer/color";
 import floatView from "@/components/properties/PropFloat.vue";
 import boolView from "@/components/properties/PropBool.vue";

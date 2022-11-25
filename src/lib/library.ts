@@ -137,7 +137,7 @@ async function loadImage(node1) {
 
 }
 //结果绘画到画布上
-function drawCanvas(node) {
+function drawCanvas(node:Node) {
 	const gl = node.gl;
 	const tex = node.getTexture();
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);

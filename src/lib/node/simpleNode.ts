@@ -10,7 +10,7 @@ export class PatternNode extends Node{
         const canvas = this.canvas;
         
         this.type = LibraryItemType.Generators;        
-        this.setCanvas(512,512);
+        this.setCanvas(256,256);
         this.canvas = canvas;
         this.canvas.id = 'patternNode';
 
@@ -79,6 +79,7 @@ export class colorNode extends Node{
         const canvas = this.canvas;
         
         canvas.id = 'colorNode';
+        this.id = 'colorNode';
 
         this.type = LibraryItemType.Generators;
         this.gl = this.canvas.getContext('webgl');

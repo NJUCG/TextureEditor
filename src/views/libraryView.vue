@@ -54,7 +54,8 @@ const library = [libraryMonitor.utils, libraryMonitor.atomicNodes, libraryMonito
 onMounted(() => {
 	for (let i = 0; i < library.length; i++) {
 		const locateLibrary = document.getElementById("nodeList");
-		let itemsModule = locateLibrary.getElementsByClassName("items")[i];
+		const itemsModule = locateLibrary.getElementsByClassName("items")[i];
+		let ul = itemsModule.getElementsByTagName("ul")[0];
 		if (library[i]) {
 			for (let item of library[i]) {
 				let li: HTMLLIElement = document.createElement('li');
@@ -64,42 +65,14 @@ onMounted(() => {
 				nodeTitle.className = "node-name";
 				li.appendChild(nodeTitle);
 
-				//获取节点canvas
-				const canvas2: HTMLCanvasElement = document.createElement('canvas');
-				canvas2.id = item.name;
-				canvas2.width = 128;
-				canvas2.height = 128;
-				const cavans2Ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
-				//不显示图片
-				cavans2Ctx.drawImage(item.node.canvas, 0, 0);
-				li.appendChild(canvas2);
+				//直接append
+				li.appendChild(item.node.canvas);
+				// console.log(li.childNodes);
 
-				//用不了 getPixelData返回undefined
-				const data = item.node.getPixelData();
-				console.log(item.node.type);
-				const dataImage = cavans2Ctx.createImageData(512, 512);
-				if (dataImage.data.set) {
-					dataImage.data.set(data);
-				}
-				cavans2Ctx.putImageData(dataImage, 0, 0);
-
-				itemsModule.appendChild(li);
-
-				
-				
+				ul.appendChild(li);
 			}
 		}
-
-
 	}
-	// for(let items in LibraryItemType){
-	// 	library.push(new LibraryItem(items, ));
-	// }
-
-	// for (let i = 0; i < Object.values(LibraryItemType).length; i++) {
-	// 	let btn = document.getElementsByClassName("items")[i] as HTMLElement
-	// 	btn.style.height = '0px';
-	// }
 })
 
 onBeforeUnmount(() => {
@@ -191,22 +164,29 @@ const loadImgFromNode = (nodeName: string) => {
 	font-size: 28px;
 	color: #333;
 	display: flex;
-	align-items: center;
+	align-items: stretch;
 	float: left;
 	margin-left: 10px;
 }
 
 .items {
-	background: #fff;
+	background: rgb(34, 34, 34);
 	transition: height 1s;
-	height: 20px;
+	/* height: 20px; */
 }
 
 .items ul li {
 	padding: 0 24px;
-	height: 10px;
-	display: flex;
-	align-items: center;
+	/* height: 10px; */
+	display: inline;
+	align-items: stretch;
+}
+
+.items ul li node-name{
+	/* padding: 0 24px; */
+	/* height: 10px; */
+	display: block;
+	align-items: stretch;
 }
 
 .library-container {
