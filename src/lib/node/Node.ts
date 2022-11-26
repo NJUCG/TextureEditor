@@ -36,6 +36,8 @@ export class Node {
     protected frameBuffer:WebGLFramebuffer;
     //离屏渲染的结果存储到targetTexture里
     protected targetTexture:WebGLTexture;
+    protected shaderPorgram:WebGLProgram;
+
     properties: Property[] = [];
     propertyGroups: PropertyGroup[] = [];
     constructor() {
@@ -46,7 +48,7 @@ export class Node {
         }
         const canvas = this.canvas;
         this.size = 512;
-
+        this.setCanvas(this.size,this.size);
         //获取上下文
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
@@ -244,7 +246,7 @@ export class Node {
         const programInfo = this.programInfo;
         const buffers = this.buffers;
         gl.viewport(0,0,this.size,this.size);
-        gl.clearColor(0.0, 1.0, 0.0, 1.0);  // Clear to black, fully opaque
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         // gl.clearDepth(1.0);                 // Clear everything
         // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         // gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
@@ -255,6 +257,10 @@ export class Node {
 
         // Tell WebGL to use our program when drawing
         gl.useProgram(programInfo.program);
+
+        //获取属性地址
+        this.getPropsLocation();
+
         //设置如何从位置缓冲区取数据到vertexPosition属性
         {
           gl.enableVertexAttribArray(
@@ -276,19 +282,6 @@ export class Node {
               offset);
 
         }
-
-        {
-            gl.enableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
-            const numComponents = 2;  // 每次迭代从缓冲区取出的数目
-            const type = gl.FLOAT;    // the data in the buffer is 32bit floats
-            const normalize = false;  // don't normalize
-            const stride = 0;         // how many bytes to get from one set of values to the next
-            const offset = 0;         // how many bytes inside the buffer to start from
-
-            gl.vertexAttribPointer(programInfo.attribLocations.texCoordLocation,numComponents,type,normalize,stride,offset);
-
-          }
 
 
         //u_texture使用纹理单位0
@@ -348,6 +341,34 @@ export class Node {
     public getPixelData(){
         return this.pixelData;
     }
+
+    //属性构建GLSL声明
+	createCodeForProps() {
+		let code = "";
+
+		for (const prop of this.properties) {
+			//code += "uniform sampler2D " + input + ";\n";
+			if (prop instanceof FloatProperty) {
+				code += "uniform float prop_" + prop.name + ";\n";
+			}
+			if (prop instanceof IntProperty) {
+				code += "uniform int prop_" + prop.name + ";\n";
+			}
+			if (prop instanceof BoolProperty) {
+				code += "uniform bool prop_" + prop.name + ";\n";
+			}
+			if (prop instanceof EnumProperty) {
+				code += "uniform int prop_" + prop.name + ";\n";
+			}
+			if (prop instanceof ColorProperty) {
+				code += "uniform vec4 prop_" + prop.name + ";\n";
+			}
+		}
+
+		code += "\n";
+
+		return code;
+	}
 
     addIntProperty(
         id: string,
@@ -430,4 +451,49 @@ export class Node {
         return prop;
     }
 
+    
+    getPropsLocation(){
+        console.log("enter props location");
+        console.log(this.properties);
+        const gl = this.gl;
+        const shaderProgram = this.programInfo.program;
+		for (const prop of this.properties) {
+			if (prop instanceof FloatProperty) {
+				gl.uniform1f(
+					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					(prop as FloatProperty).value
+				);
+			}
+			if (prop instanceof IntProperty) {
+				gl.uniform1i(
+					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					(prop as IntProperty).value
+				);
+			}
+			if (prop instanceof BoolProperty) {
+				gl.uniform1i(
+					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					(prop as BoolProperty).value == false ? 0 : 1
+				);
+			}
+			if (prop instanceof EnumProperty) {
+				gl.uniform1i(
+					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					(prop as EnumProperty).index
+				);
+			}
+			if (prop instanceof ColorProperty) {
+				const col = (prop as ColorProperty).value;
+				//console.log("color: ", col);
+				gl.uniform4f(
+					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					col.r,
+					col.g,
+					col.b,
+					col.a
+				);
+                console.log("color: ", col.r,col.g,col.b,col.a);
+			}
+		}
+    }
 }

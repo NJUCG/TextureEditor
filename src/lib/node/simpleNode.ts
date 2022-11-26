@@ -1,5 +1,6 @@
 import { Node } from "./Node"
 import { LibraryItemType } from "../library";
+import {Color} from "@/lib/designer/color";
 //Pattern节点
 export class PatternNode extends Node{
     public image:HTMLImageElement;
@@ -10,7 +11,7 @@ export class PatternNode extends Node{
         const canvas = this.canvas;
         
         this.type = LibraryItemType.Generators;        
-        this.setCanvas(256,256);
+
         this.canvas = canvas;
         this.canvas.id = 'patternNode';
 
@@ -71,11 +72,16 @@ export class PatternNode extends Node{
 
 }
 
+
 export class colorNode extends Node{
-    private color: number[] = [Math.random(),Math.random(),Math.random(), 1];
-    
+   
     constructor(){
         super();
+        
+        //添加节点属性
+        const color = new Color(1,0,0, 1);
+        this.addColorProperty('001','color',color);
+        console.log(color);
         const canvas = this.canvas;
         
         canvas.id = 'colorNode';
@@ -96,16 +102,21 @@ export class colorNode extends Node{
 
         }
         `;
-        this.fragmentSource = `
-        precision mediump float;
 
+        this.fragmentSource =
+
+        `
+        precision mediump float;
+        `+
+        this.createCodeForProps()+
+        `
         uniform vec4 uColor;
         
         void main(){
-            // gl_FragColor= vec4(1.0,0.0,0.0,1.0);
-            gl_FragColor = vec4(uColor);
+            gl_FragColor = vec4(prop_001);
         }
-        `;
+        `       
+        ;
 
         const shaderProgram = this.initShaderProgram(gl, this.vertexSource, this.fragmentSource);
 
@@ -115,95 +126,14 @@ export class colorNode extends Node{
                 vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
             },
             uniformLocations: {
-                colorLocation: gl.getUniformLocation(
-                    shaderProgram,
-                    "uColor"
-                ),
+
             },
 
         }
         this.programInfo = programInfo;
-        // this.addColorProperty('color', 'Color', this.color);
+  
     }
 
-    public drawScene(): void {
-        
-        const gl = this.gl;
-        const programInfo = this.programInfo;
-        const buffers = this.buffers;
-        gl.viewport(0,0,this.size,this.size);
-        gl.clearColor(0.0, 1.0, 0.0, 1.0);  // Clear to black, fully opaque
-        // Clear the canvas before we start drawing on it.
-
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        // Tell WebGL to use our program when drawing
-        gl.useProgram(programInfo.program);
-        //设置从位置缓冲区取数据到vertexPosition属性
-        {
-          gl.enableVertexAttribArray(
-              programInfo.attribLocations.vertexPosition);
-          gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-          const numComponents = 2;  // pull out 3 values per iteration
-          const type = gl.FLOAT;    // the data in the buffer is 32bit floats
-          const normalize = false;  // don't normalize
-          const stride = 0;         // how many bytes to get from one set of values to the next
-                                    // 0 = use type and numComponents above
-          const offset = 0;         // how many bytes inside the buffer to start from
-
-          gl.vertexAttribPointer(
-              programInfo.attribLocations.vertexPosition,
-              numComponents,
-              type,
-              normalize,
-              stride,
-              offset);
-
-        }
-
-        gl.uniform4fv(programInfo.uniformLocations.colorLocation,this.color);
-
-        const offset = 0;
-        const vertexCount = 4;
-        gl.drawArrays(gl.TRIANGLE_STRIP,offset,vertexCount);
-    
-		gl.disableVertexAttribArray(programInfo.attribLocations.vertexPosition);
-		gl.disableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
-
-    }
-
-    public passToStore(){
-        this.store.displayNodeOnComponents(this.getPixelData(),this);
-    }
-    //set color
-    public setColor(color: number[]): void {
-        this.color = color;
-    }
-
-    //return color
-    public getColor(): number[] {
-        return this.color;
-    }
-
-    //set alpha
-    public setAlpha(alpha: number): void {
-        this.color[3] = alpha;
-    }
-
-    //set red
-    public setRed(red: number): void {
-        this.color[0] = red;
-    }
-
-    //set green
-    public setGreen(green: number): void {
-        this.color[1] = green;
-    }
-
-    //set blue
-    public setBlue(blue: number): void {
-        this.color[2] = blue;
-    }
 
 
 }
