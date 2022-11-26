@@ -75,30 +75,6 @@ export class CanvasMonitor2D {
 		} else if (this.image) {
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
 		}
-
-		// if (mainStore.focusedNode) {
-		// 	const dataImage = ctx.createImageData(512, 512);
-		// 	if (dataImage.data.set) {
-		// 		dataImage.data.set(mainStore.focusedNode);
-		// 	}
-		// 	const canvas2: HTMLCanvasElement = document.createElement('canvas');
-		// 	canvas2.width = 512;
-		// 	canvas2.height = 512;
-		// 	const cavans2Ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
-		// 	cavans2Ctx.putImageData(dataImage, 0, 0);
-
-		// 	this.myCanvas = canvas2;
-		// 	this.image.src = canvas2.toDataURL("image/png");
-
-		// 	ctx.clearRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-		// 	ctx.scale(1,-1);
-		// 	ctx.translate(0,-this.myCanvas.height);
-
-		// 	ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
-
-		// } else if (this.image) {
-		// 	ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
-		// }
 	}
 
 	setFocusNode(node) {

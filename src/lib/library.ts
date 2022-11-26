@@ -57,26 +57,6 @@ export class LibraryMonitor {
 		drawCanvas(nodeColor);
 		drawFbo(nodeColor);
 
-		//颜色节点属性传输
-		//尽量不用 
-		// nodeColor.passToStore();
-
-		// const invert = new InvertNode();
-		// //建立节点连接
-		// const connect = new Connection(pattern, invert);
-
-		// //setTimeout 4s then draw invert's canvas
-		// setTimeout(() => {
-		// 	//渲染画布
-		// 	drawCanvas(pattern);
-		// 	drawCanvas(invert);
-		// 	//渲染fbo
-		// 	drawFbo(invert);
-		// 	document.body.appendChild(pattern.canvas);
-		// 	document.body.appendChild(invert.canvas);
-
-		// }, 3000);
-
 		this.addNode(nodeColor.type,nodeColor.id,nodeColor);
 		// this.addNode(pattern.type, pattern.canvas.id, pattern);
 		// add invert node

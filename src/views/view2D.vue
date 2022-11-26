@@ -79,14 +79,6 @@ const onWheel = (event: WheelEvent) => {
 	event.preventDefault();
 };
 
-
-//使用vuex全局状态 可能不需要再关联
-// const setEditor = (editor) => {
-// 	//只需关联editor事件
-
-// }
-
-
 const saveImage = () => {
 	if (!hasImage.value) return;
 
