@@ -124,6 +124,16 @@ export class colorNode extends Node{
         }
         this.programInfo = programInfo;
         // this.addColorProperty('color', 'Color', this.color);
+        this.drawCanvas();
+    }
+
+    public drawCanvas() {
+        const gl = this.gl;
+        const tex = this.getTexture();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        this.drawScene();
+        gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
     public drawScene(): void {
