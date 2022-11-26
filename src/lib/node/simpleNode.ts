@@ -68,8 +68,6 @@ export class PatternNode extends Node{
 
     }
 
-
-
 }
 
 

@@ -32,8 +32,8 @@ export class CanvasMonitor2D {
 	focusNode: any;//鼠标位于2dview界面
 	offsetX: number;//鼠标拖动界面x位移
 	offsetY: number;//鼠标拖动界面y位移
-	t:boolean;
-	
+	t: boolean;
+
 
 	constructor(canvas: HTMLCanvasElement) {
 
@@ -41,34 +41,26 @@ export class CanvasMonitor2D {
 		this.context = this.myCanvas.getContext("2d");
 		this.mousePos = new Vector2(0, 0);
 		this.image = new Image();
-		const mainStore = useMainStore();
-		// const {focusedNode} = storeToRefs(mainStore);
-		// this.focusNode = focusedNode.value;
-
-		console.log(this.focusNode);
 		this.zoomFactor = 1.0;
 		this.offsetX = 0;
 		this.offsetY = 0;
 		this.t = false;
 
-
 	}
 
-	public draw(): void {
+	public draw(focused): void {
 		const ctx = this.context;
 
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		ctx.fillStyle = "rgb(50,50,50)";
 		ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-		// console.log(this.myCanvas.height);
-		const mainStore = useMainStore();
-
 		
-		if (mainStore.focusedNode) {
+		if (focused) {
 			const dataImage = ctx.createImageData(512, 512);
 			if (dataImage.data.set) {
-				dataImage.data.set(mainStore.focusedNode);
+				dataImage.data.set(focused);
 			}
+
 			const canvas2: HTMLCanvasElement = document.createElement('canvas');
 			canvas2.width = 512;
 			canvas2.height = 512;
@@ -77,14 +69,8 @@ export class CanvasMonitor2D {
 
 			this.myCanvas = canvas2;
 			this.image.src = canvas2.toDataURL("image/png");
-			
-			ctx.clearRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-			ctx.scale(1,-1);
-			ctx.translate(0,-this.myCanvas.height);
-			
+
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
-
-
 
 		} else if (this.image) {
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);

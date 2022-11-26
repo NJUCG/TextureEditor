@@ -13,6 +13,8 @@
 import { ref, onMounted, onBeforeUnmount, defineExpose, computed } from 'vue';
 import { CanvasMonitor2D } from '@/lib/canvas2d';
 import { Editor } from '@/lib/editor';
+import { useMainStore } from '@/store';
+import { storeToRefs } from 'pinia';
 const electron = require("electron");
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
@@ -20,6 +22,9 @@ const { dialog, app, BrowserWindow, Menu } = remote;
 const myCanvas = ref<HTMLCanvasElement | null>(null);
 const canvasMonitor = ref<CanvasMonitor2D | null>(null);
 const hasImage = computed(() => { return canvasMonitor.value && canvasMonitor.value.image != null });
+const mainStore = useMainStore();
+const { focusedNode, colornode } = storeToRefs(mainStore);
+const focused = computed(() => { return focusedNode.value; })
 
 onMounted(() => {
 
@@ -35,10 +40,9 @@ onMounted(() => {
 	const img = new Image();
 	img.src = "https://pic2.zhimg.com/v2-3f3533b2e479e2a17cc96654024a8b41_r.jpg";
 	canvasMonitor.value.setImage(img);
-	// canvasMonitor.value.setFocusNode(store.state.focusedNode);
 
 	const draw = () => {
-		canvasMonitor.value.draw();
+		canvasMonitor.value.draw(focused.value);
 		requestAnimationFrame(draw);
 	};
 	requestAnimationFrame(draw);
@@ -74,14 +78,6 @@ const onWheel = (event: WheelEvent) => {
 	canvasMonitor.value.zoom(factor, pos);
 	event.preventDefault();
 };
-
-
-//使用vuex全局状态 可能不需要再关联
-// const setEditor = (editor) => {
-// 	//只需关联editor事件
-
-// }
-
 
 const saveImage = () => {
 	if (!hasImage.value) return;
