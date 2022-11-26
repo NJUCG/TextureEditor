@@ -77,11 +77,10 @@ export class colorNode extends Node{
         super();
         
         //添加节点属性
-        const color = new Color(1,0,0, 1);
+        const color = new Color(Math.random(),Math.random(),Math.random(), 1);
         this.addColorProperty('001','color',color);
         console.log(color);
         const canvas = this.canvas;
-        
         canvas.id = 'colorNode';
         this.id = 'colorNode';
 
@@ -108,8 +107,6 @@ export class colorNode extends Node{
         `+
         this.createCodeForProps()+
         `
-        uniform vec4 uColor;
-        
         void main(){
             gl_FragColor = vec4(prop_001);
         }
@@ -126,9 +123,9 @@ export class colorNode extends Node{
             uniformLocations: {
 
             },
-
         }
         this.programInfo = programInfo;
+        this.setPropsLocation();
   
     }
 

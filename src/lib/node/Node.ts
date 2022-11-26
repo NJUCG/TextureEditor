@@ -258,8 +258,8 @@ export class Node {
         // Tell WebGL to use our program when drawing
         gl.useProgram(programInfo.program);
 
-        //获取属性地址
-        this.getPropsLocation();
+        //对属性赋值
+        this.setPropsValue();
 
         //设置如何从位置缓冲区取数据到vertexPosition属性
         {
@@ -451,34 +451,48 @@ export class Node {
         return prop;
     }
 
-    
-    getPropsLocation(){
-        console.log("enter props location");
-        console.log(this.properties);
+    //获得prop地址保存到programInfo中
+    setPropsLocation(){
         const gl = this.gl;
         const shaderProgram = this.programInfo.program;
+        const obj  =this.programInfo.uniformLocations;
 		for (const prop of this.properties) {
-			if (prop instanceof FloatProperty) {
+            //获取属性地址      
+            Object.defineProperty(obj,prop.name+"Location",{
+                value:gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+                writable:true
+            });
+		}
+    }
+
+    //赋值prop值
+    setPropsValue(){
+        const gl = this.gl;
+        const shaderProgram = this.programInfo.program;
+        const locations = this.programInfo.uniformLocations;
+        for(const prop of this.properties){
+            const propLocation = locations[prop.name+"Location"];
+            if (prop instanceof FloatProperty) {
 				gl.uniform1f(
-					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					propLocation,
 					(prop as FloatProperty).value
 				);
 			}
 			if (prop instanceof IntProperty) {
 				gl.uniform1i(
-					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					propLocation,
 					(prop as IntProperty).value
 				);
 			}
 			if (prop instanceof BoolProperty) {
 				gl.uniform1i(
-					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					propLocation,
 					(prop as BoolProperty).value == false ? 0 : 1
 				);
 			}
 			if (prop instanceof EnumProperty) {
 				gl.uniform1i(
-					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					propLocation,
 					(prop as EnumProperty).index
 				);
 			}
@@ -486,14 +500,15 @@ export class Node {
 				const col = (prop as ColorProperty).value;
 				//console.log("color: ", col);
 				gl.uniform4f(
-					gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+					propLocation,
 					col.r,
 					col.g,
 					col.b,
 					col.a
 				);
-                console.log("color: ", col.r,col.g,col.b,col.a);
 			}
-		}
+        }
+        
     }
+
 }
