@@ -66,7 +66,17 @@ onMounted(() => {
 				li.appendChild(nodeTitle);
 
 				//直接append
-				li.appendChild(item.node.canvas);
+				// item.node.canvas.draggable = true;
+				// li.appendChild(item.node.canvas);
+
+				//append图片
+				const img = new Image();
+				img.src = item.node.canvas.toDataURL("image/png");
+				img.addEventListener("dragstart", function (evt: DragEvent) {
+					console.log(item.node.type + ',' + item.node.id);
+					evt.dataTransfer.setData("text/plain", item.node.type + ',' + item.node.id);
+				});
+				li.appendChild(img);
 				// console.log(li.childNodes);
 
 				ul.appendChild(li);
@@ -83,7 +93,6 @@ const showHide = (index) => {//items列表展开收起
 
 	let contant = document.getElementsByClassName('items')[index];
 	var oUl = contant.getElementsByTagName('ul')[0];
-	console.log(oUl.style.height);
 	if (oUl.style.display == 'none') {  //判断样式
 		oUl.style.display = 'block';
 		// oUl.style.height = '20px';
@@ -137,6 +146,11 @@ const addImageNode = () => {//添加图片节点
 	}
 }
 
+const dragstartNewNode = (evt: DragEvent) => {
+	console.log("dragstartNewNode");
+	evt.dataTransfer.setData("text/plain", this);
+}
+
 const loadImgFromNode = (nodeName: string) => {
 	const canvas2: HTMLCanvasElement = document.createElement('canvas');
 	canvas2.width = 512;
@@ -182,7 +196,7 @@ const loadImgFromNode = (nodeName: string) => {
 	align-items: stretch;
 }
 
-.items ul li node-name{
+.items ul li node-name {
 	/* padding: 0 24px; */
 	/* height: 10px; */
 	display: block;

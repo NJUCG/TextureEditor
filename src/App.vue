@@ -86,7 +86,7 @@ onMounted(() => {
 
   console.log(editorCanvas.value);
   editor.value = new Editor(editorCanvas.value);//包含setCanvas setGraph
-
+  
 
   //2d.setEditor
   //3d.setEditor
