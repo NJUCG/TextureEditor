@@ -1,8 +1,14 @@
 import { resolveComponent, withCtx } from "vue";
-import { PatternNode,colorNode } from "./node/simpleNode";
+import { PatternNode, colorNode } from "./node/simpleNode";
 import { InvertNode } from "./node/invertNode";
 import { Connection } from "./node/connection";
 import { Node } from "./node/Node";
+
+
+interface NodeItem<V> {
+	[key: string]: V;
+}
+
 export enum LibraryItemType {
 	Utils = "utils",//comment frame pin...
 	AtomicNodes = "atomicnodes",//自定义原子节点
@@ -29,22 +35,22 @@ export class LibraryItem {//新建节点模块
 }
 
 export class LibraryMonitor {
-	utils: Array<LibraryItem>;
-	atomicNodes: Array<LibraryItem>;
-	functionnodes: Array<LibraryItem>;
-	generators: Array<LibraryItem>;
-	filterNodes: Array<LibraryItem>;
-	view3D: Array<LibraryItem>;
-	connect: Array<Connection>;
+	utils: NodeItem<LibraryItem>;
+	atomicNodes: NodeItem<LibraryItem>;
+	functionnodes: NodeItem<LibraryItem>;
+	generators: NodeItem<LibraryItem>;
+	filterNodes: NodeItem<LibraryItem>;
+	view3D: NodeItem<LibraryItem>;
+	connect: NodeItem<LibraryItem>;
 
 	constructor() {
-		this.utils = [];
-		this.functionnodes = [];
-		this.view3D = [];
-		this.generators = [];
-		this.filterNodes = [];
-		this.connect = [];
-		this.atomicNodes = [];
+		this.utils = {};
+		this.functionnodes = {};
+		this.view3D = {};
+		this.generators = {};
+		this.filterNodes = {};
+		this.connect = {};
+		this.atomicNodes = {};
 		const canvas = <HTMLCanvasElement>document.createElement("canvas");
 
 
@@ -57,7 +63,7 @@ export class LibraryMonitor {
 		drawCanvas(nodeColor);
 		drawFbo(nodeColor);
 
-		this.addNode(nodeColor.type,nodeColor.id,nodeColor);
+		this.addNode(nodeColor.type, nodeColor.id, nodeColor);
 		// this.addNode(pattern.type, pattern.canvas.id, pattern);
 		// add invert node
 		// this.addNode(invert.type, invert.canvas.id, invert);
@@ -73,22 +79,23 @@ export class LibraryMonitor {
 	) {
 		if (type == "generators") {
 			const node = new LibraryItem(type, name, nodeItem);
-			this.generators.push(node);
+			this.generators[name] = node;
+			console.log(this.generators);
 		}
 		else if (type == "atomicNodes") {
 			const node = new LibraryItem(type, name, nodeItem);
-			this.atomicNodes.push(node);
+			this.atomicNodes[name] = node;
 		}
 		else if (type == "filters") {
 			const node = new LibraryItem(type, name, nodeItem);
-			this.filterNodes.push(node);
+			this.filterNodes[name] = node;
 		}
 	}
 
-	public addConnection(connect: Connection)//添加连接
-	{
-		this.connect.push(connect);
-	}
+	// public addConnection(connect: Connection)//添加连接
+	// {
+	// 	this.connect[name] = connect;
+	// }
 }
 
 //异步加载图片并渲染fbo
@@ -117,7 +124,7 @@ async function loadImage(node1) {
 
 }
 //结果绘画到画布上
-function drawCanvas(node:Node) {
+function drawCanvas(node: Node) {
 	const gl = node.gl;
 	const tex = node.getTexture();
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);

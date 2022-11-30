@@ -56,12 +56,14 @@ onMounted(() => {
 		const locateLibrary = document.getElementById("nodeList");
 		const itemsModule = locateLibrary.getElementsByClassName("items")[i];
 		let ul = itemsModule.getElementsByTagName("ul")[0];
+		
+		// console.log(library);
 		if (library[i]) {
-			for (let item of library[i]) {
+			for (let index in library[i]) {
 				let li: HTMLLIElement = document.createElement('li');
 				//获取节点名称
 				const nodeTitle: HTMLDivElement = document.createElement('div');
-				nodeTitle.innerHTML = item.name;
+				nodeTitle.innerHTML = library[i][index].name;
 				nodeTitle.className = "node-name";
 				li.appendChild(nodeTitle);
 
@@ -71,10 +73,14 @@ onMounted(() => {
 
 				//append图片
 				const img = new Image();
-				img.src = item.node.canvas.toDataURL("image/png");
+				const tmpCanvas = document.createElement("canvas")
+				const tmpCtx = tmpCanvas.getContext("2d");
+				tmpCtx.drawImage(library[i][index].node.canvas, 0, 0, 128, 128);
+				img.src = tmpCanvas.toDataURL("image/png");
+				// img.src = library[i][index].node.canvas.toDataURL("image/png");
 				img.addEventListener("dragstart", function (evt: DragEvent) {
-					console.log(item.node.type + ',' + item.node.id);
-					evt.dataTransfer.setData("text/plain", item.node.type + ',' + item.node.id);
+					console.log(library[i][index].node.type + ',' + library[i][index].node.id);
+					evt.dataTransfer.setData("text/plain", library[i][index].node.type + ',' + library[i][index].node.id);
 				});
 				li.appendChild(img);
 				// console.log(li.childNodes);
@@ -83,11 +89,15 @@ onMounted(() => {
 			}
 		}
 	}
+	console.log(libraryMonitor);
 })
 
 onBeforeUnmount(() => {
 
 })
+
+
+defineExpose({libraryMonitor})
 
 const showHide = (index) => {//items列表展开收起
 
@@ -168,14 +178,14 @@ const loadImgFromNode = (nodeName: string) => {
 }
 
 .items-name {
-	height: 20px;
-	padding: 0 24px;
+	height: 10px;
+	padding: 0 12px;
 	border-bottom: 1px solid #eaeaea;
 }
 
 .items-name h4 {
-	height: 20px;
-	font-size: 28px;
+	height: 10px;
+	font-size: 18px;
 	color: #333;
 	display: flex;
 	align-items: stretch;
@@ -190,7 +200,7 @@ const loadImgFromNode = (nodeName: string) => {
 }
 
 .items ul li {
-	padding: 0 24px;
+	padding: 0 12px;
 	/* height: 10px; */
 	display: inline;
 	align-items: stretch;
