@@ -1,0 +1,44 @@
+/* layout 相关css */
+.layout-root {
+    display: flex;
+    justify-content: space-between;
+}
+
+.left,
+.right,
+.middle {
+    height: 100vh;
+}
+
+.top,
+.bottom {
+	width: 100%;
+}
+
+.left {
+    width: 20%;
+}
+
+.right {
+    width: 20%;
+}
+
+.middle {
+    background: #555;
+    width: 100%;
+    margin: 0 5px;
+	overflow: hidden;
+}
+
+.top {
+	height: 50%;
+	margin: 0 0 5px 0;
+	overflow: scroll;
+	background: #555;
+}
+
+.bottom {
+	height: 50%;
+	overflow: scroll;
+	background: #555;
+}

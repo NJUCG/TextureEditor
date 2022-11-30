@@ -1,19 +1,34 @@
 <template>
-  <!-- golden layout test -->
-  <div class="full-height">
-    <div id="nav" style="height: 40px; border-style: dashed;">
-      Navigator: 作为工具栏，实现部分方法，如Redo/Undo等
-    </div>
-    <golden-layout
-      ref="GoldenLayoutRoot"
-      glc-path="./"
-      style="width: 100%; height: calc(100% - 40px)"
-    ></golden-layout>
-  </div>
-  <!-- golden layout test -->
+	<div class="layout-root">
+    <div class="left">
+		<div class="top">
+			<view2D></view2D>
+		</div>
+		<div class="bottom">
+			<view3D></view3D>
+		</div>
+	</div>
+    <div class="middle">
+		<editorView></editorView>
+	</div>
+    <div class="right">
+		<div class="top">
+			<propertyView></propertyView>
+		</div>
+		<div class="bottom">
+			<libraryView></libraryView>
+		</div>
+	</div>
+</div>
 </template>
 
 <script setup lang="ts">
+// import all views of texture editor
+import view2D from './views/view2D.vue';
+import view3D from './views/view3D.vue';
+import editorView from './views/editorView.vue';
+import propertyView from './views/propertyView.vue';
+import libraryView from './views/libraryView.vue';
 
 import { onMounted, ref } from "vue";
 import { Editor } from "@/lib/editor"
@@ -117,25 +132,26 @@ function setWindowTitle(newTitle: string) {
 </script>
 
 <style>
+@import './styles/layout-style.css';
 
 html {
-    height: 100%;
+	height: 100%;
 }
 body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
 }
 .full-height, #app {
-    height: 100%;
+	height: 100%;
 }
 #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+	font-family: Avenir, Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 #nav {
-    text-align: center;
+	text-align: center;
 }
 
 </style>
