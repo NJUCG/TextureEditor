@@ -1,7 +1,7 @@
 //节点编辑器
 
 import { NodeGraph } from "./nodegraph";
-import {PatternNode} from "./node/simpleNode";
+import {PatternNode} from "./node/generatorNode";
 
 export class Editor{
 

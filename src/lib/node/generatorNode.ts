@@ -22,17 +22,17 @@ export class PatternNode extends Node{
         }
 
 
-        this.vertexSource = `
-        attribute vec4 aVertexPosition;
-        attribute vec2 aTexCoord;
+        // this.vertexSource = `
+        // attribute vec4 aVertexPosition;
+        // attribute vec2 aTexCoord;
 
-        varying vec2 vTexCoord;
+        // varying vec2 vTexCoord;
         
-        void main(){
-            gl_Position=aVertexPosition;
-            vTexCoord = aTexCoord;
-        }
-        `;
+        // void main(){
+        //     gl_Position=aVertexPosition;
+        //     vTexCoord = aTexCoord;
+        // }
+        // `;
         this.fragmentSource = `
         precision mediump float;
 
@@ -54,10 +54,7 @@ export class PatternNode extends Node{
                 texCoordLocation: this.gl.getAttribLocation(shaderProgram, "aTexCoord"),
             },
             uniformLocations: {
-                textureLocation: this.gl.getUniformLocation(
-                    shaderProgram,
-                    "uTexture"
-                ),
+
             },
 
         }
@@ -71,7 +68,7 @@ export class PatternNode extends Node{
 }
 
 
-export class colorNode extends Node{
+export class ColorNode extends Node{
    
     constructor(){
         super();
@@ -85,20 +82,17 @@ export class colorNode extends Node{
         this.id = 'colorNode';
 
         this.type = LibraryItemType.Generators;
-        this.gl = this.canvas.getContext('webgl');
         const gl = this.gl;
-        if (!gl) {
-            console.log('fail to get context');
-        }
-        this.vertexSource = `
-        attribute vec4 aVertexPosition;
-        attribute vec2 aTexCoord;
-        
-        void main(){
-            gl_Position=aVertexPosition;
 
-        }
-        `;
+        // this.vertexSource = `
+        // attribute vec4 aVertexPosition;
+        // attribute vec2 aTexCoord;
+        
+        // void main(){
+        //     gl_Position=aVertexPosition;
+
+        // }
+        // `;
 
         this.fragmentSource =
 
@@ -108,7 +102,7 @@ export class colorNode extends Node{
         this.createCodeForProps()+
         `
         void main(){
-            gl_FragColor = vec4(prop_001);
+            gl_FragColor = vec4(prop001);
         }
         `       
         ;

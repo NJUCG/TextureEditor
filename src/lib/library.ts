@@ -1,8 +1,9 @@
 import { resolveComponent, withCtx } from "vue";
-import { PatternNode,colorNode } from "./node/simpleNode";
-import { InvertNode } from "./node/invertNode";
+import { PatternNode,ColorNode } from "./node/generatorNode";
+import { InvertNode,BlendNode } from "./node/filterNode";
 import { Connection } from "./node/connection";
 import { Node } from "./node/Node";
+import { Color } from "./designer/color";
 export enum LibraryItemType {
 	Utils = "utils",//comment frame pin...
 	AtomicNodes = "atomicnodes",//自定义原子节点
@@ -53,14 +54,39 @@ export class LibraryMonitor {
 		loadImage(pattern);
 
 		//create color node
-		const nodeColor = new colorNode();
-		drawCanvas(nodeColor);
-		drawFbo(nodeColor);
+		const colorA = new ColorNode();
+		colorA.name = "foreground";
+		drawCanvas(colorA);
+		drawFbo(colorA);
+		
+		const colorB = new ColorNode();
+		colorB.name = "background";
+		// drawCanvas(colorB);
+		// drawFbo(colorB);
 
-		this.addNode(nodeColor.type,nodeColor.id,nodeColor);
+		const blendNode = new BlendNode();
+		
+		const invertNode = new InvertNode();
+		const connection1 = new Connection("connection001",[colorA,colorB],blendNode);
+		const connection2 = new Connection("connection002",[pattern],invertNode);
+		
+
+
+		//setTimeout wait for 2 seconds
+		setTimeout(function(){
+			drawCanvas(blendNode);
+			drawFbo(blendNode);
+			// drawCanvas(invertNode);
+			// drawFbo(invertNode);
+		},2000);
+
+		//add blendNode
+		this.addNode(blendNode.type, blendNode.id, blendNode);
+		this.addNode(colorA.type,colorA.id,colorA);
+		// this.addNode(colorB.type,colorB.id,colorB);
 		// this.addNode(pattern.type, pattern.canvas.id, pattern);
 		// add invert node
-		// this.addNode(invert.type, invert.canvas.id, invert);
+		// this.addNode(invertNode.type, invertNode.canvas.id, invertNode);
 		//add connection
 		// this.addConnection(connect);
 
@@ -105,7 +131,7 @@ async function loadImage(node1) {
 			gl.bindTexture(gl.TEXTURE_2D, tex);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 			drawFbo(node1);
-
+			drawCanvas(node1);
 			reslove(1);
 		}
 
@@ -113,9 +139,10 @@ async function loadImage(node1) {
 	await promise;
 	console.log('loading finshed');
 
-
-
 }
+
+
+
 //结果绘画到画布上
 function drawCanvas(node:Node) {
 	const gl = node.gl;
@@ -142,7 +169,6 @@ function drawFbo(node: Node) {
 	node.calPixelData();
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	gl.bindTexture(gl.TEXTURE_2D, null);
-
 }
 
 //copy canvas result from webgl canvas to 2d canvas

@@ -1,38 +1,28 @@
 import {Node} from "./Node"
-import {PatternNode} from "./simpleNode"
-import { InvertNode } from "./invertNode"
+import {PatternNode} from "./generatorNode"
+import { InvertNode } from "./filterNode"
 
 export class Connection {
-    private input:any;
-    private output:any;
+    private inputNodes:Node [] = [];
+    private currentNode:Node;
     private id:string;
-    constructor(node1,node2){
-        this.setInput(node1);
-        this.setOutput(node2);
-        // connect(node1,node2);
-		console.log("connect");
-		//setTimeout 4s
-		setTimeout(function(){
-			// connect(node1,node2);
-			//将node1的结果输入给node2
-			setConnectInfo(node1,node2);
-			console.log("set input finshed");
-		},1000);
-    }
-    public setInput(node:Node){
-        this.input = node;
-    }
-    public setOutput(node:Node){
-        this.output = node;
+    constructor(id,inputNodes,currentNode){
+		this.id = id;
+		this.inputNodes = inputNodes;
+		this.currentNode = currentNode;
+		for(const input of inputNodes){
+			currentNode.addInputNode(input);
+		}
+		// setTimeout(function(){
+		// 	// connect(node1,node2);
+		// 	//将node1的结果输入给node2
+		// 	setConnectInfo(node1,node2);
+		// 	console.log("set input finshed");
+		// },1000);
     }
 
-    public getInput(){
-        return this.input;
-    }
 
-    public getOutput(){
-        return this.output;
-    }
+
 
 
 }

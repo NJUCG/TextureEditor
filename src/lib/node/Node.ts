@@ -15,6 +15,7 @@ import {
     PropertyGroup
 } from "./NodeProperty";
 export class Node {
+    public name: string;
     public id: string;
     public type: LibraryItemType;
     protected vertexSource: string;
@@ -38,6 +39,8 @@ export class Node {
     protected targetTexture:WebGLTexture;
     protected shaderPorgram:WebGLProgram;
 
+    protected inputNodes: Node[] = [];//输入节点
+    protected inputNames: string[] = [];//GLSL输入名称
     properties: Property[] = [];
     propertyGroups: PropertyGroup[] = [];
     constructor() {
@@ -49,6 +52,7 @@ export class Node {
         const canvas = this.canvas;
         this.size = 512;
         this.setCanvas(this.size,this.size);
+
         //获取上下文
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
@@ -90,8 +94,19 @@ export class Node {
         * 通过fbo将渲染结果保存到targetTexture中
         */
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTexture, 0);
+       
 
+        this.vertexSource = `
+        attribute vec4 aVertexPosition;
+        attribute vec2 aTexCoord;
 
+        varying vec2 vTexCoord;
+        
+        void main(){
+            gl_Position=aVertexPosition;
+            vTexCoord = aTexCoord;
+        }
+        `;
         //綁定鼠标监听事件
         const self = this;
         canvas.addEventListener("mousedown", function(evt: MouseEvent) {
@@ -103,11 +118,9 @@ export class Node {
     }
 
     onMouseDown(evt:MouseEvent) {
-        console.log("click");
         // this.store.displayNodeOnComponents(this.canvas);
         this.store.displayNodeOnComponents(this.getPixelData(),this);
 
-        // console.log(this.getPixelData());
     }
 
 
@@ -152,8 +165,8 @@ export class Node {
             gl.STATIC_DRAW);
 
         const buffers = {
-            position: positionBuffer,
-            texture: texBuffer,
+            position: positionBuffer,//顶点缓冲区
+            texture: texBuffer,//纹理缓冲区
         };
         return buffers;
     }
@@ -261,12 +274,13 @@ export class Node {
         //对属性赋值
         this.setPropsValue();
 
+        
         //设置如何从位置缓冲区取数据到vertexPosition属性
         {
           gl.enableVertexAttribArray(
               programInfo.attribLocations.vertexPosition);
           gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-          const numComponents = 2;  // pull out 3 values per iteration
+          const numComponents = 2;  // pull out numComponets values per iteration
           const type = gl.FLOAT;    // the data in the buffer is 32bit floats
           const normalize = false;  // don't normalize
           const stride = 0;         // how many bytes to get from one set of values to the next
@@ -283,9 +297,29 @@ export class Node {
 
         }
 
+        {
+            gl.enableVertexAttribArray(
+                programInfo.attribLocations.texCoordLocation);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+            const numComponents = 2; 
+            const type = gl.FLOAT;    
+            const normalize = false;  
+            const stride = 0;         
+            const offset = 0;       
+  
+            gl.vertexAttribPointer(
+                programInfo.attribLocations.texCoordLocation,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
+  
+        }
 
-        //u_texture使用纹理单位0
-        gl.uniform1i(programInfo.uniformLocations.textureLocation,0);
+        this.clearInputsTex();
+        this.setInputsValue();
+        
         {
           const offset = 0;
           const vertexCount = 4;
@@ -342,30 +376,50 @@ export class Node {
         return this.pixelData;
     }
 
+    protected addInput(name: string) {
+		this.inputNames.push(name);
+	}
+
+    //add input Node
+    public addInputNode(node: Node) {
+        this.inputNodes.push(node);
+    }
+
     //属性构建GLSL声明
-	createCodeForProps() {
+	protected createCodeForProps() {
 		let code = "";
 
 		for (const prop of this.properties) {
 			//code += "uniform sampler2D " + input + ";\n";
 			if (prop instanceof FloatProperty) {
-				code += "uniform float prop_" + prop.name + ";\n";
+				code += "uniform float prop" + prop.name + ";\n";
 			}
 			if (prop instanceof IntProperty) {
-				code += "uniform int prop_" + prop.name + ";\n";
+				code += "uniform int prop" + prop.name + ";\n";
 			}
 			if (prop instanceof BoolProperty) {
-				code += "uniform bool prop_" + prop.name + ";\n";
+				code += "uniform bool prop" + prop.name + ";\n";
 			}
 			if (prop instanceof EnumProperty) {
-				code += "uniform int prop_" + prop.name + ";\n";
+				code += "uniform int prop" + prop.name + ";\n";
 			}
 			if (prop instanceof ColorProperty) {
-				code += "uniform vec4 prop_" + prop.name + ";\n";
+				code += "uniform vec4 prop" + prop.name + ";\n";
 			}
 		}
 
 		code += "\n";
+
+		return code;
+	}
+
+    //输入节点的GLSL声明   
+    protected createCodeForInputs() {
+		let code = "";
+
+		for (const name of this.inputNames) {
+			code += "uniform sampler2D input" + name + ";\n";
+		}
 
 		return code;
 	}
@@ -427,8 +481,6 @@ export class Node {
         return prop;
     }
 
-
-
     addStringProperty(
         id: string,
         displayName: string,
@@ -458,20 +510,19 @@ export class Node {
         const obj  =this.programInfo.uniformLocations;
 		for (const prop of this.properties) {
             //获取属性地址      
-            Object.defineProperty(obj,prop.name+"Location",{
-                value:gl.getUniformLocation(shaderProgram, "prop_" + prop.name),
+            Object.defineProperty(obj,"prop"+prop.name,{
+                value:gl.getUniformLocation(shaderProgram, "prop" + prop.name),
                 writable:true
             });
 		}
     }
 
-    //赋值prop值
+    //赋值prop
     setPropsValue(){
         const gl = this.gl;
-        const shaderProgram = this.programInfo.program;
         const locations = this.programInfo.uniformLocations;
         for(const prop of this.properties){
-            const propLocation = locations[prop.name+"Location"];
+            const propLocation = locations["prop"+prop.name];
             if (prop instanceof FloatProperty) {
 				gl.uniform1f(
 					propLocation,
@@ -498,7 +549,6 @@ export class Node {
 			}
 			if (prop instanceof ColorProperty) {
 				const col = (prop as ColorProperty).value;
-				//console.log("color: ", col);
 				gl.uniform4f(
 					propLocation,
 					col.r,
@@ -510,5 +560,58 @@ export class Node {
         }
         
     }
+    
+    //获得输入节点的地址保存到ProgramInfo中
+    setInputsLocation(){
+        const gl = this.gl;
+        const shaderProgram = this.programInfo.program;
+        const obj  =this.programInfo.uniformLocations;
+        for (const name of this.inputNames) {
+            
+            Object.defineProperty(obj,"input"+name,{
+                value:gl.getUniformLocation(shaderProgram, "input"+name),
+                writable:true
+            });
+		}
 
+
+    
+    }
+    //将输入节点的纹理赋值给GLSL
+    setInputsValue(){
+        const gl = this.gl;
+        var texIndex = 0;
+        const locations = this.programInfo.uniformLocations;
+        for (const input of this.inputNodes) {
+            var name = this.inputNames[texIndex];
+            var texture = gl.createTexture();
+			gl.activeTexture(gl.TEXTURE0 + texIndex);
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+            //设置纹理参数
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            //设置纹理图像
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+                512 , 512, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+               input.pixelData);
+			gl.uniform1i(
+				locations["input"+name],
+				texIndex
+			);
+			texIndex++;
+		}
+    }
+    //清空输入节点纹理
+    clearInputsTex(){
+        const gl = this.gl;
+        const locations = this.programInfo.uniformLocations;
+        var texIndex = 0;
+        for (const name of this.inputNames) {
+			gl.activeTexture(gl.TEXTURE0 + texIndex);
+			gl.bindTexture(gl.TEXTURE_2D, null);
+			gl.uniform1i(locations["input"+name], 0);
+            texIndex ++;
+		}
+    }
 }
