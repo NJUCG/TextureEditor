@@ -1,28 +1,41 @@
 <template>
-  <div class="layout-root">
-    <div class="left">
-      <div class="top">
-        <view2D></view2D>
-      </div>
-      <div class="bottom">
-        <view3D></view3D>
-      </div>
-    </div>
-    <div class="middle">
-      <editorView ref="editor"></editorView>
-    </div>
-    <div class="right">
-      <div class="top">
-        <propertyView></propertyView>
-      </div>
-      <div class="bottom">
-        <libraryView ref="libraryCanvas"></libraryView>
-      </div>
-    </div>
-  </div>
+  <split-view class="pane-root" direction="horizontal" a-init="20%">
+    <template #A>
+      <split-view direction="vertical">
+          <template #A>
+            <view2D></view2D>
+          </template>
+          <template #B>
+            <view3D></view3D>
+          </template>
+      </split-view>
+    </template>
+
+    <template #B>
+      <split-view direction="horizontal" a-init="75%">
+        <template #A>
+          <div class="editor-pane">
+            <editorView ref="editor"></editorView>
+          </div>
+        </template>
+        <template #B>
+          <split-view direction="vertical">
+            <template #A>
+              <propertyView></propertyView>
+            </template>
+
+            <template #B>
+              <libraryView class="library-pane" ref="libraryCanvas"></libraryView>
+            </template>
+          </split-view>
+        </template>
+      </split-view>
+    </template>
+  </split-view>
 </template>
 
 <script setup lang="ts">
+import SplitView from 'vue-split-view'
 // import all views of texture editor
 import view2D from './views/view2D.vue';
 import view3D from './views/view3D.vue';

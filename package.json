@@ -15,11 +15,10 @@
   "dependencies": {
     "@electron/remote": "^2.0.8",
     "core-js": "^3.8.3",
-    "element-plus": "^2.2.21",
-    "golden-layout": "^2.6.0",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "pinia": "^2.0.23",
     "vue": "^3.2.13",
+    "vue-split-view": "^1.0.0",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

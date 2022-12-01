@@ -1,44 +1,25 @@
 /* layout 相关css */
-.layout-root {
-    display: flex;
-    justify-content: space-between;
+.pane-root {
+	height: calc(100vh - 4px);
+	width: calc(100vw - 4px);
+	border-style: solid;
+	border-width: 2px;
+	border-color: black;
+	background-color: #555;
 }
 
-.left,
-.right,
-.middle {
-    height: 100vh;
+.preview-pane {
+	overflow: scroll;
 }
 
-.top,
-.bottom {
-	width: 100%;
-}
-
-.left {
-    width: 20%;
-}
-
-.right {
-    width: 20%;
-}
-
-.middle {
-    background: #555;
-    width: 100%;
-    margin: 0 5px;
+.editor-pane {
 	overflow: hidden;
 }
 
-.top {
-	height: 50%;
-	margin: 0 0 5px 0;
+.property-pane {
 	overflow: scroll;
-	background: #555;
 }
 
-.bottom {
-	height: 50%;
+.library-pane {
 	overflow: scroll;
-	background: #555;
 }
