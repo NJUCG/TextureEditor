@@ -5,7 +5,10 @@
       :prop="p.prop"
       :key="index"
   ></component>
+<!--  <button @click="addProperty">添加</button>-->
+<!--  <div>{{properties}}</div>-->
   <div>propertyView</div>
+
 </template>
 
 <script  setup lang="ts">
@@ -38,20 +41,21 @@ import {
   ColorProperty,
   PropertyType,
 } from "@/lib/node/NodeProperty";
+import { storeToRefs } from 'pinia';
+import {computed} from "vue";
+import {getCurrentInstance} from "vue";
 let store=useMainStore();
 // let properties=store.properties;
-let properties:Property[]=[];
-const property1=new IntProperty("test","test",1,1);
-const property2=new BoolProperty("testbool","testbool",true);
-const property3=new EnumProperty("teste","teste",["1","2","3"],0);
-const property4=new StringProperty("tests","tests","",true);
-const defaultColor =new Color(0,0,1,1);
-const property5=new ColorProperty("testColor","testColor",defaultColor);
-properties.push(property1);
-properties.push(property2);
-properties.push(property3);
-properties.push(property4);
-properties.push(property5);
+
+const addProperty=()=>{
+  store.property.push(new StringProperty("test","test","",true));
+  console.log("属性",store.property);
+}
+//测试用
+
+const { focusedNode, property } = storeToRefs(store);
+const properties = computed(() => { return property.value; })
+
 class PropHolder {
   prop: Property;
   componentName: string;
@@ -65,7 +69,7 @@ const componentMap={
   "colorView":colorView
 };
 
-let prop: PropHolder[]=properties.map(prop =>{
+let prop: PropHolder[]=properties.value.map(prop =>{
   return {
     prop:prop,
     componentName:componentMap[prop.type+"View"]

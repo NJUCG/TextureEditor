@@ -21,7 +21,7 @@
         <template #B>
           <split-view direction="vertical">
             <template #A>
-              <propertyView></propertyView>
+              <propertyView :key="state.timer"></propertyView>
             </template>
 
             <template #B>
@@ -47,6 +47,9 @@ import { onMounted, ref } from "vue";
 import { Editor } from "@/lib/editor"
 import { MenuCommands, setupMenu } from "./menu";
 import { Project, ProjectManager } from "@/lib/project"
+import {watch} from "vue";
+import {useMainStore} from "@/store";
+import {reactive} from "vue";
 const { ipcRenderer } = require('electron')
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
@@ -56,7 +59,25 @@ const libraryCanvas = ref(null);
 let library: LibraryMonitor = null;
 // const editor = ref<Editor | null>(null);
 const editor = ref(null);
+const store=useMainStore();
+const state=reactive({
+  timer:0
+})
 
+watch(
+    // pointer函数，监听的是什么
+    () => store.property,
+    // change函数，监听值的变化
+    (newV, oldV) => {
+      console.log("检测到store变化")
+      state.timer=new Date().getTime();
+
+    },
+    {
+      immediate: true, // 立即执行
+      deep: true // 深度监听
+    }
+)
 onMounted(() => {
   
   library = libraryCanvas.value.libraryMonitor;
