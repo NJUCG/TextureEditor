@@ -1,6 +1,7 @@
 import { ImageCanvas } from "../designer/imagecanvas";
 import { NodeGraph } from "../nodegraph";
 import { Vector2 } from "../utils/utils";
+import { Node } from "../node/Node";
 import { NodeSceneState, NodeScene, MouseDownEvent, MouseMoveEvent, MouseUpEvent } from "./nodescene"
 
 export class GeneratorNodeScene extends NodeScene {
@@ -8,12 +9,13 @@ export class GeneratorNodeScene extends NodeScene {
     nodecanvas: ImageCanvas;
     thumbnail: HTMLImageElement;
 
-    constructor(id: string) {
+    constructor(node: Node) {
         super();
         this.width = 100;
         this.height = 100;
-        this.id = id;
+        this.id = node.id;
         this.nodecanvas = new ImageCanvas();
+		this.nodecanvas.copyFromCanvas(node.canvas, true);
     }
 
     public draw(ctx: CanvasRenderingContext2D, nodeState: NodeSceneState) {
@@ -26,7 +28,7 @@ export class GeneratorNodeScene extends NodeScene {
 			this.roundRect(ctx, this.x, this.y, this.width, this.height, 2);
 			ctx.stroke();
 		}
-
+		// console.log(this.width, this.height);
 		// background
 		ctx.beginPath();
 		ctx.fillStyle = "rgb(0, 0, 0)";

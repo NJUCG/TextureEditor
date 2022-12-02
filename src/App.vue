@@ -77,7 +77,7 @@ watch(
     }
 )
 onMounted(() => {
-
+  console.log(editor.value);
 
   newProject();
 

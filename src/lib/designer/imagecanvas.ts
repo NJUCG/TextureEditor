@@ -2,7 +2,7 @@ export class ImageCanvas {
 	canvas: HTMLCanvasElement;
 	context: CanvasRenderingContext2D;
 
-	constructor(width = 1024, height = 1024) {
+	constructor(width = 100, height = 100) {
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = width;
 		this.canvas.height = height;
@@ -12,11 +12,11 @@ export class ImageCanvas {
 	// copies image from source
 	// scales the image to fit dest canvas
 	copyFromCanvas(src: HTMLCanvasElement, resize = false) {
-		if (resize) {
-			if (this.canvas.width != src.width) this.canvas.width = src.width;
-			if (this.canvas.height != src.height) this.canvas.height = src.height;
-		}
-		//console.log("copying from " + src.width + " to " + this.canvas.width);
+		// if (resize) {
+		// 	if (this.canvas.width != src.width) this.canvas.width = src.width;
+		// 	if (this.canvas.height != src.height) this.canvas.height = src.height;
+		// }
+		console.log("copying from " + src.width + " to " + this.canvas.width);
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.context.drawImage(src, 0, 0, this.canvas.width, this.canvas.height);
 	}

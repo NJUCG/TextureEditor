@@ -26,6 +26,12 @@ onMounted(() => {
 
 	canvas.value.addEventListener("drop", onDrop);
 	canvas.value.addEventListener("dragover", onDragOver);
+
+	const draw = () => {
+    	editor.draw();//通过editor逐层重绘
+    	requestAnimationFrame(draw);
+  	};
+  	requestAnimationFrame(draw);
 })
 
 onBeforeUnmount(() => {
@@ -37,12 +43,12 @@ const onDrop = (evt: DragEvent) => {
 
 	evt.preventDefault();
 	console.log("onDrag");
-	// console.log(library.value.generators);
+	console.log(library.value.generators);
 	const [type, name] = evt.dataTransfer.getData('text/plain').split(',');
 	if (type == "generators") {
 		const libNode = library.value.generators[name];
 		const newNode = Object.create(libNode.node);
-		console.log(newNode.id);
+		console.log(newNode);
 		editor.addNode(newNode);
 		// let rect = canvas.value.getBoundingClientRect();
 		// let pos = [evt.clientX - rect.left, evt.clientY - rect.top];
@@ -55,7 +61,7 @@ const onDrop = (evt: DragEvent) => {
 const onDragOver = (evt: DragEvent) => {
 
 	evt.preventDefault();
-	// console.log("onDragOver");
+	console.log("onDragOver");
 	// console.log(library.value.generators);
 }
 
@@ -65,7 +71,7 @@ const onDragOver = (evt: DragEvent) => {
 
 <style>
 #editor-canvas {
-	height: 100%;
+	height: auto;
 	width: 100%;
 }
 </style>

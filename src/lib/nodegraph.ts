@@ -11,8 +11,9 @@ export class NodeGraph {
 
 
     constructor(canvas: HTMLCanvasElement) {
+        this.nodes = [];
         this.canvas = canvas;
-        // this.context = canvas.getContext("2d");
+        this.context = canvas.getContext("2d");
         // canvas.addEventListener("mousedown", this.onMouseDown);
     }
 

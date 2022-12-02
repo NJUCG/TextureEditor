@@ -93,21 +93,21 @@ export class Node {
 
 
         //綁定鼠标监听事件
-        const self = this;
-        canvas.addEventListener("mousedown", function (evt: MouseEvent) {
-            self.onMouseDown(evt);
-        });
+        // const self = this;
+        // canvas.addEventListener("mousedown", function (evt: MouseEvent) {
+        //     self.onMouseDown(evt);
+        // });
         // canvas.addEventListener("dragend", function (evt: DragEvent) {
         //     self.onDragStart(evt);
         // });
 
-        this.store = useMainStore();
+        // this.store = useMainStore();
     }
 
-    onMouseDown(evt: MouseEvent) {
-        console.log("click");
-        this.store.displayNodeOnComponents(this.getPixelData(), this);
-    }
+    // onMouseDown(evt: MouseEvent) {
+    //     console.log("click");
+    //     this.store.displayNodeOnComponents(this.getPixelData(), this);
+    // }
 
     // onDragStart(evt: DragEvent) {
     //     console.log("dragend");
