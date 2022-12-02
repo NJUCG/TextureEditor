@@ -1,6 +1,6 @@
 
 import { defineStore } from "pinia";
-import { colorNode } from "@/lib/node/simpleNode";
+import { colorNode } from "@/lib/node/generatorNode";
 import { Node } from "@/lib/node/Node";
 import { Property } from "@/lib/node/NodeProperty";
 export const useMainStore = defineStore('main', {
