@@ -15,7 +15,7 @@
       <split-view direction="horizontal" a-init="75%">
         <template #A>
           <div class="editor-pane">
-            <editorView ref="editor"></editorView>
+            <editorView ref="editor" :library="library"></editorView>
           </div>
         </template>
         <template #B>
@@ -42,9 +42,7 @@ import view3D from './views/view3D.vue';
 import propertyView from './views/propertyView.vue';
 import libraryView from './views/libraryView.vue';
 import editorView from './views/editorView.vue';
-import { LibraryMonitor } from '@/lib/library';
-import { onMounted, ref } from "vue";
-import { Editor } from "@/lib/editor"
+import { computed, onMounted, ref } from "vue";
 import { MenuCommands, setupMenu } from "./menu";
 import { Project, ProjectManager } from "@/lib/project"
 import {watch} from "vue";
@@ -56,7 +54,7 @@ const { dialog, app, BrowserWindow, Menu } = remote;
 
 let project = new Project();
 const libraryCanvas = ref(null);
-let library: LibraryMonitor = null;
+let library = computed(() => { return libraryCanvas.value ? libraryCanvas.value.libraryMonitor : null; })
 // const editor = ref<Editor | null>(null);
 const editor = ref(null);
 const store=useMainStore();
@@ -79,22 +77,15 @@ watch(
     }
 )
 onMounted(() => {
-  
-  library = libraryCanvas.value.libraryMonitor;
-  editor.value.setLibrary(library);
-  // editor.value = new Editor(editorCanvas.value);//包含setCanvas setGraph
-  // editor.value.setLibrary(library);
 
-  //2d.setEditor
-  //3d.setEditor
 
   newProject();
 
-  const draw = () => {
-    // editor.value.draw();//通过editor逐层重绘
-    requestAnimationFrame(draw);
-  };
-  requestAnimationFrame(draw);
+  // const draw = () => {
+  //   // editor.value.draw();//通过editor逐层重绘
+  //   requestAnimationFrame(draw);
+  // };
+  // requestAnimationFrame(draw);
 })
 
 // 处理menu指令
