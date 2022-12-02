@@ -67,10 +67,6 @@ onMounted(() => {
 				nodeTitle.className = "node-name";
 				li.appendChild(nodeTitle);
 
-				//直接append
-				// item.node.canvas.draggable = true;
-				// li.appendChild(item.node.canvas);
-
 				//append图片
 				const img = new Image();
 				const tmpCanvas = document.createElement("canvas")
@@ -89,7 +85,6 @@ onMounted(() => {
 			}
 		}
 	}
-	console.log(libraryMonitor);
 })
 
 onBeforeUnmount(() => {
@@ -97,7 +92,7 @@ onBeforeUnmount(() => {
 })
 
 
-defineExpose({libraryMonitor})
+defineExpose({libraryMonitor});
 
 const showHide = (index) => {//items列表展开收起
 
