@@ -8,6 +8,8 @@ export const useMainStore = defineStore('main', {
         return {
             focusedNode: null,
             colornode: new Node(),
+            property:[],
+            // change:true
         }
     },
     getters: {},
@@ -15,6 +17,7 @@ export const useMainStore = defineStore('main', {
         displayNodeOnComponents(data: Uint8Array, node: Node) {//editor中选中node，展示在2d视图
             this.focusedNode = data;
             this.colornode = node;
+            this.property=node.properties;
             console.log("color node");
             console.log(this.colornode);
             // console.log(state.focusedNode);

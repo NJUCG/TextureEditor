@@ -56,17 +56,29 @@ onMounted(() => {
 		const locateLibrary = document.getElementById("nodeList");
 		const itemsModule = locateLibrary.getElementsByClassName("items")[i];
 		let ul = itemsModule.getElementsByTagName("ul")[0];
+		
+		// console.log(library);
 		if (library[i]) {
-			for (let item of library[i]) {
+			for (let index in library[i]) {
 				let li: HTMLLIElement = document.createElement('li');
 				//获取节点名称
 				const nodeTitle: HTMLDivElement = document.createElement('div');
-				nodeTitle.innerHTML = item.name;
+				nodeTitle.innerHTML = library[i][index].name;
 				nodeTitle.className = "node-name";
 				li.appendChild(nodeTitle);
 
-				//直接append
-				li.appendChild(item.node.canvas);
+				//append图片
+				const img = new Image();
+				const tmpCanvas = document.createElement("canvas")
+				const tmpCtx = tmpCanvas.getContext("2d");
+				tmpCtx.drawImage(library[i][index].node.canvas, 0, 0, 128, 128);
+				img.src = tmpCanvas.toDataURL("image/png");
+				// img.src = library[i][index].node.canvas.toDataURL("image/png");
+				img.addEventListener("dragstart", function (evt: DragEvent) {
+					console.log(library[i][index].node.type + ',' + library[i][index].node.id);
+					evt.dataTransfer.setData("text/plain", library[i][index].node.type + ',' + library[i][index].node.id);
+				});
+				li.appendChild(img);
 				// console.log(li.childNodes);
 
 				ul.appendChild(li);
@@ -79,11 +91,13 @@ onBeforeUnmount(() => {
 
 })
 
+
+defineExpose({libraryMonitor});
+
 const showHide = (index) => {//items列表展开收起
 
 	let contant = document.getElementsByClassName('items')[index];
 	var oUl = contant.getElementsByTagName('ul')[0];
-	console.log(oUl.style.height);
 	if (oUl.style.display == 'none') {  //判断样式
 		oUl.style.display = 'block';
 		// oUl.style.height = '20px';
@@ -137,6 +151,11 @@ const addImageNode = () => {//添加图片节点
 	}
 }
 
+const dragstartNewNode = (evt: DragEvent) => {
+	console.log("dragstartNewNode");
+	evt.dataTransfer.setData("text/plain", this);
+}
+
 const loadImgFromNode = (nodeName: string) => {
 	const canvas2: HTMLCanvasElement = document.createElement('canvas');
 	canvas2.width = 512;
@@ -154,14 +173,14 @@ const loadImgFromNode = (nodeName: string) => {
 }
 
 .items-name {
-	height: 20px;
-	padding: 0 24px;
+	height: 10px;
+	padding: 0 12px;
 	border-bottom: 1px solid #eaeaea;
 }
 
 .items-name h4 {
-	height: 20px;
-	font-size: 28px;
+	height: 10px;
+	font-size: 18px;
 	color: #333;
 	display: flex;
 	align-items: stretch;
@@ -176,13 +195,13 @@ const loadImgFromNode = (nodeName: string) => {
 }
 
 .items ul li {
-	padding: 0 24px;
+	padding: 0 12px;
 	/* height: 10px; */
 	display: inline;
 	align-items: stretch;
 }
 
-.items ul li node-name{
+.items ul li node-name {
 	/* padding: 0 24px; */
 	/* height: 10px; */
 	display: block;

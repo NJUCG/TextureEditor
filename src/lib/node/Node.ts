@@ -1,4 +1,4 @@
-import {storeToRefs} from 'pinia'
+import { storeToRefs } from 'pinia'
 import { useMainStore } from '@/store/index';
 import { LibraryItemType } from '../library';
 import { Color } from "../designer/color";
@@ -24,30 +24,30 @@ export class Node {
     public gl: WebGLRenderingContext;
 
     //resolution
-    protected size:GLuint;
+    protected size: GLuint;
     protected store;
-    protected inputNode:Node;
-    protected buffers:any;
-    protected programInfo:any;
+    protected inputNode: Node;
+    protected buffers: any;
+    protected programInfo: any;
     //current node's result
     protected pixelData;
     //input texture
-    protected texture:WebGLTexture;
+    protected texture: WebGLTexture;
     //用于离屏渲染
-    protected frameBuffer:WebGLFramebuffer;
+    protected frameBuffer: WebGLFramebuffer;
     //离屏渲染的结果存储到targetTexture里
-    protected targetTexture:WebGLTexture;
-    protected shaderPorgram:WebGLProgram;
+    protected targetTexture: WebGLTexture;
+    protected shaderPorgram: WebGLProgram;
 
     protected inputNodes: Node[] = [];//输入节点
     protected inputNames: string[] = [];//GLSL输入名称
     properties: Property[] = [];
     propertyGroups: PropertyGroup[] = [];
     constructor() {
-        this.canvas=<HTMLCanvasElement>document.getElementById('mycanvas');
-        if(this.canvas == null){
+        this.canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
+        if (this.canvas == null) {
             this.canvas = <HTMLCanvasElement>document.createElement("canvas");
-
+            this.canvas.draggable = true;
         }
         const canvas = this.canvas;
         this.size = 512;
@@ -76,7 +76,7 @@ export class Node {
         const targetTexture = gl.createTexture();
         this.targetTexture = targetTexture;
         const data = null;
-        gl.bindTexture(gl.TEXTURE_2D,targetTexture);
+        gl.bindTexture(gl.TEXTURE_2D, targetTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
             this.size, this.size, 0,
             gl.RGBA, gl.UNSIGNED_BYTE, data);
@@ -88,7 +88,7 @@ export class Node {
         //创建frameBufferObject
         const frameBuffer = gl.createFramebuffer();
         this.frameBuffer = frameBuffer;
-        gl.bindFramebuffer(gl.FRAMEBUFFER,frameBuffer);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
         /*
         *将fbo和targetTexture绑定
         * 通过fbo将渲染结果保存到targetTexture中
@@ -108,20 +108,27 @@ export class Node {
         }
         `;
         //綁定鼠标监听事件
-        const self = this;
-        canvas.addEventListener("mousedown", function(evt: MouseEvent) {
-			self.onMouseDown(evt);
-		});
-        // console.log(this.canvas);
+        // const self = this;
+        // canvas.addEventListener("mousedown", function (evt: MouseEvent) {
+        //     self.onMouseDown(evt);
+        // });
+        // canvas.addEventListener("dragend", function (evt: DragEvent) {
+        //     self.onDragStart(evt);
+        // });
 
-        this.store = useMainStore();
+        // this.store = useMainStore();
     }
 
-    onMouseDown(evt:MouseEvent) {
-        // this.store.displayNodeOnComponents(this.canvas);
-        this.store.displayNodeOnComponents(this.getPixelData(),this);
+    // onMouseDown(evt: MouseEvent) {
+    //     console.log("click");
+    //     this.store.displayNodeOnComponents(this.getPixelData(), this);
+    // }
 
-    }
+    // onDragStart(evt: DragEvent) {
+    //     console.log("dragend");
+    //     // evt.dataTransfer.setData("application/node", this);
+    // }
+
 
 
     //初始化缓冲区对象:顶点缓冲区、纹理缓冲区
@@ -215,7 +222,7 @@ export class Node {
     }
 
     //初始化fbo
-    protected initFrameBufferObject(gl:WebGLRenderingContext,texture:WebGLTexture){
+    protected initFrameBufferObject(gl: WebGLRenderingContext, texture: WebGLTexture) {
 
         // 创建FBO 帧缓冲区
         const framebuffer = gl.createFramebuffer();
@@ -229,13 +236,13 @@ export class Node {
         const depthBuffer = gl.createRenderbuffer(); // Create a renderbuffer object
         gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer); // Bind the object to target
         //根据size创建buffer
-        gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16, this.size,this.size);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.size, this.size);
         //将帧缓冲区绑定到渲染缓冲区上
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
 
-        gl.bindTexture(gl.TEXTURE_2D,texture);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
         //纹理对象作为帧缓冲区的颜色缓冲区对象
-        gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texture,0);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
         // 解除帧缓冲区绑定
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         //解除纹理
@@ -248,7 +255,7 @@ export class Node {
     }
 
     //resize canvas
-    protected setCanvas(width,height){
+    protected setCanvas(width, height) {
         this.canvas.width = width;
         this.canvas.height = height;
     }
@@ -258,7 +265,7 @@ export class Node {
         const gl = this.gl;
         const programInfo = this.programInfo;
         const buffers = this.buffers;
-        gl.viewport(0,0,this.size,this.size);
+        gl.viewport(0, 0, this.size, this.size);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         // gl.clearDepth(1.0);                 // Clear everything
         // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -287,13 +294,13 @@ export class Node {
                                     // 0 = use type and numComponents above
           const offset = 0;         // how many bytes inside the buffer to start from
 
-          gl.vertexAttribPointer(
-              programInfo.attribLocations.vertexPosition,
-              numComponents,
-              type,
-              normalize,
-              stride,
-              offset);
+            gl.vertexAttribPointer(
+                programInfo.attribLocations.vertexPosition,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
 
         }
 
@@ -321,58 +328,58 @@ export class Node {
         this.setInputsValue();
         
         {
-          const offset = 0;
-          const vertexCount = 4;
-          gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+            const offset = 0;
+            const vertexCount = 4;
+            gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
         }
-		//清除
-		gl.disableVertexAttribArray(programInfo.attribLocations.vertexPosition);
-		gl.disableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
+        //清除
+        gl.disableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+        gl.disableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
 
     }
 
 
 
-    public calPixelData():Uint8Array{
-		const gl = this.gl as WebGL2RenderingContext;
+    public calPixelData(): Uint8Array {
+        const gl = this.gl as WebGL2RenderingContext;
         const texture = this.targetTexture;
         //4代表rgba四个通道
-		const data = new Uint8Array(this.size * this.size * 4);
-		gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-		gl.framebufferTexture2D(
-			gl.FRAMEBUFFER,
-			gl.COLOR_ATTACHMENT0,
-			gl.TEXTURE_2D,
-			texture,
-			0
-		);
+        const data = new Uint8Array(this.size * this.size * 4);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+        gl.framebufferTexture2D(
+            gl.FRAMEBUFFER,
+            gl.COLOR_ATTACHMENT0,
+            gl.TEXTURE_2D,
+            texture,
+            0
+        );
 
-		if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE) {
+        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE) {
             //512*512*4
-			gl.readPixels(0, 0, this.size, this.size, gl.RGBA, gl.UNSIGNED_BYTE, data);
-		} else {
-			alert("getPixelData: unable to read from framebuffer");
-		}
-		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gl.readPixels(0, 0, this.size, this.size, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        } else {
+            alert("getPixelData: unable to read from framebuffer");
+        }
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         this.pixelData = data;
-		return data;
+        return data;
     }
 
 
-    public getTexture(){
+    public getTexture() {
         return this.texture;
     }
 
-    public getFrameBuffer(){
+    public getFrameBuffer() {
         return this.frameBuffer;
     }
 
-    public getTargetTexture(){
+    public getTargetTexture() {
         return this.targetTexture;
     }
 
-    public getPixelData(){
+    public getPixelData() {
         return this.pixelData;
     }
 
@@ -408,10 +415,10 @@ export class Node {
 			}
 		}
 
-		code += "\n";
+        code += "\n";
 
-		return code;
-	}
+        return code;
+    }
 
     //输入节点的GLSL声明   
     protected createCodeForInputs() {
@@ -473,9 +480,9 @@ export class Node {
         id: string,
         displayName: string,
         defaultVal: string[] = [],
-        defaultIndex:number = 0
+        defaultIndex: number = 0
     ): EnumProperty {
-        const prop = new EnumProperty(id, displayName, defaultVal,defaultIndex);
+        const prop = new EnumProperty(id, displayName, defaultVal, defaultIndex);
 
         this.properties.push(prop);
         return prop;
@@ -504,17 +511,17 @@ export class Node {
     }
 
     //获得prop地址保存到programInfo中
-    setPropsLocation(){
+    setPropsLocation() {
         const gl = this.gl;
         const shaderProgram = this.programInfo.program;
-        const obj  =this.programInfo.uniformLocations;
-		for (const prop of this.properties) {
+        const obj = this.programInfo.uniformLocations;
+        for (const prop of this.properties) {
             //获取属性地址      
             Object.defineProperty(obj,"prop"+prop.name,{
                 value:gl.getUniformLocation(shaderProgram, "prop" + prop.name),
                 writable:true
             });
-		}
+        }
     }
 
     //赋值prop
@@ -558,7 +565,7 @@ export class Node {
 				);
 			}
         }
-        
+
     }
     
     //获得输入节点的地址保存到ProgramInfo中

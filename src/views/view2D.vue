@@ -12,7 +12,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, defineExpose, computed } from 'vue';
 import { CanvasMonitor2D } from '@/lib/canvas2d';
-import { Editor } from '@/lib/editor';
 import { useMainStore } from '@/store';
 import { storeToRefs } from 'pinia';
 const electron = require("electron");

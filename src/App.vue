@@ -1,103 +1,91 @@
 <template>
-  <!-- golden layout test -->
-  <div class="full-height">
-    <div id="nav" style="height: 40px; border-style: dashed;">
-      Navigator: 作为工具栏，实现部分方法，如Redo/Undo等
-    </div>
-    <golden-layout
-      ref="GoldenLayoutRoot"
-      glc-path="./"
-      style="width: 100%; height: calc(100% - 40px)"
-    ></golden-layout>
-  </div>
-  <!-- golden layout test -->
+  <split-view class="pane-root" direction="horizontal" a-init="20%">
+    <template #A>
+      <split-view direction="vertical">
+          <template #A>
+            <view2D></view2D>
+          </template>
+          <template #B>
+            <view3D></view3D>
+          </template>
+      </split-view>
+    </template>
+
+    <template #B>
+      <split-view direction="horizontal" a-init="75%">
+        <template #A>
+          <div class="editor-pane">
+            <editorView ref="editor" :library="library"></editorView>
+          </div>
+        </template>
+        <template #B>
+          <split-view direction="vertical">
+            <template #A>
+              <propertyView :key="state.timer"></propertyView>
+            </template>
+
+            <template #B>
+              <libraryView class="library-pane" ref="libraryCanvas"></libraryView>
+            </template>
+          </split-view>
+        </template>
+      </split-view>
+    </template>
+  </split-view>
 </template>
 
 <script setup lang="ts">
-
-import { onMounted, ref } from "vue";
-
-/** vue-golden-layout test
-import GoldenLayout from "@/views/GoldenLayout.vue";
-import { predefinedLayout } from "./lib/layout/predefined-layout";
-
-const GoldenLayoutRoot = ref<null | HTMLElement>(null);
-
-onMounted(() => {
-  if (!GoldenLayoutRoot.value) return;
-  GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.defaultLayout);
-})
- */
-
-/** Golden-Layout methods
-const onClickInitLayoutMinRow = () => {
-  if (!GoldenLayoutRoot.value) return;
-  GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.miniRow);
-};
-
-const onClickAddGLComponent1 = () => {
-  if (!GoldenLayoutRoot.value) return;
-  GoldenLayoutRoot.value.addGLComponent("Content1", "Title 1st");
-};
-
-const onClickAddGLComponent2 = () => {
-  if (!GoldenLayoutRoot.value) return;
-  GoldenLayoutRoot.value.addGLComponent("Content2", "I'm wide");
-};
-
-const onClickAddGLComponent3 = () => {
-  if (!GoldenLayoutRoot.value) return;
-  GoldenLayoutRoot.value.addGLComponent("Content3", "I'm high");
-};
-
-const onClickSaveLayout = () => {
-  if (!GoldenLayoutRoot.value) return;
-  const config = GoldenLayoutRoot.value.getLayoutConfig();
-  localStorage.setItem("gl_config", JSON.stringify(config));
-};
-
-const onClickLoadLayout = () => {
-  const str = localStorage.getItem("gl_config");
-  if (!str) return;
-  if (!GoldenLayoutRoot.value) return;
-  const config = JSON.parse(str as string);
-  GoldenLayoutRoot.value.loadGLLayout(config);
-};
- */
-
-import GoldenLayout from "@/views/GoldenLayout.vue";
-import { predefinedLayout } from "./lib/layout/predefined-layout";
-/** former import */
-import { Editor } from "@/lib/editor"
+import SplitView from 'vue-split-view'
+// import all views of texture editor
+import view2D from './views/view2D.vue';
+import view3D from './views/view3D.vue';
+import propertyView from './views/propertyView.vue';
+import libraryView from './views/libraryView.vue';
+import editorView from './views/editorView.vue';
+import { computed, onMounted, ref } from "vue";
 import { MenuCommands, setupMenu } from "./menu";
 import { Project, ProjectManager } from "@/lib/project"
+import {watch} from "vue";
+import {useMainStore} from "@/store";
+import {reactive} from "vue";
 const { ipcRenderer } = require('electron')
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
 
-var project = new Project();
-const editor = ref<Editor | null>(null);
-const editorCanvas = ref<HTMLCanvasElement | null>(null);
-const GoldenLayoutRoot = ref<null | HTMLElement>(null);
+let project = new Project();
+const libraryCanvas = ref(null);
+let library = computed(() => { return libraryCanvas.value ? libraryCanvas.value.libraryMonitor : null; })
+// const editor = ref<Editor | null>(null);
+const editor = ref(null);
+const store=useMainStore();
+const state=reactive({
+  timer:0
+})
 
+watch(
+    // pointer函数，监听的是什么
+    () => store.property,
+    // change函数，监听值的变化
+    (newV, oldV) => {
+      console.log("检测到store变化")
+      state.timer=new Date().getTime();
+
+    },
+    {
+      immediate: true, // 立即执行
+      deep: true // 深度监听
+    }
+)
 onMounted(() => {
-  if (!GoldenLayoutRoot.value) return;
-  GoldenLayoutRoot.value.loadGLLayout(predefinedLayout.defaultLayout);
-
-  console.log(editorCanvas.value);
-  editor.value = new Editor(editorCanvas.value);//包含setCanvas setGraph
-
-
-  //2d.setEditor
-  //3d.setEditor
+  console.log(editor.value);
 
   newProject();
 
-  const draw = () => {
-    editor.value.draw();//通过editor逐层重绘
-    requestAnimationFrame(draw);
-  };
-  requestAnimationFrame(draw);
+  // const draw = () => {
+  //   // editor.value.draw();//通过editor逐层重绘
+  //   requestAnimationFrame(draw);
+  // };
+  // requestAnimationFrame(draw);
 })
 
 // 处理menu指令
@@ -173,41 +161,30 @@ function setWindowTitle(newTitle: string) {
 </script>
 
 <style>
-@import "golden-layout/dist/css/goldenlayout-base.css";
-@import "golden-layout/dist/css/themes/goldenlayout-dark-theme.css";
+@import './styles/layout-style.css';
 
 html {
-    height: 100%;
+  height: 100%;
 }
+
 body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
 }
-.full-height, #app {
-    height: 100%;
-}
+
+.full-height,
 #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  height: 100%;
 }
-#nav {
-    text-align: center;
-}
-/*
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 
-.flex-div {
-  display: flex;
-  width: auto;
+#nav {
+  text-align: center;
 }
-*/
 </style>
