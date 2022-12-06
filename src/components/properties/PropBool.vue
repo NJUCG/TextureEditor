@@ -12,6 +12,8 @@
 </template>
 
 <script setup lang="ts">
+import {useMainStore} from "@/store";
+
 let val=ref(false);
 import {defineProps, ref} from 'vue'
 const props=defineProps(
@@ -22,7 +24,8 @@ const props=defineProps(
 
 const toggleValue = () => {
         val.value=!val.value;
-        console.log("修改为"+val.value);
+        const store=useMainStore();
+        store.changeProperties(props.prop.name,val.value);
 }
 
 </script>

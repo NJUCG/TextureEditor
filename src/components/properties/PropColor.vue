@@ -14,6 +14,8 @@
 
 <script setup>
 import {defineProps, onMounted, ref} from "vue";
+import {Color} from "@/lib/designer/color";
+import {useMainStore} from "@/store";
 let value1=ref("#111111");
 const props=defineProps(
     {
@@ -25,8 +27,12 @@ onMounted(() => {
   value1.value=props.prop.value.toHex();
 })
 const changeValue=(evt)=>{
+
+  let color=Color.parse(value1.value.toLowerCase());
+  const store=useMainStore();
+  store.changeProperties(props.prop.name,color);
   console.log("颜色改变"+evt.toLowerCase());
-  console.log(props.prop.value.toHex());
+
 }
 </script>
 

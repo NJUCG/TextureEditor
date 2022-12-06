@@ -18,6 +18,7 @@
 <script setup lang="ts">
 
 import {defineProps, onMounted, ref} from 'vue'
+import {useMainStore} from "@/store";
 let enumIndex=ref(0);
 const props=defineProps(
     {
@@ -28,6 +29,8 @@ onMounted(() => {
   enumIndex.value=props.prop.index;
 })
 const updateValue=(evt)=> {
+    const store=useMainStore();
+    store.changeProperties(props.prop.name,evt.target.options.selectedIndex)
     console.log("修改index为"+evt.target.options.selectedIndex);
   }
 

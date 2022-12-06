@@ -29,7 +29,7 @@ import {
   Property,
   IPropertyHolder,
   PropertyGroup
-} from "@/lib/designer/properties";
+} from "@/lib/node/NodeProperty";
 import {Node} from "@/lib/node/Node";
 import { useMainStore } from '@/store/index';
 import {
