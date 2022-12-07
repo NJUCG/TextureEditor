@@ -5,6 +5,9 @@
       :prop="p.prop"
       :key="index"
   ></component>
+
+
+
 <!--  <button @click="addProperty">添加</button>-->
 <!--  <div>{{properties}}</div>-->
   <div>propertyView</div>
@@ -42,8 +45,10 @@ import {
   PropertyType,
 } from "@/lib/node/NodeProperty";
 import { storeToRefs } from 'pinia';
-import {computed} from "vue";
+import {computed, onMounted} from "vue";
 import {getCurrentInstance} from "vue";
+
+
 let store=useMainStore();
 // let properties=store.properties;
 
@@ -76,5 +81,6 @@ let prop: PropHolder[]=properties.value.map(prop =>{
   }
 })
 console.log(properties);
+
 
 </script>

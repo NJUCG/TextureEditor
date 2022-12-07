@@ -26,7 +26,12 @@ onMounted(() => {
 
 	canvas.value.addEventListener("drop", onDrop);
 	canvas.value.addEventListener("dragover", onDragOver);
-
+	canvas.value.addEventListener("click",function(e){
+		console.log("click happens!");
+	});
+	console.log("editor view on mount");
+	console.log(canvas.value);
+	
 	const draw = () => {
     	editor.draw();//通过editor逐层重绘
     	requestAnimationFrame(draw);
@@ -40,7 +45,7 @@ onBeforeUnmount(() => {
 })
 
 const onDrop = (evt: DragEvent) => {
-
+	console.log("editor view on drop");
 	evt.preventDefault();
 	console.log("onDrag");
 	console.log(library.value.generators);

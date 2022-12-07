@@ -14,6 +14,7 @@ import {
     PropertyType,
     PropertyGroup
 } from "./NodeProperty";
+import { exitCode } from 'process';
 export class Node {
     public name: string;
     public id: string;
@@ -24,7 +25,7 @@ export class Node {
     public gl: WebGLRenderingContext;
 
     //resolution
-    protected size: GLuint;
+    public size: GLuint;
     protected store;
     protected inputNode: Node;
     protected buffers: any;
@@ -47,16 +48,20 @@ export class Node {
         this.canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
         if (this.canvas == null) {
             this.canvas = <HTMLCanvasElement>document.createElement("canvas");
-            this.canvas.draggable = true;
+            // this.canvas.draggable = true;
         }
         const canvas = this.canvas;
+        canvas.className = "nodeCanvas";
+
         this.size = 512;
         this.setCanvas(this.size,this.size);
+        // this.resizeCanvasToDisplaySize(this.canvas,1);
 
         //获取上下文
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
-
+        //反置y轴
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
         //创建缓冲区
         const buffers = this.initBuffers(this.gl);
         this.buffers = buffers;
@@ -178,6 +183,7 @@ export class Node {
         return buffers;
     }
 
+    
     //初始化着色程序
     protected initShaderProgram(gl: WebGLRenderingContext,
         vsSource: string, fsSource: string): WebGLProgram {
@@ -260,11 +266,33 @@ export class Node {
         this.canvas.height = height;
     }
 
+    /**
+     * Resize a canvas to match the size its displayed.
+     * @param {HTMLCanvasElement} canvas The canvas to resize.
+     * @param {number} [multiplier] amount to multiply by.
+     *    Pass in window.devicePixelRatio for native pixels.
+     * @return {boolean} true if the canvas was resized.
+     * @memberOf module:webgl-utils
+     */
+    protected resizeCanvasToDisplaySize(canvas, multiplier) {
+        multiplier = multiplier || 1;
+        const width  = canvas.clientWidth  * multiplier | 0;
+        const height = canvas.clientHeight * multiplier | 0;
+        if (canvas.width !== width ||  canvas.height !== height) {
+          canvas.width  = width;
+          canvas.height = height;
+          return true;
+        }
+        return false;
+      }
+    
+
     //draw the result of this Node
     public drawScene(): void {
         const gl = this.gl;
         const programInfo = this.programInfo;
         const buffers = this.buffers;
+        
         gl.viewport(0, 0, this.size, this.size);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         // gl.clearDepth(1.0);                 // Clear everything
@@ -621,4 +649,89 @@ export class Node {
             texIndex ++;
 		}
     }
+}
+
+
+
+//结果绘画到画布上
+export function drawCanvas(node: Node) {
+	const gl = node.gl;
+	const tex = node.getTexture();
+	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	gl.bindTexture(gl.TEXTURE_2D, tex);
+	node.drawScene();
+	gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+//离屏渲染:结果保存为pixeldata
+export function drawFbo(node: Node) {
+	const gl = node.gl;
+	const tex = node.getTexture();
+	const fb = node.getFrameBuffer();
+	const targetTex = node.getTargetTexture();
+	//绘制到fbo中
+	gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+	gl.framebufferTexture2D(gl.FRAMEBUFFER,
+		gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTex, 0);
+	gl.bindTexture(gl.TEXTURE_2D, tex);
+	gl.viewport(0, 0, 512, 512);
+	node.drawScene();
+	node.calPixelData();
+	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+//copy canvas result from webgl canvas to 2d canvas
+export function copyFromCanvas(src: HTMLCanvasElement, dest: HTMLCanvasElement,size:GLuint) {
+
+	const context = dest.getContext("2d");
+    //设置目标像素
+	dest.width = size;
+	dest.height = size;
+
+	// console.log("copying from " + src.width + " to " + dest.width);
+	context.clearRect(0, 0, dest.width, dest.height);
+	// context.rotate(Math.PI);
+	// context.translate(-dest.width, -dest.height);
+	context.drawImage(src, 0, 0, dest.width, dest.height);
+}
+
+
+export function testCanvas(canvas: HTMLCanvasElement) {
+	const ctx = canvas.getContext("2d");
+	canvas.width = 300;
+	canvas.height = 300;
+	//draw a rectangle in canvas and rotate 90 degree
+	ctx.fillStyle = "green";
+	//旋转虚拟画布后再绘画
+	// ctx.translate(-canvas.width, -canvas.height);
+	// ctx.rotate(Math.PI/6);
+	ctx.translate(canvas.width, 0);
+	ctx.scale(-1, 1);
+	ctx.fillRect(20, 20, 150, 100);
+
+}
+
+//异步加载图片并渲染fbo
+export async function loadImage(node1) {
+	const gl = node1.gl;
+	const image = node1.image;
+	const tex = node1.texture;
+
+	const promise = new Promise((reslove) => {
+		//加载图片 绘制到缓冲区 drawFbo
+		node1.image.src = require("../../assets/1.jpg");
+		node1.image.onload = async function () {
+			//将加载的图片放到texture中
+			gl.bindTexture(gl.TEXTURE_2D, tex);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+			drawFbo(node1);
+			drawCanvas(node1);
+			reslove(1);
+		}
+
+	})
+	await promise;
+	console.log('loading finshed');
+
 }

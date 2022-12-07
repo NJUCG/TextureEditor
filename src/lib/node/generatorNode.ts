@@ -14,9 +14,7 @@ export class PatternNode extends Node{
 
         this.canvas = canvas;
         this.canvas.id = 'patternNode';
-
-        const gl =this.gl;
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+        
         if (!this.gl) {
             console.log('fail to get context');
         }
@@ -33,9 +31,12 @@ export class PatternNode extends Node{
         //     vTexCoord = aTexCoord;
         // }
         // `;
-        this.fragmentSource = `
+        this.fragmentSource = 
+        `
         precision mediump float;
-
+        `
+        +this.createCodeForProps()+
+        `
         uniform sampler2D uTexture;
 
         varying vec2 vTexCoord;
