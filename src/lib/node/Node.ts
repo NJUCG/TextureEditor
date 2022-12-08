@@ -46,15 +46,21 @@ export class Node {
     propertyGroups: PropertyGroup[] = [];
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
+      
         if (this.canvas == null) {
             this.canvas = <HTMLCanvasElement>document.createElement("canvas");
+            this.canvas.setAttribute("id", "mycanvas");
+            
             // this.canvas.draggable = true;
+            console.log("fail to get ");
+        }
+        else{
+            console.log("get it");
         }
         const canvas = this.canvas;
-        canvas.className = "nodeCanvas";
 
         this.size = 512;
-        this.setCanvas(this.size,this.size);
+        // this.setCanvas(this.size,this.size);
         // this.resizeCanvasToDisplaySize(this.canvas,1);
 
         //获取上下文
@@ -723,9 +729,11 @@ export async function loadImage(node1) {
 		node1.image.src = require("../../assets/1.jpg");
 		node1.image.onload = async function () {
 			//将加载的图片放到texture中
+            gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, tex);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-			drawFbo(node1);
+			// gl.uniform1i(node1.programInfo.uniformLocations.textureLocation, 0);
+            drawFbo(node1);
 			drawCanvas(node1);
 			reslove(1);
 		}

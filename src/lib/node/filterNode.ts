@@ -10,7 +10,6 @@ export  class InvertNode extends Node{
         this.setCanvas(512,512);
         this.type = LibraryItemType.Filters;
         this.canvas = canvas;
-        this.canvas.id='invertNode';
         this.addInput("Tex1");
         this.fragmentSource = `
         precision mediump float;
