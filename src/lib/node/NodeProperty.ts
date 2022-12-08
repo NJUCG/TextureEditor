@@ -7,7 +7,7 @@ export enum PropertyType {
     Enum = "enum",
     String = "string",
     // Gradient = "gradient",
-    // Image = "image"
+    Image = "image"
 }
 
 export class PropertyGroup {
@@ -293,6 +293,40 @@ export class ColorProperty extends Property {
 
     public copyValuesFrom(prop: ColorProperty) {
         this.setValue(prop.value);
+    }
+}
+
+export class ImageProperty extends Property {
+    value: string;
+    public constructor(
+        name: string,
+        displayName: string,
+        value = "",
+    ) {
+        super();
+        this.name = name;
+        this.displayName = displayName;
+        this.value = value;
+        this.type = PropertyType.Image;
+    }
+
+    public getValue(): any {
+        return this.value;
+    }
+
+    public setValue(val: any) {
+        // todo: validate
+        this.value = val;
+    }
+
+    public clone(): Property {
+        const prop = new ImageProperty(this.name, this.displayName, this.value);
+
+        return prop;
+    }
+
+    public copyValuesFrom(prop:ImageProperty) {
+        this.value = prop.value;
     }
 }
 
