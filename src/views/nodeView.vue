@@ -19,9 +19,11 @@ import {Connection} from '@/lib/node/connection';
 onMounted(() => {
     const canvas = document.getElementById("nodeCanvas");
     const ctx = canvas.getContext("2d");
-    if(document.getElementById("mycanvas")){
+    const nodeCanvas = document.getElementById("mycanvas");
+    if(nodeCanvas){
         console.log("mycanvas is exist");
     }
+
 
 
     console.log("color");
@@ -29,13 +31,13 @@ onMounted(() => {
     drawCanvas(colorA);
     copyFromCanvas(colorA.canvas,canvas,colorA.size);
     
-
-    console.log("pattern");
     const pattern = new PatternNode();
     loadImage(pattern);
+    
     setTimeout(() => {
         copyFromCanvas(pattern.canvas,canvas,pattern.size);
-    }, 1000);
+    }, 800);
+
     // ctx.fillStyle = "red";
     // ctx.fillRect(0, 0, 100, 100);
     
@@ -59,8 +61,8 @@ onMounted(() => {
     display: block
 }
 .hideCanvas{
-    width: 128px;
-    height: 128px;
+    width: 512px;
+    height: 512px;
     display: none;
     visibility: hidden;
 }

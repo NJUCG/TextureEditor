@@ -7,7 +7,7 @@ export  class InvertNode extends Node{
     constructor(){
         super();
         const canvas = this.canvas;
-        this.setCanvas(512,512);
+        // this.setCanvas(512,512);
         this.type = LibraryItemType.Filters;
         this.canvas = canvas;
         this.addInput("Tex1");
@@ -46,18 +46,18 @@ export  class InvertNode extends Node{
     }
 
     //将输入节点的结果绑定到当前节点的texture
-    public setInputNode(node1: PatternNode): void {
-        const data = node1.getPixelData();
-        const gl = this.gl;
-        const texture = this.texture;
+    // public setInputNode(node1: PatternNode): void {
+    //     const data = node1.getPixelData();
+    //     const gl = this.gl;
+    //     const texture = this.texture;
 
-        // gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-        gl.bindTexture(gl.TEXTURE_2D,texture);
-        //绑定输入节点的结果到texture
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
-             512 , 512, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-            data);
-    }
+    //     // gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    //     gl.bindTexture(gl.TEXTURE_2D,texture);
+    //     //绑定输入节点的结果到texture
+    //     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+    //          512 , 512, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+    //         data);
+    // }
 
 
 
@@ -69,7 +69,7 @@ export class BlendNode extends Node{
     constructor(){
         super();
         const canvas = this.canvas;
-        this.setCanvas(512,512);
+        // this.setCanvas(512,512);
         this.type = LibraryItemType.Filters;
         this.canvas = canvas;
         this.id='blendNode';
