@@ -54,6 +54,10 @@ export class LibraryMonitor {
 		this.connect = {};
 		this.atomicNodes = {};
 
+		//add color Node
+		const colorNode = new ColorNode();
+		colorNode.drawScene();
+		this.addNode("generators", "color", colorNode);
 		
 	}
 

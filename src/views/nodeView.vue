@@ -1,8 +1,7 @@
 <template>
     <div id="imageDiv">
-        <canvas class="nodeCanvas" id="nodeCanvas"></canvas>
+        <canvas class="hideCanvas" id="nodeCanvas"></canvas>
     </div>
-    <p>========================================================</p>
     <div>
         <canvas class="hideCanvas" id="mycanvas"></canvas>
     </div>

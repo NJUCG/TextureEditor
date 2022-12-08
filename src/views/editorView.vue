@@ -53,6 +53,8 @@ const onDrop = (evt: DragEvent) => {
 	if (type == "generators") {
 		const libNode = library.value.generators[name];
 		const newNode = Object.create(libNode.node);
+		console.log("??");
+		console.log(libNode);
 		console.log(newNode);
 		editor.addNode(newNode);
 		// let rect = canvas.value.getBoundingClientRect();

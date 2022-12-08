@@ -80,16 +80,10 @@ let prop: PropHolder[]=properties.value.map(prop =>{
     componentName:componentMap[prop.type+"View"]
   }
 })
-<<<<<<< HEAD
 // let prop: PropHolder[]=testProperty.map(prop =>{
 //   return {
 //     prop:prop,
 //     componentName:componentMap[prop.type+"View"]
 //   }
 // })
-=======
-console.log(properties);
-
-
->>>>>>> dev
 </script>
