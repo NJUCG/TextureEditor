@@ -9,7 +9,7 @@ export const useMainStore = defineStore('main', {
     state: () => {
         return {
             focusedNode: null,
-            colornode: new Node(),
+            colornode:null,
             property:[],
             // change:true
         }

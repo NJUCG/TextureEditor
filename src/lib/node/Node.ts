@@ -14,6 +14,7 @@ import {
     PropertyType,
     PropertyGroup
 } from "./NodeProperty";
+import { exitCode } from 'process';
 export class Node {
     public name: string;
     public id: string;
@@ -24,15 +25,15 @@ export class Node {
     public gl: WebGLRenderingContext;
 
     //resolution
-    protected size: GLuint;
+    public size: GLuint;
     protected store;
     protected inputNode: Node;
-    protected buffers: any;
-    protected programInfo: any;
+    public buffers: any;
+    public programInfo: any;
     //current node's result
     protected pixelData;
     //input texture
-    protected texture: WebGLTexture;
+    // protected texture: WebGLTexture;
     //用于离屏渲染
     protected frameBuffer: WebGLFramebuffer;
     //离屏渲染的结果存储到targetTexture里
@@ -43,35 +44,38 @@ export class Node {
     protected inputNames: string[] = [];//GLSL输入名称
     properties: Property[] = [];
     propertyGroups: PropertyGroup[] = [];
+
+    public texIndex:GLuint=0;//纹理序号
+    textures: WebGLTexture[] = [];//纹理序列
+
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
+      
         if (this.canvas == null) {
             this.canvas = <HTMLCanvasElement>document.createElement("canvas");
-            this.canvas.draggable = true;
+            this.canvas.setAttribute("id", "mycanvas");
+            
+            // this.canvas.draggable = true;
+            console.log("fail to get ");
+        }
+        else{
+            console.log("get it");
         }
         const canvas = this.canvas;
+        
         this.size = 512;
         this.setCanvas(this.size,this.size);
+        // this.resizeCanvasToDisplaySize(this.canvas,1);
 
         //获取上下文
         this.gl = this.canvas.getContext("webgl");
         const gl = this.gl;
-
+        //反置y轴
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
         //创建缓冲区
         const buffers = this.initBuffers(this.gl);
         this.buffers = buffers;
 
-        //创建纹理
-        const texture = gl.createTexture();
-        this.texture = texture;
-        //设置纹理相关参数
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-
-        // image.src = "../../assets/1.jpg";
         //创建保存节点渲染结果的目标纹理并设置相关参数
         const targetTexture = gl.createTexture();
         this.targetTexture = targetTexture;
@@ -94,7 +98,7 @@ export class Node {
         * 通过fbo将渲染结果保存到targetTexture中
         */
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTexture, 0);
-       
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         this.vertexSource = `
         attribute vec4 aVertexPosition;
@@ -143,6 +147,12 @@ export class Node {
 
         // Now create an array of positions for the square.
         //由两个三角形构造一个矩形
+        // const positions = [
+        //     1.0, 1.0,
+        //     -1.0, 1.0,
+        //     1.0, -1.0,
+        //     -1.0, -1.0,
+        // ];
         const positions = [
             1.0, 1.0,
             -1.0, 1.0,
@@ -178,6 +188,7 @@ export class Node {
         return buffers;
     }
 
+    
     //初始化着色程序
     protected initShaderProgram(gl: WebGLRenderingContext,
         vsSource: string, fsSource: string): WebGLProgram {
@@ -260,12 +271,35 @@ export class Node {
         this.canvas.height = height;
     }
 
+    /**
+     * Resize a canvas to match the size its displayed.
+     * @param {HTMLCanvasElement} canvas The canvas to resize.
+     * @param {number} [multiplier] amount to multiply by.
+     *    Pass in window.devicePixelRatio for native pixels.
+     * @return {boolean} true if the canvas was resized.
+     * @memberOf module:webgl-utils
+     */
+    protected resizeCanvasToDisplaySize(canvas, multiplier) {
+        multiplier = multiplier || 1;
+        const width  = canvas.clientWidth  * multiplier | 0;
+        const height = canvas.clientHeight * multiplier | 0;
+        if (canvas.width !== width ||  canvas.height !== height) {
+          canvas.width  = width;
+          canvas.height = height;
+          return true;
+        }
+        return false;
+      }
+    
+
     //draw the result of this Node
     public drawScene(): void {
         const gl = this.gl;
         const programInfo = this.programInfo;
         const buffers = this.buffers;
-        gl.viewport(0, 0, this.size, this.size);
+        const canvas = this.canvas;
+        console.log(canvas.width);
+        gl.viewport(0, 0, 512,512);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         // gl.clearDepth(1.0);                 // Clear everything
         // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -307,7 +341,7 @@ export class Node {
         {
             gl.enableVertexAttribArray(
                 programInfo.attribLocations.texCoordLocation);
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
             const numComponents = 2; 
             const type = gl.FLOAT;    
             const normalize = false;  
@@ -367,9 +401,9 @@ export class Node {
     }
 
 
-    public getTexture() {
-        return this.texture;
-    }
+    // public getTexture() {
+    //     return this.texture;
+    // }
 
     public getFrameBuffer() {
         return this.frameBuffer;
@@ -597,7 +631,7 @@ export class Node {
             //设置纹理参数
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
             //设置纹理图像
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
                 512 , 512, 0, gl.RGBA, gl.UNSIGNED_BYTE,
@@ -621,4 +655,104 @@ export class Node {
             texIndex ++;
 		}
     }
+}
+
+
+
+//结果绘画到画布上
+export function drawCanvas(node: Node) {
+	const gl = node.gl;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	node.drawScene();
+	// gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+//离屏渲染:结果保存为pixeldata
+export function drawFbo(node: Node) {
+	const gl = node.gl;
+	// const tex = node.getTexture();
+	const fb = node.getFrameBuffer();
+	const targetTex = node.getTargetTexture();
+	//绘制到fbo中
+	gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+	gl.framebufferTexture2D(gl.FRAMEBUFFER,
+		gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTex, 0);
+	// gl.bindTexture(gl.TEXTURE_2D, tex);
+	gl.viewport(0, 0, 512, 512);
+	node.drawScene();
+	node.calPixelData();
+	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+//copy canvas result from webgl canvas to 2d canvas
+export function copyFromCanvas(src: HTMLCanvasElement, dest: HTMLCanvasElement,size:GLuint) {
+
+	const context = dest.getContext("2d");
+    //设置目标像素
+	dest.width = size;
+	dest.height = size;
+
+	// console.log("copying from " + src.width + " to " + dest.width);
+	context.clearRect(0, 0, dest.width, dest.height);
+	// context.rotate(Math.PI);
+	// context.translate(-dest.width, -dest.height);
+	context.drawImage(src, 0, 0, dest.width, dest.height);
+}
+
+
+export function testCanvas(canvas: HTMLCanvasElement) {
+	const ctx = canvas.getContext("2d");
+	canvas.width = 300;
+	canvas.height = 300;
+	//draw a rectangle in canvas and rotate 90 degree
+	ctx.fillStyle = "green";
+	//旋转虚拟画布后再绘画
+	// ctx.translate(-canvas.width, -canvas.height);
+	// ctx.rotate(Math.PI/6);
+	ctx.translate(canvas.width, 0);
+	ctx.scale(-1, 1);
+	ctx.fillRect(20, 20, 150, 100);
+
+}
+
+//异步加载图片并渲染fbo
+export async function loadImage(node1) {
+	const gl = node1.gl;
+	const image = node1.image;
+    //创建新的纹理并加入node
+    var texIndex = node1.texIndex;
+    node1.texIndex++;
+	var tex = gl.createTexture();
+    node1.textures.push(tex);
+	const promise = new Promise((reslove) => {
+		//加载图片 绘制到缓冲区 drawFbo
+		node1.image.src = require("../../assets/leaves.jpg");
+        //set node1.image.src to https://webglfundamentals.org/webgl/resources/leaves.jpg
+        // node1.image.src = "https://webglfundamentals.org/webgl/resources/leaves.jpg";
+
+        node1.image.onload = async function () {
+			//将加载的图片放到texture中
+            const programInfo=node1.programInfo;
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+			gl.uniform1i(programInfo.uniformLocations.textureLocation, 0);
+            console.log(programInfo.uniformLocations.textureLocation);
+            // drawFbo(node1);
+            node1.drawScene();
+            //bind framebuffer to null
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			
+			reslove(1);
+		}
+
+	})
+	await promise;
+	console.log('loading finshed');
+
 }

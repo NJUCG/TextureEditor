@@ -43,8 +43,10 @@ import {
   ImageProperty
 } from "@/lib/node/NodeProperty";
 import { storeToRefs } from 'pinia';
-import {computed} from "vue";
+import {computed, onMounted} from "vue";
 import {getCurrentInstance} from "vue";
+
+
 let store=useMainStore();
 // let properties=store.properties;
 
@@ -78,10 +80,16 @@ let prop: PropHolder[]=properties.value.map(prop =>{
     componentName:componentMap[prop.type+"View"]
   }
 })
+<<<<<<< HEAD
 // let prop: PropHolder[]=testProperty.map(prop =>{
 //   return {
 //     prop:prop,
 //     componentName:componentMap[prop.type+"View"]
 //   }
 // })
+=======
+console.log(properties);
+
+
+>>>>>>> dev
 </script>

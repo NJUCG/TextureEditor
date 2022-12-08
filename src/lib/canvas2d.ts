@@ -1,5 +1,5 @@
 import { useMainStore } from '@/store/index';
-import { copyFromCanvas } from '@/lib/library';
+import { copyFromCanvas } from '@/lib/node/Node';
 class Vector2 {
 	x: number;
 	y: number;
