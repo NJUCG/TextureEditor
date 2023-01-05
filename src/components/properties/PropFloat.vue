@@ -36,6 +36,8 @@
 
 let val=ref(0);
 import {defineProps, onMounted, ref} from 'vue'
+import {useMainStore} from "@/store";
+const store=useMainStore();
 const props=defineProps(
     {
       prop:Object
@@ -54,12 +56,15 @@ const updateValue=(evt) => {
   } else {
     if (newValue <= props.prop.maxValue && newValue >= props.prop.minValue) {
       val.value = newValue;
+      store.changeProperties(props.prop.name,val.value);
       console.log("更新值为" + val.value)
     } else if (newValue > props.prop.maxValue) {
       val.value = props.prop.maxValue;
+      store.changeProperties(props.prop.name,val.value);
       console.log("更新值为" + val.value)
     } else {
       val.value = props.prop.minValue;
+      store.changeProperties(props.prop.name,val.value);
       console.log("更新值为" + val.value)
     }
   }
@@ -67,6 +72,7 @@ const updateValue=(evt) => {
 
 const updateRangeValue=(evt) =>{
   val.value = evt.target.value;
+  store.changeProperties(props.prop.name,val.value);
 }
 
 </script>

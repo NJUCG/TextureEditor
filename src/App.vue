@@ -1,4 +1,5 @@
 <template>
+  <nodeView></nodeView>
   <split-view class="pane-root" direction="horizontal" a-init="20%">
     <template #A>
       <split-view direction="vertical">
@@ -35,6 +36,9 @@
 </template>
 
 <script setup lang="ts">
+
+import nodeView from './views/nodeView.vue';
+
 import SplitView from 'vue-split-view'
 // import all views of texture editor
 import view2D from './views/view2D.vue';

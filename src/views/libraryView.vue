@@ -28,9 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, onBeforeMount } from 'vue';
 import { LibraryMonitor } from '@/lib/library';
 import { it } from 'node:test';
+import { getEventListeners } from 'node:events';
 const remote = require("@electron/remote");
 const { dialog } = remote;
 
@@ -50,6 +51,11 @@ const LibraryItemType = ["utils", "atomicnodes", "functionnodes", "generators", 
 
 const libraryMonitor = new LibraryMonitor();
 const library = [libraryMonitor.utils, libraryMonitor.atomicNodes, libraryMonitor.functionnodes, libraryMonitor.generators, libraryMonitor.filterNodes, libraryMonitor.view3D];
+
+onBeforeMount(() => {
+
+});
+
 
 onMounted(() => {
 	for (let i = 0; i < library.length; i++) {
@@ -75,12 +81,16 @@ onMounted(() => {
 				img.src = tmpCanvas.toDataURL("image/png");
 				// img.src = library[i][index].node.canvas.toDataURL("image/png");
 				img.addEventListener("dragstart", function (evt: DragEvent) {
+					console.log("drag start");
 					console.log(library[i][index].node.type + ',' + library[i][index].node.id);
 					evt.dataTransfer.setData("text/plain", library[i][index].node.type + ',' + library[i][index].node.id);
 				});
+				img.addEventListener("click",function(evt: MouseEvent){
+					console.log("click by add Event Listener");
+				});
+
 				li.appendChild(img);
 				// console.log(li.childNodes);
-
 				ul.appendChild(li);
 			}
 		}
