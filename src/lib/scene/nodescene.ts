@@ -29,6 +29,8 @@ export class NodeScene {
     // called every frame the mouse is over this object
     public mouseOver(evt: MouseOverEvent) { }
 
+    public setCenter(x: number, y: number){}
+
     roundRect(ctx: CanvasRenderingContext2D, x, y, w, h, r) {
 		if (w < 2 * r) r = w / 2;
 		if (h < 2 * r) r = h / 2;

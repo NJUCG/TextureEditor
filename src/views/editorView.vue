@@ -49,7 +49,7 @@ const onDrop = (evt: DragEvent) => {
 		const libNode = library.value.generators[name];
 		const newNode = Object.create(libNode.node);
 		console.log(newNode);
-		editor.addNode(newNode);
+		editor.addNode(newNode, evt.clientX, evt.clientY);
 		// let rect = canvas.value.getBoundingClientRect();
 		// let pos = [evt.clientX - rect.left, evt.clientY - rect.top];
 		// console.log(rect);
@@ -70,8 +70,8 @@ const onDragOver = (evt: DragEvent) => {
 </script>
 
 <style>
-#editor-canvas {
-	height: auto;
+/* #editor-canvas {
+	height: 100%;
 	width: 100%;
-}
+} */
 </style>

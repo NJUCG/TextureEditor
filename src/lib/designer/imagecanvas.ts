@@ -2,7 +2,7 @@ export class ImageCanvas {
 	canvas: HTMLCanvasElement;
 	context: CanvasRenderingContext2D;
 
-	constructor(width = 100, height = 100) {
+	constructor(width = 50, height = 50) {
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = width;
 		this.canvas.height = height;
