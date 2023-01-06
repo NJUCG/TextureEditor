@@ -16,26 +16,26 @@ import {BlendNode} from '@/lib/node/filterNode';
 import {Connection} from '@/lib/node/connection';
 
 onMounted(() => {
-    const canvas = document.getElementById("nodeCanvas");
-    const ctx = canvas.getContext("2d");
-    const nodeCanvas = document.getElementById("mycanvas");
-    if(nodeCanvas){
-        console.log("mycanvas is exist");
-    }
+    // const canvas = document.getElementById("nodeCanvas");
+    // const ctx = canvas.getContext("2d");
+    // const nodeCanvas = document.getElementById("mycanvas");
+    // if(nodeCanvas){
+    //     console.log("mycanvas is exist");
+    // }
 
 
 
-    console.log("color");
-    const colorA = new ColorNode();
-    drawCanvas(colorA);
-    copyFromCanvas(colorA.canvas,canvas,colorA.size);
+    // console.log("color");
+    // const colorA = new ColorNode();
+    // drawCanvas(colorA);
+    // copyFromCanvas(colorA.canvas,canvas,colorA.size);
     
-    const pattern = new PatternNode();
-    loadImage(pattern);
+    // const pattern = new PatternNode();
+    // loadImage(pattern);
     
-    setTimeout(() => {
-        copyFromCanvas(pattern.canvas,canvas,pattern.size);
-    }, 800);
+    // setTimeout(() => {
+    //     copyFromCanvas(pattern.canvas,canvas,pattern.size);
+    // }, 800);
 
     // ctx.fillStyle = "red";
     // ctx.fillRect(0, 0, 100, 100);
