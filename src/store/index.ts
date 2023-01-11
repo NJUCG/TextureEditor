@@ -22,8 +22,7 @@ export const useMainStore = defineStore('main', {
             // this.colornode = node;
             // this.property=node.properties;
             console.log("color node");
-            console.log(this.colornode);
-            // console.log(state.focusedNode);
+            console.log(node);
         },
         changeProperties(name:String,newValue:any){//供properties component调用用来修改property的值
             //遍历整个properties数组，找出需要修改的那一个property（通过name属性）

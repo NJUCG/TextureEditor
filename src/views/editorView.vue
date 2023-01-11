@@ -22,7 +22,12 @@ const { library } = toRefs(props);
 
 onMounted(() => {
 	
+	canvas.value.width = 1000;
+	canvas.value.height = 1000;
 	editor = new Editor(canvas.value);
+	
+	console.log(canvas.value.width);
+	console.log(document.getElementById('editor-canvas').clientWidth);
 
 	canvas.value.addEventListener("drop", onDrop);
 	canvas.value.addEventListener("dragover", onDragOver);
@@ -53,14 +58,7 @@ const onDrop = (evt: DragEvent) => {
 	if (type == "generators") {
 		const libNode = library.value.generators[name];
 		const newNode = Object.create(libNode.node);
-		console.log("??");
-		console.log(libNode);
-		console.log(newNode);
 		editor.addNode(newNode, evt.clientX, evt.clientY);
-		// let rect = canvas.value.getBoundingClientRect();
-		// let pos = [evt.clientX - rect.left, evt.clientY - rect.top];
-		// console.log(rect);
-		// console.log(pos);
 	}
 
 }

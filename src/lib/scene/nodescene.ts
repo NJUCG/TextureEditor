@@ -1,4 +1,5 @@
 import { Rect, Vector2 } from "../utils/utils";
+import { ImageCanvas } from "../designer/imagecanvas";
 
 export class NodeSceneState {
     hovered = false;//悬停
@@ -18,13 +19,14 @@ export class NodeScene {
     protected y: number = 0;
     protected width: number = 100;
     protected height: number = 100;
+    public nodecanvas: ImageCanvas;
 
     public draw(ctx: CanvasRenderingContext2D, nodeState: NodeSceneState) { }
 
     // STANDARD MOUSE EVENTS
-    public mouseDown(evt: MouseDownEvent) { }
-    public mouseMove(evt: MouseMoveEvent) { }
-    public mouseUp(evt: MouseUpEvent) { }
+    public mouseDown(evt: CustomEvent) { }
+    public mouseMove(evt: CustomEvent) { }
+    public mouseUp(evt: CustomEvent) { }
 
     // called every frame the mouse is over this object
     public mouseOver(evt: MouseOverEvent) { }

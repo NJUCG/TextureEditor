@@ -1,5 +1,6 @@
 import { useMainStore } from '@/store/index';
 import { copyFromCanvas } from '@/lib/node/Node';
+import { NodeScene } from "./scene/nodescene";
 class Vector2 {
 	x: number;
 	y: number;
@@ -48,29 +49,32 @@ export class CanvasMonitor2D {
 
 	}
 
-	public draw(focused): void {
+	public draw(focused:NodeScene): void {
 		const ctx = this.context;
 
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		ctx.fillStyle = "rgb(50,50,50)";
 		ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-		
+
 		if (focused) {
-			const dataImage = ctx.createImageData(512, 512);
-			if (dataImage.data.set) {
-				dataImage.data.set(focused);
-			}
+			ctx.clearRect(0, 0, this.myCanvas.width, this.myCanvas.height);
+			ctx.drawImage(focused.nodecanvas.canvas, 0, 0, this.myCanvas.width, this.myCanvas.height);
 
-			const canvas2: HTMLCanvasElement = document.createElement('canvas');
-			canvas2.width = 512;
-			canvas2.height = 512;
-			const cavans2Ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
-			cavans2Ctx.putImageData(dataImage, 0, 0);
+			// const dataImage = ctx.createImageData(512, 512);
+			// if (dataImage.data.set) {
+			// 	dataImage.data.set(focused);
+			// }
 
-			this.myCanvas = canvas2;
-			this.image.src = canvas2.toDataURL("image/png");
+			// const canvas2: HTMLCanvasElement = document.createElement('canvas');
+			// canvas2.width = 512;
+			// canvas2.height = 512;
+			// const cavans2Ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
+			// cavans2Ctx.putImageData(dataImage, 0, 0);
 
-			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
+			// this.myCanvas = canvas2;
+			// this.image.src = canvas2.toDataURL("image/png");
+
+			// ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
 
 		} else if (this.image) {
 			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
