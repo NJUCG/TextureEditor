@@ -17,6 +17,7 @@
     "core-js": "^3.8.3",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "pinia": "^2.0.23",
+    "three": "^0.148.0",
     "vue": "^3.2.13",
     "vue-split-view": "^1.0.0",
     "vuex": "^4.0.2"
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@types/three": "^0.148.0",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

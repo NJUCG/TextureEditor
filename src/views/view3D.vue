@@ -1,59 +1,63 @@
 <template>
-    <div style="height:100%">
-        3dView
-        <canvas id="_view3d" ref="myCanvas" style="display:block;"></canvas>
-    </div>
+	<div class="full-view">
+		<div>
+			<!-- setting button -->
+		</div>
+		<div class="flex-view">
+			<canvas ref="preview3d" style="display: block;"></canvas>
+		</div>
+	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { CanvasMonitor3D } from '@/lib/canvas3d';
-const myCanvas = ref<HTMLCanvasElement | null>(null);
-const canvasMonitor = ref<CanvasMonitor3D | null>(null);
+import { ref, onMounted } from "vue";
+import { View3D } from "@/lib/canvas3d";
+import { nextTick } from "process";
+
+const preview3d = ref<HTMLCanvasElement | null>(null);
+const showMenu = ref(false);
+const view3d = new View3D();
 
 onMounted(() => {
-    canvasMonitor.value = new CanvasMonitor3D(myCanvas.value);
-    //在类外加入鼠标事件监听器
-    myCanvas.value.addEventListener('mouseover', onMouseOver);
-    myCanvas.value.addEventListener('mouseleave', onMouseLeave);
-	myCanvas.value.addEventListener('mousemove', onMouseMove);
-	myCanvas.value.addEventListener('wheel', onWheel);
+	view3d.setCanvas(preview3d.value!);
+	window.addEventListener("resize", () => {
+		nextTick(resize);
+	});
+});
 
-    const img = new Image();
-    img.src = "https://pic2.zhimg.com/v2-3f3533b2e479e2a17cc96654024a8b41_r.jpg";
+function resize() {
+	fitCanvasToContainer(preview3d.value!, showMenu.value);
+	if (view3d)
+		view3d.resize(preview3d.value!.width, preview3d.value!.height);
+}
 
-    canvasMonitor.value.setImage(img);
-    const draw = () => {
-        canvasMonitor.value.draw();
-        requestAnimationFrame(draw);
-    };
-    requestAnimationFrame(draw);
-})
-
-onBeforeUnmount(() => {
-    myCanvas.value.removeEventListener('mouseover', onMouseOver);
-	myCanvas.value.removeEventListener('mouseleave', onMouseLeave);
-	myCanvas.value.removeEventListener('mousemove', onMouseMove);
-	myCanvas.value.removeEventListener('wheel', onWheel);
-})
-
-const onMouseMove = (event: MouseEvent) => {
-	// let rect = myCanvas.value.getBoundingClientRect();
-	// canvasMonitor.value.setMousePos(event.clientX - rect.left, event.clientY - rect.top);
-};
-
-const onMouseOver = (event: MouseEvent) => {
-	canvasMonitor.value.focus = true;
-};
-
-const onMouseLeave = (event: MouseEvent) => {
-	canvasMonitor.value.focus = false;
-};
-
-const onWheel = (event: WheelEvent) => {//原生事件未关闭
-    let factor = event.deltaY < 0 ? 1.1 : 0.9;
-    canvasMonitor.value.zoom(factor);
-    event.preventDefault();
-};
+// 动态调整Canvas大小: https://stackoverflow.com/questions/10214873/make-canvas-as-wide-and-as-high-as-parent
+function fitCanvasToContainer(canvas: HTMLCanvasElement, showMenu: boolean) {
+	// Make it visually fill the positioned parent
+	if (showMenu) 
+		canvas.style.width = "60%";
+	else 
+		canvas.style.width = "100%";
+	canvas.style.height = "100%";
+	// ...then set the internal size to match
+	canvas.width = canvas.clientWidth;
+	canvas.height = canvas.clientHeight;
+}
 
 </script>
+
+<style>
+
+.full-view {
+	display: relative;
+	height: 100%;
+	overflow: hidden;
+}
+
+.flex-view {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+}
+
+</style>
