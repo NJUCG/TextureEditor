@@ -43,6 +43,14 @@ export class GeneratorNodeScene extends NodeScene {
 		this.select = false;
 	}
 
+	mouseMove(evt: CustomEvent) {
+		console.log("mouseMove");
+		if (this.select) {
+			this.x += evt.detail.deltaX;
+			this.y += evt.detail.deltaY;
+		}
+	}
+
 	public draw(ctx: CanvasRenderingContext2D) {
 		// border
 		if (this.select) {

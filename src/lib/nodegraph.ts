@@ -58,6 +58,9 @@ export class NodeGraph {
 		canvas.addEventListener("mouseup", function (evt: MouseEvent) {
 			self.onMouseUp(evt);
 		});
+		canvas.addEventListener("mousemove", function (evt: MouseEvent) {
+			self.onMouseMove(evt);
+		});
 	}
 
 	public draw() {
@@ -65,6 +68,7 @@ export class NodeGraph {
 		//背景图添加网格
 		const width = this.canvas.width;
 		const height = this.canvas.height;
+		this.context.clearRect(0, 0, width, height);
 		this.grid(this.canvas.width, this.canvas.height, 10)
 
 		for (const item of this.nodes) {
@@ -128,11 +132,28 @@ export class NodeGraph {
 
 		const hitItem = this.hitItem;
 		if (hitItem != null) {
-			mouseUpEvent.detail.deltaX = mouseX-this.preMousePos.x;
-			mouseUpEvent.detail.deltaY = mouseY-this.preMousePos.y;
+			mouseUpEvent.detail.deltaX = mouseX - this.preMousePos.x;
+			mouseUpEvent.detail.deltaY = mouseY - this.preMousePos.y;
 			hitItem.mouseUp(mouseUpEvent);
 			this.hitItem = hitItem;
 			this.hitItem = null;
+		} else {//拖动画布
+		}
+	}
+
+	onMouseMove(evt: MouseEvent) {
+		const pos = this.getScenePos(evt);
+		const mouseX = pos.x;
+		const mouseY = pos.y;
+		let mouseUpEvent = new CustomEvent("mouseup", { "detail": { "deltaX": 0, "deltaY": 0 } });
+
+		const hitItem = this.hitItem;
+		if (hitItem != null) {
+			mouseUpEvent.detail.deltaX = mouseX - this.preMousePos.x;
+			mouseUpEvent.detail.deltaY = mouseY - this.preMousePos.y;
+			hitItem.mouseMove(mouseUpEvent);
+			this.preMousePos.x = mouseX;
+			this.preMousePos.y = mouseY;
 		} else {//拖动画布
 		}
 	}
