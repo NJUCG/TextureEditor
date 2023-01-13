@@ -3,6 +3,7 @@ import { Node } from "./node/Node";
 import { GeneratorNodeScene } from "./scene/generatornodescene";
 import { NodeSceneState, NodeScene } from "./scene/nodescene";
 import { useMainStore } from '@/store/index';
+import { SocketScene, SocketType } from "./scene/socketscene";
 
 export class Vector2 {
 	x: number;
@@ -81,8 +82,8 @@ export class NodeGraph {
 
 	}
 
-	public grid(width, height, interval) {
-		// this.context.lineWidth=1;
+	public grid(width:number, height:number, interval:number) {
+		this.context.lineWidth=1;
 		this.context.strokeStyle = "#333";
 		for (let y = 10; y < height; y = y + interval) {
 			this.context.beginPath();
@@ -105,7 +106,7 @@ export class NodeGraph {
 		const mouseY = pos.y;
 		let mouseDownEvent = new CustomEvent("mousedown", { "detail": { "x": pos.x, "y": pos.y } });
 
-		if (evt.button == 0) {// 判断connection
+		if (evt.button == 0) {// 判断鼠标按键
 			const rect = this.canvas.getBoundingClientRect();
 			this.preMousePos = new Vector2(evt.clientX - rect.left, evt.clientY - rect.top);
 			const hitItem = this.getHitItem(mouseX, mouseY);
@@ -116,7 +117,9 @@ export class NodeGraph {
 				this.hitItem = hitItem;
 
 				console.log(hitItem);
-				this.store.displayNodeOnComponents(hitItem);
+				if(hitItem instanceof SocketScene){
+					this.store.displayNodeOnComponents(hitItem.node);
+				}
 			} else {//选中connection
 
 			}
@@ -194,9 +197,10 @@ export class NodeGraph {
 		for (let index = this.nodes.length - 1; index >= 0; index--) {
 			const node = this.nodes[index];
 
-			// for (const sock of node.sockets) {
-			// 	if (sock.isPointInside(x, y)) return sock;
-			// }//判断connection
+			//判断接口
+			for (const sock of node.sockets) {
+				if (sock.isPointInside(x, y)) return sock;
+			}
 
 			if (node.isPointInside(x, y)) return node;
 		}

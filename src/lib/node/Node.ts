@@ -426,6 +426,10 @@ export class Node {
         this.inputNodes.push(node);
     }
 
+    public getInputNode(){
+        return this.inputNode;
+    }
+
     //属性构建GLSL声明
 	protected createCodeForProps() {
 		let code = "";

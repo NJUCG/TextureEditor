@@ -4,6 +4,7 @@ import { NodeGraph } from "./nodegraph";
 import { LibraryMonitor } from '@/lib/library';
 import { Node } from "./node/Node";
 import { GeneratorNodeScene } from "./scene/generatornodescene";
+import { SocketType } from "./scene/socketscene";
 
 export class Editor {
 
@@ -32,7 +33,10 @@ export class Editor {
     public addNode(node: Node, clientX:number, clientY:number) {
         //todo: 用得到的node给GeneratorNodeScene中的canvas赋值
         const nodeItem = new GeneratorNodeScene(node);
-        console.log(nodeItem);
+        for(const sock in node.getInputNode()){
+            nodeItem.addSockets(SocketType.In);
+        }
+        nodeItem.addSockets(SocketType.Out);
         this.graph.addNode(nodeItem);
         const rect = this.canvas.getBoundingClientRect();
 		const pos = [Math.max(0,clientX - rect.left), Math.max(0,clientY - rect.top)];

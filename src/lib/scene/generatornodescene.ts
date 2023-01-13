@@ -4,6 +4,7 @@ import { Vector2 } from "../utils/utils";
 import { Node } from "../node/Node";
 import { NodeScene, MouseDownEvent, MouseMoveEvent, MouseUpEvent } from "./nodescene"
 import { useMainStore } from '@/store/index';
+import { SocketScene, SocketType } from "./socketscene";
 
 export class GeneratorNodeScene extends NodeScene {
 	public id: string;
@@ -11,6 +12,7 @@ export class GeneratorNodeScene extends NodeScene {
 	thumbnail: HTMLImageElement;
 	protected store;
 	public select: boolean;
+	public sockets: SocketScene[];
 
 	constructor(node: Node) {
 		super();
@@ -20,6 +22,7 @@ export class GeneratorNodeScene extends NodeScene {
 		this.nodecanvas = new ImageCanvas();
 		this.nodecanvas.copyFromCanvas(node.canvas, true);
 		this.select = false;
+		this.sockets = [];
 
 		//綁定鼠标监听事件
 		const self = this;
@@ -39,6 +42,9 @@ export class GeneratorNodeScene extends NodeScene {
 		if (this.select) {
 			this.x += evt.detail.deltaX;
 			this.y += evt.detail.deltaY;
+			for (const sock of this.sockets) {
+				sock.move(evt.detail.deltaX, evt.detail.deltaY);
+			}
 		}
 		this.select = false;
 	}
@@ -48,6 +54,9 @@ export class GeneratorNodeScene extends NodeScene {
 		if (this.select) {
 			this.x += evt.detail.deltaX;
 			this.y += evt.detail.deltaY;
+			for (const sock of this.sockets) {
+				sock.move(evt.detail.deltaX, evt.detail.deltaY);
+			}
 		}
 	}
 
@@ -68,6 +77,7 @@ export class GeneratorNodeScene extends NodeScene {
 		ctx.rect(this.x, this.y, this.width, this.height);
 		ctx.fill();
 
+		//图像内容
 		ctx.drawImage(
 			this.nodecanvas.canvas,
 			this.x,
@@ -76,6 +86,11 @@ export class GeneratorNodeScene extends NodeScene {
 			this.height
 		);
 
+		//节点上的in/out接口
+		for (const sock of this.sockets) {
+			sock.draw(ctx);
+		}
+
 	}
 
 	public setThumbnail(thumbnail: HTMLImageElement) {
@@ -83,18 +98,54 @@ export class GeneratorNodeScene extends NodeScene {
 	}
 
 	public setCenter(x: number, y: number) {
+		//调整节点位置
 		this.x = Math.max(0, x - this.width / 2);
 		this.y = Math.max(0, y - this.height / 2);
+
+		//调整接口位置
+		this.setSocketCenter();
 	}
 
-	public isPointInside(px: number, py: number): boolean {
-		if (
-			px >= this.x &&
-			px <= this.x + this.width &&
-			py >= this.y &&
-			py <= this.y + this.height
-		)
-			return true;
-		return false;
+	public setSocketCenter() {
+		let socks = this.getSocketIn();
+
+		// top and bottom padding for sockets
+		const pad = socks.length < 5 ? 10 : 0;
+
+		// sort in sockets
+		let incr = (this.height - pad * 2) / socks.length;
+		let mid = incr / 2.0;
+		let i = 0;
+		for (const sock of socks) {
+			const y = pad + i * incr + mid;
+			const x = this.x;
+			sock.setCenter(x, this.y + y);
+			i++;
+		}
+
+		// sort out sockets
+		socks = this.getSocketOut();
+		incr = (this.height - pad * 2) / socks.length;
+		mid = incr / 2.0;
+		i = 0;
+		for (const sock of socks) {
+			const y = pad + i * incr + mid;
+			const x = this.x + this.width;
+			sock.setCenter(x, this.y + y);
+			i++;
+		}
+	}
+
+	public getSocketIn() {
+		return this.sockets.filter((sock) => sock.socketType == SocketType.In);
+	}
+
+	public getSocketOut() {
+		return this.sockets.filter((sock) => sock.socketType == SocketType.Out);
+	}
+
+	public addSockets(type: SocketType) {
+		const socket = new SocketScene(type, this);
+		this.sockets.push(socket);
 	}
 }

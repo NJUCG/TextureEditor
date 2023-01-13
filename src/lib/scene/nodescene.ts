@@ -33,7 +33,7 @@ export class NodeScene {
 
     public setCenter(x: number, y: number){}
 
-    roundRect(ctx: CanvasRenderingContext2D, x, y, w, h, r) {
+    roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
 		if (w < 2 * r) r = w / 2;
 		if (h < 2 * r) r = h / 2;
 		ctx.beginPath();
@@ -44,5 +44,16 @@ export class NodeScene {
 		ctx.arcTo(x, y, x + w, y, r);
 		ctx.closePath();
 		//ctx.stroke();
+	}
+
+    public isPointInside(px: number, py: number): boolean {
+		if (
+			px >= this.x &&
+			px <= this.x + this.width &&
+			py >= this.y &&
+			py <= this.y + this.height
+		)
+			return true;
+		return false;
 	}
 }
