@@ -15,13 +15,18 @@ import {
     PropertyGroup
 } from "./NodeProperty";
 import { exitCode } from 'process';
+import { WebGLMultipleRenderTargets } from 'three';
 export class Node {
     public name: string;
     public id: string;
     public type: LibraryItemType;
+    
     protected vertexSource: string;
     protected fragmentSource: string;
+
     public canvas: HTMLCanvasElement;
+    public libCanvas:HTMLCanvasElement;//library canva
+
     public gl: WebGLRenderingContext;
 
     //resolution
@@ -49,6 +54,7 @@ export class Node {
     textures: WebGLTexture[] = [];//纹理序列
 
     constructor() {
+        
         this.canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
       
         if (this.canvas == null) {
@@ -111,6 +117,9 @@ export class Node {
             vTexCoord = aTexCoord;
         }
         `;
+
+
+        
         //綁定鼠标监听事件
         // const self = this;
         // canvas.addEventListener("mousedown", function (evt: MouseEvent) {
@@ -291,13 +300,17 @@ export class Node {
         return false;
       }
     
+    public drawScene(){
+        this.drawCanvas(this.canvas,this.gl,this.programInfo,this.buffers);
+    }
+
 
     //draw the result of this Node
-    public drawScene(): void {
-        const gl = this.gl;
-        const programInfo = this.programInfo;
-        const buffers = this.buffers;
-        const canvas = this.canvas;
+    protected drawCanvas(canvas:HTMLCanvasElement,gl:WebGLRenderingContext,programInfo:any,buffers:any): void {
+        // const gl = this.gl;
+        // const programInfo = this.programInfo;
+        // const buffers = this.buffers;
+        // const canvas = this.canvas;
         console.log(canvas.width);
         gl.viewport(0, 0, 512,512);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
@@ -659,6 +672,104 @@ export class Node {
             texIndex ++;
 		}
     }
+
+    //draw libCanvas to show node picture in library
+    public initLibImage(){
+        
+        this.libCanvas = <HTMLCanvasElement>document.getElementById("libCanvas");
+        // this.libCanvas = <HTMLCanvasElement>document.createElement("canvas");
+        // this.libCanvas.setAttribute("id", "libCanvas");
+
+        const canvas = this.libCanvas;
+        const img = new Image();
+        
+        const ctx = canvas.getContext("2d");
+        canvas.width=128;
+        canvas.height=128;
+
+        img.onload=function(){
+            ctx.drawImage(img,0,0);
+            // console.log(img);
+            console.log(img.width);
+            console.log(canvas.width);
+            console.log("image load");
+        }
+        img.src=require("../../assets/leaves.jpg");
+        
+
+    }
+
+    
+    protected initLibCanvas(image:any,canvas:HTMLCanvasElement) {
+
+        console.log(image);
+        const gl = canvas.getContext("webgl");
+        if (!gl) {
+          return;
+        }
+        
+        // const vertexSource = `
+        // attribute vec4 aVertexPosition;
+        // attribute vec2 aTexCoord;
+
+        // varying vec2 vTexCoord;
+        
+        // void main(){
+        //     gl_Position=aVertexPosition;
+        //     vTexCoord = aTexCoord;
+        // }
+        // `;
+
+        const vertexSource = this.vertexSource;
+
+        const fragmentSource = `
+        precision mediump float;
+        uniform sampler2D uTexture;
+
+        varying vec2 vTexCoord;
+        
+        void main(){
+            gl_FragColor= texture2D(uTexture,vTexCoord);
+        }
+        `;
+
+        // setup GLSL program
+        var shaderProgram = this.initShaderProgram(gl,vertexSource,fragmentSource);
+
+        const programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+                vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+                texCoordLocation: gl.getAttribLocation(shaderProgram, "aTexCoord"),
+            },
+            uniformLocations: {
+                textureLocation:gl.getUniformLocation(shaderProgram, "uTexture"),
+            },  
+
+        }
+
+        // return a buffer Object containing of tex and pos Buffer
+        const buffers = this.initBuffers(gl);
+           
+        // Create a texture.
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+      
+        // Set the parameters so we can render any size image.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      
+        // Upload the image into the texture.
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    
+    
+        return {gl:gl,programInfo:programInfo,buffers:buffers};
+    }
+
+    
+
 }
 
 

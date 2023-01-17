@@ -1,10 +1,13 @@
 <template>
     <div id="imageDiv">
         <canvas class="hideCanvas" id="nodeCanvas"></canvas>
+        <!-- <canvas class="nodeCanvas" id="libCanvas"></canvas> -->
+        <!-- <img src="../assets/filter.png" id="filtersImg" class="hideImage"> -->
     </div>
     <div>
         <canvas class="hideCanvas" id="mycanvas"></canvas>
     </div>
+
     
 </template>
 
@@ -62,6 +65,12 @@ onMounted(() => {
 .hideCanvas{
     width: 512px;
     height: 512px;
+    display: none;
+    visibility: hidden;
+}
+.hideImage{
+    width: 128px;
+    height: 128px;
     display: none;
     visibility: hidden;
 }

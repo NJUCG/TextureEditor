@@ -32,6 +32,7 @@ import { ref, onMounted, onBeforeUnmount, onBeforeMount } from 'vue';
 import { LibraryMonitor } from '@/lib/library';
 import { it } from 'node:test';
 import { getEventListeners } from 'node:events';
+import { consumers } from 'node:stream';
 const remote = require("@electron/remote");
 const { dialog } = remote;
 
@@ -77,8 +78,18 @@ onMounted(() => {
 				const img = new Image();
 				const tmpCanvas = document.createElement("canvas")
 				const tmpCtx = tmpCanvas.getContext("2d");
-				tmpCtx.drawImage(library[i][index].node.canvas, 0, 0, 128, 128);
-				img.src = tmpCanvas.toDataURL("image/png");
+
+				if(library[i][index].type=="filters"){
+					img.src = require("../assets/filters.png");
+					img.height = 128;
+					img.width =128;
+					tmpCtx.drawImage(img,0,0,128,128);
+				}
+				else{
+					tmpCtx.drawImage(library[i][index].node.canvas, 0, 0, 128, 128);
+					img.src = tmpCanvas.toDataURL("image/png");
+				}
+
 				// img.src = library[i][index].node.canvas.toDataURL("image/png");
 				img.addEventListener("dragstart", function (evt: DragEvent) {
 					console.log("drag start");
