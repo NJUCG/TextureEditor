@@ -7,9 +7,9 @@ export  class InvertNode extends Node{
     constructor(){
         super();
         const canvas = this.canvas;
+        const gl = canvas.getContext("webgl");
         // this.setCanvas(512,512);
         this.type = LibraryItemType.Filters;
-        this.canvas = canvas;
         this.addInput("Tex1");
         this.fragmentSource = `
         precision mediump float;
@@ -28,13 +28,13 @@ export  class InvertNode extends Node{
         }
         `;
 
-        const shaderProgram = this.initShaderProgram(this.gl, this.vertexSource, this.fragmentSource);
+        const shaderProgram = this.initShaderProgram(gl, this.vertexSource, this.fragmentSource);
 
         const programInfo = {
             program: shaderProgram,
             attribLocations: {
-                vertexPosition: this.gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-                texCoordLocation: this.gl.getAttribLocation(shaderProgram, "aTexCoord"),
+                vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+                texCoordLocation: gl.getAttribLocation(shaderProgram, "aTexCoord"),
             },
             uniformLocations: {
             },
@@ -48,7 +48,7 @@ export  class InvertNode extends Node{
     //将输入节点的结果绑定到当前节点的texture
     // public setInputNode(node1: PatternNode): void {
     //     const data = node1.getPixelData();
-    //     const gl = this.gl;
+    //     const gl = gl;
     //     const texture = this.texture;
 
     //     // gl.bindFramebuffer(gl.FRAMEBUFFER,null);
@@ -69,6 +69,7 @@ export class BlendNode extends Node{
     constructor(){
         super();
         const canvas = this.canvas;
+        const gl = this.canvas.getContext("webgl");
         // this.setCanvas(512,512);
         this.type = LibraryItemType.Filters;
         this.canvas = canvas;
@@ -94,13 +95,13 @@ export class BlendNode extends Node{
         `
         ;
 
-        const shaderProgram = this.initShaderProgram(this.gl, this.vertexSource, this.fragmentSource);
+        const shaderProgram = this.initShaderProgram(gl, this.vertexSource, this.fragmentSource);
 
         const programInfo = {
             program: shaderProgram,
             attribLocations: {
-                vertexPosition: this.gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-                texCoordLocation: this.gl.getAttribLocation(shaderProgram, "aTexCoord"),
+                vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+                texCoordLocation: gl.getAttribLocation(shaderProgram, "aTexCoord"),
             },
             uniformLocations: {
             },

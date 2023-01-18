@@ -1,6 +1,6 @@
 <template>
     <div id="imageDiv">
-        <canvas class="hideCanvas" id="nodeCanvas"></canvas>
+        <!-- <canvas class="nodeCanvas" id="ownCanvas"></canvas> -->
         <!-- <canvas class="nodeCanvas" id="libCanvas"></canvas> -->
         <!-- <img src="../assets/filter.png" id="filtersImg" class="hideImage"> -->
     </div>

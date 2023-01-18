@@ -20,7 +20,7 @@ export class GeneratorNodeScene extends NodeScene {
 		this.height = 50;
 		this.id = node.id;
 		this.nodecanvas = new ImageCanvas();
-		this.nodecanvas.copyFromCanvas(node.canvas, true);
+		this.nodecanvas.copyFromCanvas(node.ownCanvas, true);
 		this.select = false;
 		this.sockets = [];
 

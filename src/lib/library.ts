@@ -56,11 +56,12 @@ export class LibraryMonitor {
 
 		//add color Node
 		const colorNode = new ColorNode();
-		colorNode.drawScene();
+		colorNode.initCanvas();
 		this.addNode("generators", "colorNode", colorNode);
 		
-		const filterNode = new BlendNode();
-		this.addNode("filters","filterNode",filterNode);
+		const blendNode = new BlendNode();
+		blendNode.initCanvas();
+		this.addNode("filters","blendNode",blendNode);
 
 	}
 

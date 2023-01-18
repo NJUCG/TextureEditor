@@ -12,12 +12,9 @@ export class PatternNode extends Node{
         
         this.type = LibraryItemType.Generators;        
 
-        this.canvas = canvas;
         this.id = 'patternNode';
 
-        if (!this.gl) {
-            console.log('fail to get context');
-        }
+        const gl = this.canvas.getContext("webgl");
         
 
         // this.vertexSource = `
@@ -48,16 +45,16 @@ export class PatternNode extends Node{
         }
         `;
 
-        const shaderProgram = this.initShaderProgram(this.gl, this.vertexSource, this.fragmentSource);
+        const shaderProgram = this.initShaderProgram(gl, this.vertexSource, this.fragmentSource);
 
         const programInfo = {
             program: shaderProgram,
             attribLocations: {
-                vertexPosition: this.gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-                texCoordLocation: this.gl.getAttribLocation(shaderProgram, "aTexCoord"),
+                vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+                texCoordLocation: gl.getAttribLocation(shaderProgram, "aTexCoord"),
             },
             uniformLocations: {
-                textureLocation:this.gl.getUniformLocation(shaderProgram, "uTexture"),
+                textureLocation:gl.getUniformLocation(shaderProgram, "uTexture"),
             },  
 
         }
@@ -74,16 +71,14 @@ export class ColorNode extends Node{
    
     constructor(){
         super();
-        
         //添加节点属性
         const color = new Color(Math.random(),Math.random(),Math.random(), 1);
         this.addColorProperty('001','color',color);
         console.log(color);
-        const canvas = this.canvas;
         this.id = 'colorNode';
 
         this.type = LibraryItemType.Generators;
-        const gl = this.gl;
+        const gl = this.canvas.getContext("webgl");
 
         // this.vertexSource = `
         // attribute vec4 aVertexPosition;
@@ -116,7 +111,7 @@ export class ColorNode extends Node{
             program: shaderProgram,
             attribLocations: {
                 vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-                texCoordLocation: this.gl.getAttribLocation(shaderProgram, "aTexCoord"),
+                texCoordLocation: gl.getAttribLocation(shaderProgram, "aTexCoord"),
             },
             uniformLocations: {
 
@@ -128,7 +123,7 @@ export class ColorNode extends Node{
     }
 
     // public drawScene(): void {
-    //     const gl = this.gl;
+    //     const gl = gl;
     //     const programInfo = this.programInfo;
     //     const buffers = this.buffers;
     //     const canvas = this.canvas;

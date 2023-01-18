@@ -53,10 +53,17 @@ const onDrop = (evt: DragEvent) => {
 	console.log("editor view on drop");
 	evt.preventDefault();
 	console.log("onDrag");
-	console.log(library.value.generators);
 	const [type, name] = evt.dataTransfer.getData('text/plain').split(',');
 	if (type == "generators") {
 		const libNode = library.value.generators[name];
+		console.log(name);
+		console.log(library.value.generators);
+		const newNode = Object.create(libNode.node);
+		editor.addNode(newNode, evt.clientX, evt.clientY);
+	}
+	else if (type == "filters"){
+
+		const libNode = library.value.filterNodes[name];
 		const newNode = Object.create(libNode.node);
 		editor.addNode(newNode, evt.clientX, evt.clientY);
 	}

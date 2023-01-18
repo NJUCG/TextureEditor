@@ -25,7 +25,7 @@ export class Node {
     protected fragmentSource: string;
 
     public canvas: HTMLCanvasElement;
-    public libCanvas:HTMLCanvasElement;//library canva
+    public ownCanvas:HTMLCanvasElement;//library canva
 
     public gl: WebGLRenderingContext;
 
@@ -56,7 +56,7 @@ export class Node {
     constructor() {
         
         this.canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
-      
+
         if (this.canvas == null) {
             this.canvas = <HTMLCanvasElement>document.createElement("canvas");
             this.canvas.setAttribute("id", "mycanvas");
@@ -67,7 +67,7 @@ export class Node {
         else{
             console.log("get it");
         }
-        const canvas = this.canvas;
+       
         
         this.size = 512;
         this.setCanvas(this.size,this.size);
@@ -673,34 +673,36 @@ export class Node {
 		}
     }
 
-    //draw libCanvas to show node picture in library
-    public initLibImage(){
+    //init owncanvas 
+    public initCanvas(){
         
-        this.libCanvas = <HTMLCanvasElement>document.getElementById("libCanvas");
-        // this.libCanvas = <HTMLCanvasElement>document.createElement("canvas");
-        // this.libCanvas.setAttribute("id", "libCanvas");
-
-        const canvas = this.libCanvas;
-        const img = new Image();
-        
-        const ctx = canvas.getContext("2d");
-        canvas.width=128;
-        canvas.height=128;
-
-        img.onload=function(){
-            ctx.drawImage(img,0,0);
-            // console.log(img);
-            console.log(img.width);
-            console.log(canvas.width);
-            console.log("image load");
+        this.ownCanvas = <HTMLCanvasElement>document.createElement("canvas");
+        // this.ownCanvas = <HTMLCanvasElement>document.getElementById("ownCanvas");
+        const canvas = this.ownCanvas;
+        const gl = canvas.getContext("2d");
+        // console.log(ctx);
+        if(this.type == "generators"){
+            this.drawScene();//draw on the common canvas
+            copyFromCanvas(this.canvas,this.ownCanvas,this.size);
+            // ctx.drawImage(this.canvas, 0, 0, this.size,this.size);
         }
-        img.src=require("../../assets/leaves.jpg");
+        else{
+            const ctx = canvas.getContext("2d");
+            canvas.width=this.size;
+            canvas.height=this.size;
+    
+            ctx.fillStyle="white";
+            ctx.fillRect(0,0,512,512);
+            console.log("filter init canvas");
+            console.log(canvas);
+           
+        }
         
-
+        
     }
 
-    
-    protected initLibCanvas(image:any,canvas:HTMLCanvasElement) {
+    //unused method
+    protected initownCanvas(image:any,canvas:HTMLCanvasElement) {
 
         console.log(image);
         const gl = canvas.getContext("webgl");
@@ -802,8 +804,11 @@ export function drawFbo(node: Node) {
 
 //copy canvas result from webgl canvas to 2d canvas
 export function copyFromCanvas(src: HTMLCanvasElement, dest: HTMLCanvasElement,size:GLuint) {
-
+    
 	const context = dest.getContext("2d");
+    console.log(dest);
+    console.log("copy from canvas context");
+    console.log(context);
     //设置目标像素
 	dest.width = size;
 	dest.height = size;
