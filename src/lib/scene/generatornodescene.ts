@@ -108,7 +108,6 @@ export class GeneratorNodeScene extends NodeScene {
 
 	public setSocketCenter() {
 		let socks = this.getSocketIn();
-
 		// top and bottom padding for sockets
 		const pad = socks.length < 5 ? 10 : 0;
 
@@ -144,8 +143,8 @@ export class GeneratorNodeScene extends NodeScene {
 		return this.sockets.filter((sock) => sock.socketType == SocketType.Out);
 	}
 
-	public addSockets(type: SocketType) {
-		const socket = new SocketScene(type, this);
+	public addSockets(type: SocketType, graph:NodeGraph) {
+		const socket = new SocketScene(type, this, graph);
 		this.sockets.push(socket);
 	}
 }

@@ -1,3 +1,4 @@
+import { NodeGraph } from "../nodegraph";
 import { ConnectionScene } from "./connectionscene";
 import { GeneratorNodeScene } from "./generatornodescene";
 import { NodeScene } from "./nodescene";
@@ -17,8 +18,9 @@ export class SocketScene extends NodeScene {
     public node: NodeScene;
     public movingX: number;
     public movingY: number;
+    public graph:NodeGraph;
 
-    constructor(type: SocketType, node: NodeScene) {
+    constructor(type: SocketType, node: NodeScene, graph:NodeGraph) {
         super();
         this.socketType = type;
         this.radius = 4;
@@ -30,22 +32,22 @@ export class SocketScene extends NodeScene {
         this.node = node;
         this.movingX = 0;
         this.movingY = 0;
+        this.graph = graph;
     }
 
     draw(ctx: CanvasRenderingContext2D) {
 
         ctx.lineWidth = 1;
-        //ctx.rect(this.x, this.y, this.width, this.height);
         ctx.beginPath();
         ctx.fillStyle = "rgb(150,150,150)";
         ctx.arc(this.centerX(), this.centerY(), this.radius, 0, 2 * Math.PI);
         ctx.fill();
-
         // border
         ctx.beginPath();
         ctx.arc(this.centerX(), this.centerY(), this.radius, 0, 2 * Math.PI);
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.stroke();
+
 
         if (this.select) this.drawActiveConnection(ctx);
     }
@@ -104,7 +106,28 @@ export class SocketScene extends NodeScene {
     }
 
     mouseUp(evt: CustomEvent) {
-        if (!this.connected) {//没连上
+        if (this.select) {
+            this.x += evt.detail.deltaX;
+            this.y += evt.detail.deltaY;
+            const closeSock = evt.detail.endLocation;
+
+            if (closeSock && this.connectValid(this, closeSock)) {//要判断整张图有没有连通图 之后再写
+                const con: ConnectionScene = new ConnectionScene();
+                if(this.socketType==SocketType.In){
+                    con.setSockets(this, closeSock);
+                }else{
+                    con.setSockets(closeSock, this);
+                }
+                this.graph.addConnections(con);
+            } else {
+                this.select = false;
+                return;
+            }
+        }
+
+        if (this.connected) {
+
+        } else {//没连上
             this.select = false;
         }
     }
@@ -122,9 +145,14 @@ export class SocketScene extends NodeScene {
         this.y = y - this.height / 2;
     }
 
-    public move(deltaX: number, deltaY: number) {
+    public move(deltaX: number, deltaY: number): void {
         this.x += deltaX;
         this.y += deltaY;
+    }
+
+    public connectValid(sockA: SocketScene, sockB: SocketScene): Boolean {
+        return sockA.socketType != sockB.socketType
+            && sockA.node != sockB.node;
     }
 
 }

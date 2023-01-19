@@ -34,9 +34,9 @@ export class Editor {
         //todo: 用得到的node给GeneratorNodeScene中的canvas赋值
         const nodeItem = new GeneratorNodeScene(node);
         for(const sock in node.getInputNode()){
-            nodeItem.addSockets(SocketType.In);
+            nodeItem.addSockets(SocketType.In, this.graph);
         }
-        nodeItem.addSockets(SocketType.Out);
+        nodeItem.addSockets(SocketType.Out, this.graph);
         this.graph.addNode(nodeItem);
         const rect = this.canvas.getBoundingClientRect();
 		const pos = [Math.max(0,clientX - rect.left), Math.max(0,clientY - rect.top)];

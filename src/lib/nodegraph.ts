@@ -4,6 +4,7 @@ import { GeneratorNodeScene } from "./scene/generatornodescene";
 import { NodeSceneState, NodeScene } from "./scene/nodescene";
 import { useMainStore } from '@/store/index';
 import { SocketScene, SocketType } from "./scene/socketscene";
+import { ConnectionScene } from "./scene/connectionscene";
 
 export class Vector2 {
 	x: number;
@@ -33,6 +34,7 @@ export class NodeGraph {
 	context: CanvasRenderingContext2D;
 	// displayNode:
 	nodes: Array<GeneratorNodeScene>;
+	connections:Array<ConnectionScene>;
 	public hitItem: NodeScene;
 	private store;
 	public preMousePos: Vector2;
@@ -40,6 +42,7 @@ export class NodeGraph {
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.nodes = [];
+		this.connections = [];
 		this.canvas = canvas;
 		this.context = this.canvas.getContext("2d");
 		this.store = useMainStore();
@@ -75,6 +78,10 @@ export class NodeGraph {
 		for (const item of this.nodes) {
 			item.draw(this.context);
 		}
+
+		for (const con of this.connections) {
+			con.draw(this.context);
+		}
 	}
 
 	public addNode(node: GeneratorNodeScene) {
@@ -82,8 +89,13 @@ export class NodeGraph {
 
 	}
 
-	public grid(width:number, height:number, interval:number) {
-		this.context.lineWidth=1;
+	public addConnections(con: ConnectionScene) {
+		this.connections.push(con);
+
+	}
+
+	public grid(width: number, height: number, interval: number) {
+		this.context.lineWidth = 1;
 		this.context.strokeStyle = "#333";
 		for (let y = 10; y < height; y = y + interval) {
 			this.context.beginPath();
@@ -112,16 +124,13 @@ export class NodeGraph {
 			const hitItem = this.getHitItem(mouseX, mouseY);
 
 			if (hitItem != null) {
-
 				hitItem.mouseDown(mouseDownEvent);
 				this.hitItem = hitItem;
-
-				console.log(hitItem);
-				if(hitItem instanceof SocketScene){
+				if (hitItem instanceof SocketScene) {
 					this.store.displayNodeOnComponents(hitItem.node);
 				}
 			} else {//选中connection
-
+				this.store.displayNodeOnComponents(null);
 			}
 
 		}
@@ -131,12 +140,13 @@ export class NodeGraph {
 		const pos = this.getScenePos(evt);
 		const mouseX = pos.x;
 		const mouseY = pos.y;
-		let mouseUpEvent = new CustomEvent("mouseup", { "detail": { "deltaX": 0, "deltaY": 0 } });
+		let mouseUpEvent = new CustomEvent("mouseup", { "detail": { "deltaX": 0, "deltaY": 0, endLocation: null } });
 
 		const hitItem = this.hitItem;
 		if (hitItem != null) {
 			mouseUpEvent.detail.deltaX = mouseX - this.preMousePos.x;
 			mouseUpEvent.detail.deltaY = mouseY - this.preMousePos.y;
+			mouseUpEvent.detail.endLocation = this.getHitSocket(mouseX, mouseY);
 			hitItem.mouseUp(mouseUpEvent);
 			this.hitItem = hitItem;
 			this.hitItem = null;
@@ -205,6 +215,17 @@ export class NodeGraph {
 			if (node.isPointInside(x, y)) return node;
 		}
 
+		return null;
+	}
+
+	getHitSocket(x: number, y: number): SocketScene {
+		for (const node of this.nodes) {
+			for (const sock of node.sockets) {
+				if (sock.isPointInside(x, y)) {
+					return sock;
+				}
+			}
+		}
 		return null;
 	}
 }

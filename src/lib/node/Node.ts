@@ -440,7 +440,7 @@ export class Node {
     }
 
     public getInputNode(){
-        return this.inputNode;
+        return this.inputNames;
     }
 
     //属性构建GLSL声明
