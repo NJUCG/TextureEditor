@@ -5,7 +5,6 @@
       :prop="p.prop"
       :key="index"
   ></component>
-  <button @click="addProperty">添加</button>
 <!--  <div>{{properties}}</div>-->
   <div>propertyView</div>
 

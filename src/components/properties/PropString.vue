@@ -27,6 +27,8 @@
 <script setup lang="ts">
 
 import {defineProps, onMounted, ref} from 'vue'
+import {useMainStore} from "@/store";
+const store=useMainStore();
 const props=defineProps(
     {
       prop:Object
@@ -34,6 +36,7 @@ const props=defineProps(
 );
 const updateValue=(evt)=>{
   console.log("修改值为"+evt.target.value);
+  store.changeProperties(props.prop.name,evt.target.value);
 }
 
 </script>

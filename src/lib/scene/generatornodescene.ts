@@ -13,6 +13,7 @@ export class GeneratorNodeScene extends NodeScene {
 	protected store;
 	public select: boolean;
 	public sockets: SocketScene[];
+	public node:Node;
 
 	constructor(node: Node) {
 		super();
@@ -23,6 +24,7 @@ export class GeneratorNodeScene extends NodeScene {
 		this.nodecanvas.copyFromCanvas(node.ownCanvas, true);
 		this.select = false;
 		this.sockets = [];
+		this.node=node;
 
 		//綁定鼠标监听事件
 		const self = this;

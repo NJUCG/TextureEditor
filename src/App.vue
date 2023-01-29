@@ -68,7 +68,7 @@ const state=reactive({
 
 watch(
     // pointer函数，监听的是什么
-    () => store.property,
+    () => store.change,
     // change函数，监听值的变化
     (newV, oldV) => {
       console.log("检测到store变化")
