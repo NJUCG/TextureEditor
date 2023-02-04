@@ -86,7 +86,7 @@ onMounted(() => {
 					tmpCtx.drawImage(img,0,0,128,128);
 				}
 				else{
-					tmpCtx.drawImage(library[i][index].node.canvas, 0, 0, 128, 128);
+					tmpCtx.drawImage(library[i][index].node.ownCanvas, 0, 0, 128, 128);
 					img.src = tmpCanvas.toDataURL("image/png");
 				}
 

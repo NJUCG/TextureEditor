@@ -122,84 +122,125 @@ export class ColorNode extends Node{
   
     }
 
-    // public drawScene(): void {
-    //     const gl = gl;
-    //     const programInfo = this.programInfo;
-    //     const buffers = this.buffers;
-    //     const canvas = this.canvas;
-    //     console.log(canvas.width);
-    //     gl.viewport(0, 0, 512,512);
-    //     gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-    //     // gl.clearDepth(1.0);                 // Clear everything
-    //     // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
-    //     // gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
-    //     // Clear the canvas before we start drawing on it.
+}
 
-    //     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    //     // Tell WebGL to use our program when drawing
-    //     gl.useProgram(programInfo.program);
+export class SimplexNoiseNode extends Node{
+    constructor(){
+        super();
+        //添加节点属性
+        this.addFloatProperty('Scale','Scale',100, 1, 1000, 0.01);
+        this.id="simplexNoiseNode";
 
-    //     //对属性赋值
-    //     this.setPropsValue();
+        this.type = LibraryItemType.Generators;
+        const gl = this.canvas.getContext("webgl");
 
+        // this.vertexSource = `
+        // attribute vec4 aVertexPosition;
+        // attribute vec2 aTexCoord;
         
-    //     //设置如何从位置缓冲区取数据到vertexPosition属性
-    //     {
-    //       gl.enableVertexAttribArray(
-    //           programInfo.attribLocations.vertexPosition);
-    //       gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-    //       const numComponents = 2;  // pull out numComponets values per iteration
-    //       const type = gl.FLOAT;    // the data in the buffer is 32bit floats
-    //       const normalize = false;  // don't normalize
-    //       const stride = 0;         // how many bytes to get from one set of values to the next
-    //                                 // 0 = use type and numComponents above
-    //       const offset = 0;         // how many bytes inside the buffer to start from
+        // void main(){
+        //     gl_Position=aVertexPosition;
 
-    //         gl.vertexAttribPointer(
-    //             programInfo.attribLocations.vertexPosition,
-    //             numComponents,
-    //             type,
-    //             normalize,
-    //             stride,
-    //             offset);
+        // }
+        // `;
 
-    //     }
+        this.fragmentSource =
 
-    //     {
-    //         gl.enableVertexAttribArray(
-    //             programInfo.attribLocations.texCoordLocation);
-    //         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
-    //         const numComponents = 2; 
-    //         const type = gl.FLOAT;    
-    //         const normalize = false;  
-    //         const stride = 0;         
-    //         const offset = 0;       
-  
-    //         gl.vertexAttribPointer(
-    //             programInfo.attribLocations.texCoordLocation,
-    //             numComponents,
-    //             type,
-    //             normalize,
-    //             stride,
-    //             offset);
-  
-    //     }
-    //     console.log(this.programInfo);
-
-    //     this.clearInputsTex();
-    //     this.setInputsValue();
+        `
+        precision mediump float;
+        `+
+        this.createCodeForProps()+
+        `
+        varying vec2 vTexCoord;
         
-    //     {
-    //         const offset = 0;
-    //         const vertexCount = 4;
-    //         gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-    //     }
-    //     //清除
-    //     gl.disableVertexAttribArray(programInfo.attribLocations.vertexPosition);
-    //     gl.disableVertexAttribArray(programInfo.attribLocations.texCoordLocation);
-    //     console.log("in color");
-    // }
+        //函数式声明
+        vec4 process(vec2 uv);
+
+        void main(){
+            gl_FragColor = process(vTexCoord);
+        }
+
+        //具体噪声函数
+
+        float random (in vec2 st) {
+            return fract(sin(dot(st.xy,
+                                 vec2(12.9898,78.233)))
+                         * 43758.5453123);
+        }
+        
+        float noise (in vec2 st) {
+            vec2 i = floor(st);
+            vec2 f = fract(st);
+        
+            // Four corners in 2D of a tile
+            float a = random(i);
+            float b = random(i + vec2(1.0, 0.0));
+            float c = random(i + vec2(0.0, 1.0));
+            float d = random(i + vec2(1.0, 1.0));
+        
+            // Smooth Interpolation
+        
+            // Cubic Hermine Curve.  Same as SmoothStep()
+            vec2 u = f*f*(3.0-2.0*f);
+            // u = smoothstep(0.,1.,f);
+        
+            // Mix 4 coorners porcentages
+            return mix(a, b, u.x) +
+                    (c - a)* u.y * (1.0 - u.x) +
+                    (d - b) * u.x * u.y;
+        }
+        
+        vec2 skew (vec2 st) {
+            vec2 r = vec2(0.0);
+            r.x = 1.1547*st.x;
+            r.y = st.y+0.5*r.x;
+            return r;
+        }
+        
+        vec3 simplexGrid (vec2 st) {
+            vec3 xyz = vec3(0.0);
+        
+            vec2 p = fract(skew(st));
+            if (p.x > p.y) {
+                xyz.xy = 1.0-vec2(p.x,p.y-p.x);
+                xyz.z = p.y;
+            } else {
+                xyz.yz = 1.0-vec2(p.x-p.y,p.y);
+                xyz.x = p.x;
+            }
+        
+            return fract(xyz);
+        }
+        
+        vec4 process(vec2 uv)
+        {
+            vec3 color = vec3(noise(uv * propScale));
+        
+            return vec4(color,1.0);
+        }
+        
+        `       
+        ;
+
+
+
+        const shaderProgram = this.initShaderProgram(gl, this.vertexSource, this.fragmentSource);
+
+        const programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+                vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+                texCoordLocation: gl.getAttribLocation(shaderProgram, "aTexCoord"),
+            },
+            uniformLocations: {
+
+            },
+        }
+        this.programInfo = programInfo;
+        this.setPropsLocation();
+  
+    }
 
 }

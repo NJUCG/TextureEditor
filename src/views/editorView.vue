@@ -8,6 +8,7 @@
 import { Editor } from "@/lib/editor";
 import { ref, onMounted, defineProps, toRefs, onBeforeUnmount } from 'vue';
 import { LibraryMonitor } from '@/lib/library';
+import { changeGlobalNodesTarget } from "element-plus/es/utils";
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 let editor:Editor = null;
@@ -57,7 +58,7 @@ const onDrop = (evt: DragEvent) => {
 	if (type == "generators") {
 		const libNode = library.value.generators[name];
 		console.log(name);
-		console.log(library.value.generators);
+		console.log(library.value.generators[name]);
 		const newNode = Object.create(libNode.node);
 		editor.addNode(newNode, evt.clientX, evt.clientY);
 	}

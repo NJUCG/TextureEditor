@@ -1,5 +1,5 @@
 import { resolveComponent, withCtx } from "vue";
-import { PatternNode,ColorNode } from "./node/generatorNode";
+import { PatternNode,ColorNode,SimplexNoiseNode } from "./node/generatorNode";
 import { InvertNode,BlendNode } from "./node/filterNode";
 import { Connection } from "./node/connection";
 import { Node } from "./node/Node";
@@ -62,6 +62,10 @@ export class LibraryMonitor {
 		const blendNode = new BlendNode();
 		blendNode.initCanvas();
 		this.addNode("filters","blendNode",blendNode);
+
+		const simplexNoiseNode =  new SimplexNoiseNode();
+		simplexNoiseNode.initCanvas();
+		this.addNode("generators","simplexNoiseNode",simplexNoiseNode);
 
 	}
 

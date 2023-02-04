@@ -2,7 +2,6 @@
     <div id="imageDiv">
         <!-- <canvas class="nodeCanvas" id="ownCanvas"></canvas> -->
         <!-- <canvas class="nodeCanvas" id="libCanvas"></canvas> -->
-        <!-- <img src="../assets/filter.png" id="filtersImg" class="hideImage"> -->
     </div>
     <div>
         <canvas class="hideCanvas" id="mycanvas"></canvas>
@@ -14,7 +13,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import {Node,copyFromCanvas,drawCanvas,drawFbo,loadImage} from '@/lib/node/Node';
-import {ColorNode,PatternNode} from '@/lib/node/generatorNode';
+import {ColorNode,PatternNode,SimplexNoiseNode} from '@/lib/node/generatorNode';
 import {BlendNode} from '@/lib/node/filterNode';
 import {Connection} from '@/lib/node/connection';
 
@@ -51,12 +50,15 @@ onMounted(() => {
     //     copyFromCanvas(blend.canvas,canvas,blend.size);
     // }, 2000);
 
+    // const noiseNode = new SimplexNoiseNode();
+    // noiseNode.initCanvas();
+
     
 })
 </script>
 
 <style>
-.nodeCanvas{
+.showCanvas{
     width: 256px;
     height: 256px;
     background: #ffffff;
