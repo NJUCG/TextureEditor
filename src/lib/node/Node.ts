@@ -302,6 +302,7 @@ export class Node {
     
     public drawScene(){
         this.drawCanvas(this.canvas,this.gl,this.programInfo,this.buffers);
+        copyFromCanvas(this.canvas,this.ownCanvas,this.size);
     }
 
 
@@ -682,8 +683,8 @@ export class Node {
         const gl = canvas.getContext("2d");
         // console.log(ctx);
         if(this.type == "generators"){
-            this.drawScene();//draw on the common canvas
-            copyFromCanvas(this.canvas,this.ownCanvas,this.size);
+            this.drawScene();//draw on the common canvas then copy to node's own canvas
+            
             // ctx.drawImage(this.canvas, 0, 0, this.size,this.size);
         }
         else{
