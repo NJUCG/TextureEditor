@@ -6,11 +6,13 @@ export class Connection {
     private inputNodes:Node [] = [];
     private currentNode:Node;
     private id:string;
-    constructor(id,inputNodes,currentNode){
+    constructor(id:string,inputNodes:Node [],currentNode:Node){
 		this.id = id;
 		this.inputNodes = inputNodes;
 		this.currentNode = currentNode;
 		for(const input of inputNodes){
+			//绘制到targetTexture
+			input.drawFbo();
 			currentNode.addInputNode(input);
 		}
 		// setTimeout(function(){

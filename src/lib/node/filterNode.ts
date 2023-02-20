@@ -89,8 +89,8 @@ export class BlendNode extends Node{
             vec4 foreground = texture2D(inputForeground,vTexCoord);
             vec4 background = texture2D(inputBackground,vTexCoord);
             vec4 result = mix(background,foreground,propOpacity);
-            gl_FragColor= result;
-            // gl_FragColor =background;
+           
+            gl_FragColor =result;
         }        
         `
         ;
@@ -111,6 +111,6 @@ export class BlendNode extends Node{
 
         this.setInputsLocation();
         this.setPropsLocation();
-        
+
     }
 }

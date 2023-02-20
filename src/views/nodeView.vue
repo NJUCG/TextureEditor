@@ -25,13 +25,15 @@ onMounted(() => {
     //     console.log("mycanvas is exist");
     // }
 
-
-
-    // console.log("color");
-    // const colorA = new ColorNode();
-    // drawCanvas(colorA);
-    // copyFromCanvas(colorA.canvas,canvas,colorA.size);
     
+    // const noiseNode = new SimplexNoiseNode();
+    // noiseNode.initCanvas();
+
+
+    // const colorA = new ColorNode();
+    // colorA.initCanvas();
+
+    // noiseNode.drawScene();
     // const pattern = new PatternNode();
     // loadImage(pattern);
     
@@ -43,17 +45,18 @@ onMounted(() => {
     // ctx.fillRect(0, 0, 100, 100);
     
     // const blend = new BlendNode();
-    // const connection = new Connection("con01",[colorA,pattern],blend);
+    // console.log(blend);
+    // blend.initCanvas();
+    // const connection = new Connection("con01",[colorA,noiseNode],blend);
+    
 
     // setTimeout(() => {
-    //     drawCanvas(blend);
-    //     copyFromCanvas(blend.canvas,canvas,blend.size);
+    //     blend.drawScene();
     // }, 2000);
 
-    // const noiseNode = new SimplexNoiseNode();
-    // noiseNode.initCanvas();
 
-    
+
+
 })
 </script>
 
