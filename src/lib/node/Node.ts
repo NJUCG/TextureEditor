@@ -132,17 +132,6 @@ export class Node {
         // this.store = useMainStore();
     }
 
-    // onMouseDown(evt: MouseEvent) {
-    //     console.log("click");
-    //     this.store.displayNodeOnComponents(this.getPixelData(), this);
-    // }
-
-    // onDragStart(evt: DragEvent) {
-    //     console.log("dragend");
-    //     // evt.dataTransfer.setData("application/node", this);
-    // }
-
-
 
     //初始化缓冲区对象:顶点缓冲区、纹理缓冲区
     protected initBuffers(gl: WebGLRenderingContext) {
@@ -300,19 +289,16 @@ export class Node {
         return false;
       }
     
+    //draw at own canvas by common canvas
     public drawScene(){
         this.drawCanvas(this.canvas,this.gl,this.programInfo,this.buffers);
         copyFromCanvas(this.canvas,this.ownCanvas,this.size);
     }
 
 
-    //draw the result of this Node
+    //draw the result of this Node at common canvas
     protected drawCanvas(canvas:HTMLCanvasElement,gl:WebGLRenderingContext,programInfo:any,buffers:any): void {
-        // const gl = this.gl;
-        // const programInfo = this.programInfo;
-        // const buffers = this.buffers;
-        // const canvas = this.canvas;
-        console.log(canvas.width);
+
         gl.viewport(0, 0, 512,512);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         // gl.clearDepth(1.0);                 // Clear everything
@@ -386,7 +372,23 @@ export class Node {
 
     }
 
-
+    //draw to targetTexture
+    public drawFbo(){
+        const gl = this.gl;
+        // const tex = node.getTexture();
+        const fb = this.frameBuffer;
+        const targetTex = this.targetTexture;
+        //绘制到fbo中
+        gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER,
+            gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, targetTex, 0);
+        // gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.viewport(0, 0, 512, 512);
+        this.drawCanvas(this.canvas,this.gl,this.programInfo,this.buffers);
+ 
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
 
     public calPixelData(): Uint8Array {
         const gl = this.gl as WebGL2RenderingContext;
@@ -643,23 +645,25 @@ export class Node {
         const locations = this.programInfo.uniformLocations;
         for (const input of this.inputNodes) {
             var name = this.inputNames[texIndex];
-            var texture = gl.createTexture();
+            // var texture = gl.createTexture();
 			gl.activeTexture(gl.TEXTURE0 + texIndex);
-			gl.bindTexture(gl.TEXTURE_2D, texture);
-            //设置纹理参数
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            //设置纹理图像
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
-                512 , 512, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-               input.pixelData);
+			gl.bindTexture(gl.TEXTURE_2D, input.targetTexture);
+            // //设置纹理参数
+            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            // // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            // //设置纹理图像
+            // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+            //     512 , 512, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+            //    input.pixelData);
 			gl.uniform1i(
 				locations["input"+name],
 				texIndex
 			);
 			texIndex++;
-		}
+        }
+        console.log(locations);
+
     }
     //清空输入节点纹理
     clearInputsTex(){
