@@ -13,7 +13,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import {Node,copyFromCanvas,drawCanvas,drawFbo,loadImage} from '@/lib/node/Node';
-import {ColorNode,PatternNode,SimplexNoiseNode} from '@/lib/node/generatorNode';
+import {ColorNode,PatternNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, ShapeNode, GradientNode} from '@/lib/node/generatorNode';
 import {BlendNode} from '@/lib/node/filterNode';
 import {Connection} from '@/lib/node/connection';
 
@@ -53,6 +53,17 @@ onMounted(() => {
     // const noiseNode = new SimplexNoiseNode();
     // noiseNode.initCanvas();
 
+    // const noiseNode = new WorleyNoiseNode();
+    // noiseNode.initCanvas();
+
+    // const brickNode = new BrickNode();
+    // brickNode.initCanvas();
+
+    // const shapeNode = new ShapeNode();
+    // shapeNode.initCanvas();
+
+    // const gradient = new GradientNode();
+    // gradient.initCanvas();
     
 })
 </script>
