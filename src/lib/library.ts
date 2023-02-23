@@ -1,5 +1,5 @@
 import { resolveComponent, withCtx } from "vue";
-import { PatternNode,ColorNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, ShapeNode, GradientNode} from "./node/generatorNode";
+import { PatternNode,ColorNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from "./node/generatorNode";
 import { InvertNode,BlendNode } from "./node/filterNode";
 import { Connection } from "./node/connection";
 import { Node } from "./node/Node";
@@ -75,13 +75,17 @@ export class LibraryMonitor {
 		brickNode.initCanvas();
 		this.addNode("generators","brickNode",brickNode);
 
-		const shapeNode = new ShapeNode();
-		shapeNode.initCanvas();
-		this.addNode("generators","shapeNode",shapeNode);
+		const polygonNode = new PolygonNode();
+		polygonNode.initCanvas();
+		this.addNode("generators","polygonNode",polygonNode);
 
-		const gradient = new GradientNode();
-		gradient.initCanvas();
-		this.addNode("generators","gradient",gradient);
+		const gradientNode = new GradientNode();
+		gradientNode.initCanvas();
+		this.addNode("generators","gradientNode",gradientNode);
+
+		const cellNode = new CellNode();
+		cellNode.initCanvas();
+		this.addNode("generators","cellNode",cellNode);
 
 	}
 

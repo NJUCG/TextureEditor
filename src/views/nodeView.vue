@@ -13,7 +13,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import {Node,copyFromCanvas,drawCanvas,drawFbo,loadImage} from '@/lib/node/Node';
-import {ColorNode,PatternNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, ShapeNode, GradientNode} from '@/lib/node/generatorNode';
+import {ColorNode,PatternNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from '@/lib/node/generatorNode';
 import {BlendNode} from '@/lib/node/filterNode';
 import {Connection} from '@/lib/node/connection';
 
@@ -61,13 +61,15 @@ onMounted(() => {
     // const brickNode = new BrickNode();
     // brickNode.initCanvas();
 
-    // const shapeNode = new ShapeNode();
-    // shapeNode.initCanvas();
+    // const polygonNode = new PolygonNode();
+    // polygonNode.initCanvas();
 
     // const gradient = new GradientNode();
     // gradient.initCanvas();
-    
 
+    // const cellNode = new CellNode();
+    // cellNode.initCanvas();
+    
 
 })
 </script>
