@@ -1,6 +1,7 @@
 import { Node } from "./Node"
 import { PatternNode} from "./generatorNode";
 import { LibraryItemType } from "../library";
+
 export  class InvertNode extends Node{
     private InputNode:any;
 
@@ -10,6 +11,7 @@ export  class InvertNode extends Node{
         const gl = canvas.getContext("webgl");
         // this.setCanvas(512,512);
         this.type = LibraryItemType.Filters;
+        this.id="invertNode";
         this.addInput("Tex1");
         this.fragmentSource = `
         precision mediump float;
@@ -165,4 +167,109 @@ export class BlendNode extends Node{
         this.setPropsLocation();
 
     }
+
+
+
+}
+
+
+export  class BlurNode extends Node{
+    private InputNode:any;
+
+    constructor(){
+        super();
+        const canvas = this.canvas;
+        const gl = canvas.getContext("webgl");
+        // this.setCanvas(512,512);
+        this.type = LibraryItemType.Filters;
+        this.id="blurNode";
+        this.addInput("Tex1");
+        this.addGlobalObject("TexSize", [this.size,this.size]);
+        console.log("blur constructor");
+        console.log(this.size);
+		this.addFloatProperty("Intensity", "Intensity", 1, 0, 10, 0.1);
+		this.addIntProperty("Samples", "Samples", 50, 0, 100, 1);
+        this.fragmentSource = `
+        precision mediump float;
+
+        #define pow2(x) (x * x)
+
+        const float pi = atan(1.0) * 4.0;
+        `+
+        this.createCodeForProps()+
+        this.createCodeForInputs()+
+        this.createCodeForGlobals()+
+        `
+        // uniform sampler2D u_texture;
+
+        varying vec2 vTexCoord;
+
+        float gaussian(vec2 i, float sigma) {
+            return 1.0 / (2.0 * pi * pow2(sigma)) * exp(-((pow2(i.x) + pow2(i.y)) / (2.0 * pow2(sigma))));
+        }
+
+        vec3 blur(sampler2D sp, vec2 uv, vec2 scale) {
+            vec3 col = vec3(0.0);
+            float accum = 0.0;
+            float weight;
+            vec2 offset;
+
+            float sigma = float(propSamples) * 0.25;
+            
+            for (int x=0; x < 100 / 2; ++x) {
+                for (int y =0; y < 100 / 2; ++y) {
+                    offset = vec2(x, y);
+                    weight = gaussian(offset, sigma);
+                    col += texture2D(sp, uv + scale * offset).rgb * weight;
+                    accum += weight;
+                }
+            }
+            
+            return col / accum;
+        }
+
+        vec4 process(vec2 uv)
+        {
+            // if (!image_connected)
+            //     return vec4(0,0,0,1.0);
+
+            vec4 color = vec4(0.0);
+            vec2 ps = vec2(1.0, 1.0) / globalTexSize;
+            color.rgb = blur(inputTex1, uv, ps * propIntensity);
+            color.a = 1.0;
+
+            return color;
+        }
+
+        void main(){
+            gl_FragColor= process(vTexCoord);
+            // gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+        }
+
+        `;
+
+        const shaderProgram = this.initShaderProgram(gl, this.vertexSource, this.fragmentSource);
+
+        const programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+                vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+                texCoordLocation: gl.getAttribLocation(shaderProgram, "aTexCoord"),
+            },
+            uniformLocations: {
+                texSizeLocation:gl.getUniformLocation(shaderProgram, "globalTexSize"),
+            },
+
+        }
+        this.programInfo = programInfo;
+
+        this.setInputsLocation();
+        this.setPropsLocation();
+        this.setGlobalLocation();
+
+    }
+
+
+
+
 }

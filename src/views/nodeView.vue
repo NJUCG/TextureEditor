@@ -14,7 +14,7 @@
 import { onMounted } from 'vue';
 import {Node,copyFromCanvas,drawCanvas,drawFbo,loadImage} from '@/lib/node/Node';
 import {ColorNode,PatternNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from '@/lib/node/generatorNode';
-import {BlendNode} from '@/lib/node/filterNode';
+import {BlendNode,InvertNode,BlurNode} from '@/lib/node/filterNode';
 import {Connection} from '@/lib/node/connection';
 
 onMounted(() => {
@@ -69,7 +69,17 @@ onMounted(() => {
 
     // const cellNode = new CellNode();
     // cellNode.initCanvas();
+
+    // const blurNode =new BlurNode();
+    // blurNode.initCanvas();
     
+    // const invertNode = new InvertNode();
+    // invertNode.initCanvas();
+    // brickNode.drawScene();
+    // const connection = new Connection("con01",[brickNode],invertNode);
+    // setTimeout(() => {
+    //    invertNode.drawScene();
+    // }, 2000);
 
 })
 </script>

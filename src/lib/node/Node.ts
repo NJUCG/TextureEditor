@@ -16,6 +16,22 @@ import {
 } from "./NodeProperty";
 import { exitCode } from 'process';
 import { WebGLMultipleRenderTargets } from 'three';
+
+export class GlobalObject{
+    // public type:GlobalObjectType;
+    public name:string;
+    public value:Array<any>;
+    public size:Number;
+    constructor(name:string,value:Array<any>){
+        // this.type=type;
+        this.name=name;
+        this.size = value.length;
+        this.value=value;
+    }
+
+    
+
+}
 export class Node {
     public name: string;
     public id: string;
@@ -47,6 +63,8 @@ export class Node {
 
     protected inputNodes: Node[] = [];//输入节点
     protected inputNames: string[] = [];//GLSL输入名称
+    protected globalObjectArrays:GlobalObject[]=[];
+
     properties: Property[] = [];
     propertyGroups: PropertyGroup[] = [];
 
@@ -314,7 +332,8 @@ export class Node {
 
         //对属性赋值
         this.setPropsValue();
-
+        //对全局属性赋值
+        this.setGLobalValue();
         
         //设置如何从位置缓冲区取数据到vertexPosition属性
         {
@@ -433,6 +452,11 @@ export class Node {
         return this.pixelData;
     }
 
+    protected addGlobalObject(name:string,value:Array<any>){
+        const obj = new GlobalObject(name,value);
+        this.globalObjectArrays.push(obj);
+    }
+
     protected addInput(name: string) {
 		this.inputNames.push(name);
 	}
@@ -481,9 +505,20 @@ export class Node {
 		for (const name of this.inputNames) {
 			code += "uniform sampler2D input" + name + ";\n";
 		}
-
+        code += "\n";
 		return code;
 	}
+
+
+    protected createCodeForGlobals(){
+        let code = "";
+        for(const global of this.globalObjectArrays){
+
+            code += "uniform vec"+ String(global.size) +" global"+ global.name + ";\n";
+        }
+        code += "\n";
+        return code;
+    }
 
     addIntProperty(
         id: string,
@@ -622,6 +657,42 @@ export class Node {
 
     }
     
+    //Global变量 并非prop属性和输入节点input的第三类uniform对象
+    setGlobalLocation(){
+        const gl = this.gl;
+        const shaderProgram = this.programInfo.program;
+        const obj  =this.programInfo.uniformLocations;
+        for (const global of this.globalObjectArrays) {
+            const name = global.name;
+            Object.defineProperty(obj,"global"+name,{
+                value:gl.getUniformLocation(shaderProgram, "global"+name),
+                writable:true
+            });
+		}
+
+
+    
+    }
+    setGLobalValue(){
+        const gl =this.gl;
+        const locations = this.programInfo.uniformLocations;
+        for(const global of this.globalObjectArrays){
+            const name = global.name;
+            if(global.size==1){
+                gl.uniform1fv(locations["global"+name],global.value[0]);
+            }
+            if(global.size==2){
+                gl.uniform2f(locations["global"+name],global.value[0],global.value[1]);
+                console.log(global.value[0],global.value[1]);
+                console.log("in set Global Value");
+            }
+            if(global.size==3){
+                gl.uniform3f(locations["global"+name],global.value[0],global.value[1],global.value[2]);
+            }
+        }
+
+    }
+
     //获得输入节点的地址保存到ProgramInfo中
     setInputsLocation(){
         const gl = this.gl;
@@ -634,10 +705,12 @@ export class Node {
                 writable:true
             });
 		}
+        const locations = this.programInfo.uniformLocations;
 
 
     
     }
+    
     //将输入节点的纹理赋值给GLSL
     setInputsValue(){
         const gl = this.gl;

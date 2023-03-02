@@ -1,6 +1,6 @@
 import { resolveComponent, withCtx } from "vue";
 import { PatternNode,ColorNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from "./node/generatorNode";
-import { InvertNode,BlendNode } from "./node/filterNode";
+import { BlurNode,BlendNode, InvertNode } from "./node/filterNode";
 import { Connection } from "./node/connection";
 import { Node } from "./node/Node";
 import { Color } from "./designer/color";
@@ -54,15 +54,11 @@ export class LibraryMonitor {
 		this.connect = {};
 		this.atomicNodes = {};
 
-		//add color Node
+		//add generator node
 		const colorNode = new ColorNode();
 		colorNode.initCanvas();
 		this.addNode("generators", "colorNode", colorNode);
 		
-		const blendNode = new BlendNode();
-		blendNode.initCanvas();
-		this.addNode("filters","blendNode",blendNode);
-
 		const simplexNoiseNode = new SimplexNoiseNode();
 		simplexNoiseNode.initCanvas();
 		this.addNode("generators","simplexNoiseNode",simplexNoiseNode);
@@ -87,6 +83,20 @@ export class LibraryMonitor {
 		cellNode.initCanvas();
 		this.addNode("generators","cellNode",cellNode);
 
+		//add filter node
+		const blendNode = new BlendNode();
+		blendNode.initCanvas();
+		this.addNode("filters","blendNode",blendNode);
+
+		//add blur node
+		const blurNode = new BlurNode();
+		blurNode.initCanvas();
+		this.addNode("filters","blurNode",blurNode);
+
+		//add invert node
+		const invertNode = new InvertNode();
+		invertNode.initCanvas();
+		this.addNode("filters","invertNode",invertNode);
 	}
 
 	public addNode(//向libraryItem中添加节点
