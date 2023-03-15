@@ -1,5 +1,6 @@
 import { BasicNode } from "./basic-node";
 import { createShaderProgram } from "../webgl-utils";
+import { Designer, NodeRenderingContext } from "../designer";
 import {
     Property,
     FloatProperty,
@@ -273,19 +274,6 @@ export class ShaderNode extends BasicNode {
             gl.uniform1i(locations["input" + input.name], texIndex);
             gl.uniform1i(locations["input" + input.name + "Connected"], 1);
             ++texIndex;
-		}
-    }
-
-    // 清空输入节点纹理
-    clearInputsTex(){
-        const gl = this.gl;
-        const locations = this.programInfo.uniformLocations;
-        var texIndex = 0;
-        for (const name of this.inputNames) {
-			gl.activeTexture(gl.TEXTURE0 + texIndex);
-			gl.bindTexture(gl.TEXTURE_2D, null);
-			gl.uniform1i(locations["input"+name], 0);
-            texIndex ++;
 		}
     }
 }

@@ -11,6 +11,7 @@ import {
     IPropertyHolder,
     PropertyType,
 } from "./node-property";
+import { Designer } from '../designer';
 
 /**
  * 节点类型
@@ -47,6 +48,8 @@ export abstract class BasicNode implements IPropertyHolder {
     public properties: Property[];
     public propertyGroups: PropertyGroup[];
 
+    public needToUpdate: boolean;
+
     constructor() {
         this.uuid = newUUID();
         this.name = null;
@@ -59,6 +62,7 @@ export abstract class BasicNode implements IPropertyHolder {
         this.outputs = [];
         this.properties = [];
         this.propertyGroups = [];
+        this.needToUpdate = true;
     }
 
     public addInput(port: Port) {
@@ -70,8 +74,8 @@ export abstract class BasicNode implements IPropertyHolder {
     }
 
     // 该节点发生变化, 请求designer更新
-    public requestUpdate() {
-        this.designer.requestUpdate(this);    
+    public requestToUpdate() {
+        this.designer.requestToUpdate(this);    
     }
 
     public setProperty(name: string, value: any): void {
@@ -82,11 +86,11 @@ export abstract class BasicNode implements IPropertyHolder {
         if (prop) {
             if (prop.type == PropertyType.Image) {
 				prop.setValue(value, () => {
-					this.requestUpdate();
+					this.requestToUpdate();
 				});
 			} else {
 				prop.setValue(value);
-				this.requestUpdate();
+				this.requestToUpdate();
 			}
         }
     }
@@ -144,7 +148,7 @@ export abstract class BasicNode implements IPropertyHolder {
         const format = gl.RGBA;
         const type = gl.FLOAT;
         const data = null;
-        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, this.designer.width, this.designer.height, border, format, type, data);
+        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, this.texSize, this.texSize, border, format, type, data);
 
         // set the filtering so we don't need mips
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
