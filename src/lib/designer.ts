@@ -1,14 +1,14 @@
-import { BasicNode } from "./node/basic-node";
+import { BaseNode } from "./node/base-node";
 import { ShaderNode } from "./node/shader-node";
 import { Connection } from "./node/connection";
 import { createShaderProgram } from "./webgl-utils";
-import { ImageCanvas } from "./designer/image-canvas";
+import { ImageCanvas } from "./utils/image-canvas";
 
-class NodeInputInfo {
+export class NodeInputInfo {
     name: string;
-    node: BasicNode;
+    node: BaseNode;
 
-    constructor(name: string, node: BasicNode) {
+    constructor(name: string, node: BaseNode) {
         this.name = name;
         this.node = node;
     }
@@ -47,13 +47,13 @@ export class Designer {
 
     public thumbnailProgram: WebGLProgram;      // 仅用于从targetTex绘制缩略图
 
-    public nodes: Map<string, BasicNode>;
+    public nodes: Map<string, BaseNode>;
     public conns: Map<string, Connection>;
 
-    public queueToUpdate: BasicNode[];
+    public queueToUpdate: BaseNode[];
 
     // callbacks
-    public onNodeTextureUpdated: (Node: BasicNode) => void;
+    public onNodeTextureUpdated: (Node: BaseNode) => void;
 
     public constructor() {
         // webgl2 context
@@ -82,7 +82,7 @@ export class Designer {
 		if (!result) 
             console.log("TEXTURE NORM16 NOT SUPPORTED", result);
 
-        this.nodes = new Map<string, BasicNode>();
+        this.nodes = new Map<string, BaseNode>();
         this.conns = new Map<string, Connection>();
 
         this.queueToUpdate = [];
@@ -184,7 +184,7 @@ export class Designer {
      * note:
      * 1. ensure all input nodes are already updated
      */
-    private updateNode(node: BasicNode) {
+    private updateNode(node: BaseNode) {
         const inputs = node.inputs;
 
         // update input nodes
@@ -267,7 +267,7 @@ export class Designer {
 		canvas.copyFromCanvas(this.canvas);
     }
 
-    public addNode(node: BasicNode) {
+    public addNode(node: BaseNode) {
         this.nodes.set(node.uuid, node);
         node.gl = this.gl;
         node.designer = this;
@@ -314,7 +314,7 @@ export class Designer {
      * add node and its subsequent nodes to update list recursively
      * @param node 
      */
-    public requestToUpdate(node: BasicNode) {
+    public requestToUpdate(node: BaseNode) {
         if (this.queueToUpdate.indexOf(node) == -1) {
             node.needToUpdate = true;
             this.queueToUpdate.push(node);

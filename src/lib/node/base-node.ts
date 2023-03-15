@@ -1,5 +1,4 @@
-import { newUUID } from '../utils';
-import { Color } from '../designer/color';
+import { Color } from '../utils/color';
 import {
     Property,
     PropertyGroup,
@@ -12,6 +11,7 @@ import {
     PropertyType,
 } from "./node-property";
 import { Designer } from '../designer';
+import { Port } from './port';
 
 /**
  * 节点类型
@@ -28,7 +28,7 @@ export enum NodeType {
 /**
  * 节点抽象类, 保存节点的基本信息和基本方法
  */
-export abstract class BasicNode implements IPropertyHolder {
+export abstract class BaseNode implements IPropertyHolder {
     // node info
     public uuid: string;
     public name: string;
@@ -50,8 +50,8 @@ export abstract class BasicNode implements IPropertyHolder {
 
     public needToUpdate: boolean;
 
-    constructor() {
-        this.uuid = newUUID();
+    constructor(uuid: string) {
+        this.uuid = uuid;
         this.name = null;
         this.type = null;
         this.designer = null;

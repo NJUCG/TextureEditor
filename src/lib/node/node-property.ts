@@ -1,4 +1,4 @@
-import { Color } from "../designer/color";
+import { Color } from "../utils/color";
 export enum PropertyType {
     Float = "float",
     Int = "int",

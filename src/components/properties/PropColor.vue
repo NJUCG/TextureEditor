@@ -14,7 +14,7 @@
 
 <script setup>
 import {defineProps, onMounted, ref} from "vue";
-import {Color} from "@/lib/designer/color";
+import {Color} from "@/lib/utils/color";
 import {useMainStore} from "@/store";
 let value1=ref("#111111");
 const props=defineProps(

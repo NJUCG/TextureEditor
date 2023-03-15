@@ -11,7 +11,7 @@
 </template>
 
 <script  setup lang="ts">
-import { Color } from "@/lib/designer/color";
+import { Color } from "@/lib/utils/color";
 import floatView from "@/components/properties/PropFloat.vue";
 import boolView from "@/components/properties/PropBool.vue";
 import enumView from "@/components/properties/PropEnum.vue";

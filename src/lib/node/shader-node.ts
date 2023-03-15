@@ -1,6 +1,7 @@
-import { BasicNode } from "./basic-node";
+import { BaseNode } from "./base-node";
 import { createShaderProgram } from "../webgl-utils";
-import { Designer, NodeRenderingContext } from "../designer";
+import { Designer, NodeRenderingContext, NodeInputInfo } from "../designer";
+import { Port } from "./port";
 import {
     Property,
     FloatProperty,
@@ -19,7 +20,7 @@ import {
  * ShaderNode没有自己的Buffers, 整个渲染使用Designer提供的Buffers, 一组Buffers用于全部节点的绘制
  * ShaderNode的输入节点信息通过Designer提供
  */
-export class ShaderNode extends BasicNode {
+export class ShaderNode extends BaseNode {
     // shader 上下文属性
     protected vertexSource: string;
     protected fragmentSource: string;
@@ -35,8 +36,8 @@ export class ShaderNode extends BasicNode {
     };
 
     // Constructor并不初始化, 初始化在init函数中进行
-    constructor() {
-        super();
+    constructor(uuid: string) {
+        super(uuid);
         this.vertexSource = null;
         this.fragmentSource = null;
         this.shaderProgram = null;
@@ -264,7 +265,7 @@ export class ShaderNode extends BasicNode {
     }
     
     // 将输入节点的纹理赋值给GLSL
-    setInputsValue(inputs: Port[]) {
+    private setInputsValue(inputs: NodeInputInfo[]) {
         const gl = this.gl;
         const locations = this.programInfo.uniformLocations;
         let texIndex = 0;

@@ -3,8 +3,8 @@
 import { NodeGraph } from "./node-graph";
 import { LibraryMonitor } from '@/lib/library';
 import { Node } from "./node/shader-node";
-import { GeneratorNodeScene } from "./scene/generatornodescene";
-import { SocketType } from "./scene/socketscene";
+import { GeneratorNodeScene } from "./view/generatornodescene";
+import { SocketType } from "./view/socketscene";
 
 export class Editor {
 

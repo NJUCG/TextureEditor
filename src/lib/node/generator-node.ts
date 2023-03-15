@@ -1,6 +1,6 @@
 import { Node } from "./shader-node"
 import { LibraryItemType } from "../library";
-import {Color} from "@/lib/designer/color";
+import {Color} from "@/lib/utils/color";
 //Pattern节点
 export class PatternNode extends Node{
     public image:HTMLImageElement;

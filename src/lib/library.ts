@@ -3,7 +3,7 @@ import { PatternNode,ColorNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, Pol
 import { BlurNode,BlendNode, InvertNode } from "./node/filter-node";
 import { Connection } from "./node/connection";
 import { Node } from "./node/shader-node";
-import { Color } from "./designer/color";
+import { Color } from "./utils/color";
 
 
 
