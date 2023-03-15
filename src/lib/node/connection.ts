@@ -1,6 +1,6 @@
-import {Node} from "./shadernode"
-import {PatternNode} from "./generatorNode"
-import { InvertNode } from "./filterNode"
+import {Node} from "./shader-node"
+import {PatternNode} from "./generator-node"
+import { InvertNode } from "./filter-node"
 
 export class Connection {
     private inputNodes:Node [] = [];

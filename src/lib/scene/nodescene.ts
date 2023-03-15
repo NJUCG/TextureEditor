@@ -1,5 +1,5 @@
 import { Rect, Vector2 } from "../utils/utils";
-import { ImageCanvas } from "../designer/imagecanvas";
+import { ImageCanvas } from "../designer/image-canvas";
 
 export class NodeSceneState {
     hovered = false;//悬停

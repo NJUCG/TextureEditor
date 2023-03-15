@@ -1,5 +1,5 @@
 import { useMainStore } from '@/store/index';
-import { copyFromCanvas } from '@/lib/node/shadernode';
+import { copyFromCanvas } from '@/lib/node/shader-node';
 import { NodeScene } from "./scene/nodescene";
 class Vector2 {
 	x: number;

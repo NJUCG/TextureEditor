@@ -1,4 +1,4 @@
-import { NodeGraph } from "../nodegraph";
+import { NodeGraph } from "../node-graph";
 import { ConnectionScene } from "./connectionscene";
 import { GeneratorNodeScene } from "./generatornodescene";
 import { NodeScene } from "./nodescene";

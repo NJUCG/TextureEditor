@@ -1,8 +1,8 @@
 import { resolveComponent, withCtx } from "vue";
-import { PatternNode,ColorNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from "./node/generatorNode";
-import { BlurNode,BlendNode, InvertNode } from "./node/filterNode";
+import { PatternNode,ColorNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from "./node/generator-node";
+import { BlurNode,BlendNode, InvertNode } from "./node/filter-node";
 import { Connection } from "./node/connection";
-import { Node } from "./node/shadernode";
+import { Node } from "./node/shader-node";
 import { Color } from "./designer/color";
 
 

@@ -1,10 +1,10 @@
 
 import { defineStore } from "pinia";
 import { NodeScene } from "@/lib/scene/nodescene";
-import { ColorNode } from "@/lib/node/generatorNode";
-import { Node } from "@/lib/node/shadernode";
-import { Property } from "@/lib/node/NodeProperty";
-import { EnumProperty } from "@/lib/node/NodeProperty";
+import { ColorNode } from "@/lib/node/generator-node";
+import { Node } from "@/lib/node/shader-node";
+import { Property } from "@/lib/node/node-property";
+import { EnumProperty } from "@/lib/node/node-property";
 import { toRaw } from "vue";
 import { SocketScene } from "@/lib/scene/socketscene";
 import {GeneratorNodeScene} from "@/lib/scene/generatornodescene";

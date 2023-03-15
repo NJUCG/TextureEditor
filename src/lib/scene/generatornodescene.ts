@@ -1,7 +1,7 @@
-import { ImageCanvas } from "../designer/imagecanvas";
-import { NodeGraph } from "../nodegraph";
+import { ImageCanvas } from "../designer/image-canvas";
+import { NodeGraph } from "../node-graph";
 import { Vector2 } from "../utils/utils";
-import { Node } from "../node/shadernode";
+import { Node } from "../node/shader-node";
 import { NodeScene, MouseDownEvent, MouseMoveEvent, MouseUpEvent } from "./nodescene"
 import { useMainStore } from '@/store/index';
 import { SocketScene, SocketType } from "./socketscene";
