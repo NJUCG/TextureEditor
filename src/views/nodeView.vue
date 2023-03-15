@@ -12,7 +12,7 @@
 
 <script setup>
 import { onMounted } from 'vue';
-import {Node,copyFromCanvas,drawCanvas,drawFbo,loadImage} from '@/lib/node/Node';
+import {Node,copyFromCanvas,drawCanvas,drawFbo,loadImage} from '@/lib/node/shadernode';
 import {ColorNode,PatternNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from '@/lib/node/generatorNode';
 import {BlendNode,InvertNode,BlurNode} from '@/lib/node/filterNode';
 import {Connection} from '@/lib/node/connection';

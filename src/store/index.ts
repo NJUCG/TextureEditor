@@ -2,7 +2,7 @@
 import { defineStore } from "pinia";
 import { NodeScene } from "@/lib/scene/nodescene";
 import { ColorNode } from "@/lib/node/generatorNode";
-import { Node } from "@/lib/node/Node";
+import { Node } from "@/lib/node/shadernode";
 import { Property } from "@/lib/node/NodeProperty";
 import { EnumProperty } from "@/lib/node/NodeProperty";
 import { toRaw } from "vue";

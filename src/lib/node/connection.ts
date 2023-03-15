@@ -1,4 +1,4 @@
-import {Node} from "./Node"
+import {Node} from "./shadernode"
 import {PatternNode} from "./generatorNode"
 import { InvertNode } from "./filterNode"
 

@@ -29,7 +29,7 @@ import {
   IPropertyHolder,
   PropertyGroup
 } from "@/lib/node/NodeProperty";
-import {Node} from "@/lib/node/Node";
+import {Node} from "@/lib/node/shadernode";
 import { useMainStore } from '@/store/index';
 import {
   FloatProperty,

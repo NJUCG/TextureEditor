@@ -1,5 +1,5 @@
 //结点图
-import { Node } from "./node/Node";
+import { Node } from "./node/shadernode";
 import { GeneratorNodeScene } from "./scene/generatornodescene";
 import { NodeSceneState, NodeScene } from "./scene/nodescene";
 import { useMainStore } from '@/store/index';

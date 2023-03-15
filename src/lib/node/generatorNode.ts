@@ -1,4 +1,4 @@
-import { Node } from "./Node"
+import { Node } from "./shadernode"
 import { LibraryItemType } from "../library";
 import {Color} from "@/lib/designer/color";
 //Pattern节点

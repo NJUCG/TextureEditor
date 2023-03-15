@@ -1,3 +1,4 @@
+import { newUUID } from '../utils';
 import { Color } from '../designer/color';
 import {
     Property,
@@ -26,15 +27,16 @@ export enum NodeType {
 /**
  * 节点抽象类, 保存节点的基本信息和基本方法
  */
-export abstract class Node implements IPropertyHolder {
+export abstract class BasicNode implements IPropertyHolder {
     // node info
     public uuid: string;
     public name: string;
     public type: NodeType;
     // rendering context for texture
     public designer: Designer;
-    public ctx: WebGL2RenderingContext;
+    public gl: WebGL2RenderingContext;
     public targetTex: WebGLTexture;
+    public texSize: GLuint;
     // every node has a randomSeed
     public randomSeed: number;
     // inputs' ports of this node
@@ -46,12 +48,12 @@ export abstract class Node implements IPropertyHolder {
     public propertyGroups: PropertyGroup[];
 
     constructor() {
-        this.uuid = UUID.newUUID();
+        this.uuid = newUUID();
         this.name = null;
         this.type = null;
         this.designer = null;
-        this.ctx = null;
         this.targetTex = null;
+        this.texSize = 2048;
         this.randomSeed = 0;
         this.inputs = [];
         this.outputs = [];
@@ -124,8 +126,8 @@ export abstract class Node implements IPropertyHolder {
     }
 
     // 新建该节点对应的纹理
-    protected initTexture() {
-        const gl = this.ctx;
+    protected createTexture() {
+        const gl = this.gl;
 
         if (this.targetTex) {
             // texture exists

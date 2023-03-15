@@ -2,7 +2,7 @@ import { resolveComponent, withCtx } from "vue";
 import { PatternNode,ColorNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from "./node/generatorNode";
 import { BlurNode,BlendNode, InvertNode } from "./node/filterNode";
 import { Connection } from "./node/connection";
-import { Node } from "./node/Node";
+import { Node } from "./node/shadernode";
 import { Color } from "./designer/color";
 
 
