@@ -15,16 +15,20 @@ export enum LibraryItemType {
  */
 export class LibraryItemInfo {
 	type: LibraryItemType;
+	nodeType: NodeType;
 	name: string;
 
-	constructor(type: LibraryItemType, name: string = "") {
+	constructor(type: LibraryItemType, nodeType: NodeType, name: string = "") {
 		this.type = type;
+		this.nodeType = nodeType;
 		this.name = name;
 	}
 }
 
 // 节点构造器类, 用于创建name类型的节点
 export class NodeCreator {
+	public name: string;
+	public type: NodeType;
 	public create: () => BaseNode;
 }
 
@@ -72,6 +76,8 @@ export class Library {
 		node: (new() => T)
 	) {
 		const creator = new NodeCreator();
+		creator.name = name;
+		creator.type = type;
 		creator.create = (): BaseNode => {
 			return new node();
 		}

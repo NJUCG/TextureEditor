@@ -1,90 +1,101 @@
 <template>
-	<canvas id="editor-canvas" ref="canvas"></canvas>
+	<div ref="containerEditor" class="full-view">
+		<canvas 
+			ref="canvas"
+			style="height: 100%; display: block;"
+		>
+		</canvas>
+	</div>
 </template>
 
-
-
 <script setup lang="ts">
+import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
 import { Editor } from "@/lib/editor";
-import { ref, onMounted, defineProps, toRefs, onBeforeUnmount } from 'vue';
-import { LibraryMonitor } from '@/lib/library';
-import { changeGlobalNodesTarget } from "element-plus/es/utils";
+import { Designer } from '@/lib/designer';
+import { Library, LibraryItemType } from '@/lib/library';
 
+const props = defineProps<{ designer: Designer, library: Library }>();
+
+const containerEditor = ref<HTMLDivElement | null>(null);
+const editorResizeObserver = new ResizeObserver(resize);
 const canvas = ref<HTMLCanvasElement | null>(null);
-let editor:Editor = null;
-let mousePos = [];
-// let library = null;
-const props = defineProps({
-	library: {
-		type: [LibraryMonitor, null],
-	}
-});
-const { library } = toRefs(props);
+const designer = props.designer;
+const library = props.library;
+const editor = new Editor();
 
 onMounted(() => {
-	
-	canvas.value.width = 1000;
-	canvas.value.height = 1000;
-	editor = new Editor(canvas.value);
-	
-	console.log(canvas.value.width);
-	console.log(document.getElementById('editor-canvas').clientWidth);
-
+	editor.init(canvas.value, library, designer);
+	editorResizeObserver.observe(containerEditor.value!);
 	canvas.value.addEventListener("drop", onDrop);
 	canvas.value.addEventListener("dragover", onDragOver);
-	canvas.value.addEventListener("click",function(e){
-		console.log("click happens!");
-	});
-	console.log("editor view on mount");
-	console.log(canvas.value);
-	
+	canvas.value.addEventListener("click", onClick);
+
 	const draw = () => {
-    	editor.draw();//通过editor逐层重绘
+		editor.update();
+    	editor.draw();
     	requestAnimationFrame(draw);
   	};
+
   	requestAnimationFrame(draw);
 })
+
 
 onBeforeUnmount(() => {
 	canvas.value.removeEventListener("drop", onDrop);
 	canvas.value.removeEventListener("dragover", onDragOver);
+	canvas.value.removeEventListener("click", onClick);
 })
 
 const onDrop = (evt: DragEvent) => {
-	console.log("editor view on drop");
+	console.log("editorView.vue: editor handling onDrop event.");
 	evt.preventDefault();
-	console.log("onDrag");
-	const [type, name] = evt.dataTransfer.getData('text/plain').split(',');
-	if (type == "generators") {
-		const libNode = library.value.generators[name];
-		console.log(name);
-		console.log(library.value.generators[name]);
-		const newNode = Object.create(libNode.node);
-		editor.addNode(newNode, evt.clientX, evt.clientY);
-	}
-	else if (type == "filters"){
 
-		const libNode = library.value.filterNodes[name];
-		const newNode = Object.create(libNode.node);
-		editor.addNode(newNode, evt.clientX, evt.clientY);
-	}
+	const item = JSON.parse(evt.dataTransfer.getData('text/plain'));
+	console.log(item);
+	const rect = canvas.value.getBoundingClientRect();
+	const itemCenter = { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
 
+	switch (item.type) {
+		case LibraryItemType.Node:
+			const node = library.createNode(item.name, item.nodeType, editor.designer);
+			console.log("EditorView.vue: creating new node...");
+			console.log(node);
+			editor.addNode(node, itemCenter.x, itemCenter.y);
+			break;
+		case LibraryItemType.Comment:
+			break;
+		case LibraryItemType.Frame:
+			break;
+		default:
+			console.log("editorView.vue: drop item type is invalid!");
+	}
 }
 
 const onDragOver = (evt: DragEvent) => {
-
 	evt.preventDefault();
 	console.log("onDragOver");
 	// console.log(library.value.generators);
 }
 
+const onClick = (evt: Event) => {
+	console.log("click happens!");
+}
 
+function resize() {
+	// console.log("EditorView.vue: resize called!");
+	// set the internal size to match
+	canvas.value.width = canvas.value.clientWidth;
+	canvas.value.height = canvas.value.clientHeight;
+}
 
 </script>
 
-<style>
-/* #editor-canvas {
+<style scoped>
+
+.full-view {
+	position: relative;
 	height: 100%;
-	width: 100%;
-} */
+	overflow: hidden;
+}
+
 </style>

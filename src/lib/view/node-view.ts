@@ -110,7 +110,7 @@ export class NodeView extends BaseView {
 	}
 
 	public addPortView(port: Port) {
-		const portView = new PortView(port, this);
+		const portView = new PortView(this.uuid, port, this);
 		if (port.type == PortType.In)
 			this.inPorts.push(portView);
 		else

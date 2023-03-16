@@ -1,69 +1,69 @@
 <template>
-  <nodeView></nodeView>
-  <split-view class="pane-root" direction="horizontal" a-init="20%">
-    <template #A>
-      <split-view direction="vertical">
-          <template #A>
-            <view2D></view2D>
-          </template>
-          <template #B>
-            <view3D></view3D>
-          </template>
-      </split-view>
-    </template>
-
-    <template #B>
-      <split-view direction="horizontal" a-init="75%">
+    <split-view class="pane-root" direction="horizontal" a-init="20%">
         <template #A>
-          <div class="editor-pane">
-            <editorView ref="editor" :library="library"></editorView>
-          </div>
+            <split-view direction="vertical">
+                <template #A>
+                    <View2D :designer="designer"></View2D>
+                </template>
+                <template #B>
+                    <View3D></View3D>
+                </template>
+            </split-view>
         </template>
-        <template #B>
-          <split-view direction="vertical">
-            <template #A>
-              <propertyView :key="state.timer"></propertyView>
-            </template>
 
-            <template #B>
-              <libraryView class="library-pane" ref="libraryCanvas"></libraryView>
-            </template>
-          </split-view>
+        <template #B>
+            <split-view direction="horizontal" a-init="75%">
+                <template #A>
+                    <EditorView ref="editorView" :designer="designer" :library="library"></EditorView>
+                </template>
+                <template #B>
+                    <split-view direction="vertical">
+                        <template #A>
+                            PropertyView
+                            <!-- <PropertyView></PropertyView> -->
+                        </template>
+                        <template #B>
+                            <LibraryView ref="libraryCanvas" :library="library"></LibraryView>
+                            <!-- <LibraryView class="library-pane" ref="libraryCanvas" :library="library"></LibraryView> -->
+                        </template>
+                    </split-view>
+                </template>
+            </split-view>
         </template>
-      </split-view>
-    </template>
-  </split-view>
+    </split-view>
 </template>
 
 <script setup lang="ts">
 
-import nodeView from './views/NodeView.vue';
-
 import SplitView from 'vue-split-view'
-// import all views of texture editor
-import view2D from './views/View2D.vue';
-import view3D from './views/View3D.vue';
-import propertyView from './views/PropertyView.vue';
-import libraryView from './views/LibraryView.vue';
-import editorView from './views/EditorView.vue';
-import { computed, onMounted, ref } from "vue";
-import { MenuCommands, setupMenu } from "./menu";
-import { Project, ProjectManager } from "@/lib/project"
-import {watch} from "vue";
-import {useMainStore} from "@/store";
-import {reactive} from "vue";
+// view components
+import View2D from './views/View2D.vue';
+import View3D from './views/View3D.vue';
+import PropertyView from './views/PropertyView.vue';
+import LibraryView from './views/LibraryView.vue';
+import EditorView from './views/EditorView.vue';
+// libs
+import { onMounted, ref, reactive } from "vue";
+import { MenuCommands } from "./menu";
+import { Project, ProjectManager } from "@/lib/project";
+import { Editor } from "@/lib/editor";
+import { Library } from '@/lib/library';
+import { Designer } from './lib/designer';
+import { watch } from "vue";
+import { useMainStore } from "@/store";
+// electron related
 const { ipcRenderer } = require('electron')
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
 
 let project = new Project();
-const libraryCanvas = ref(null);
-let library = computed(() => { return libraryCanvas.value ? libraryCanvas.value.libraryMonitor : null; })
-// const editor = ref<Editor | null>(null);
+
+const library = new Library();
+const designer = new Designer();
 const editor = ref(null);
-const store=useMainStore();
-const state=reactive({
-  timer:0
+const store = useMainStore();
+const state = reactive({
+    timer:0
 })
 
 watch(
@@ -81,79 +81,79 @@ watch(
     }
 )
 onMounted(() => {
-  console.log(editor.value);
+    console.log(editor.value);
 
-  newProject();
+    newProject();
 
-  // const draw = () => {
-  //   // editor.value.draw();//通过editor逐层重绘
-  //   requestAnimationFrame(draw);
-  // };
-  // requestAnimationFrame(draw);
+    // const draw = () => {
+    //   // editor.value.draw();//通过editor逐层重绘
+    //   requestAnimationFrame(draw);
+    // };
+    // requestAnimationFrame(draw);
 })
 
 // 处理menu指令
 ipcRenderer.on(MenuCommands.FileOpen, () => {
-  openProject();
+    openProject();
 })
 
 ipcRenderer.on(MenuCommands.FileNew, () => {
-  newProject();
+    newProject();
 })
 
 ipcRenderer.on(MenuCommands.FileSave, () => {
-  saveProject();
+    saveProject();
 })
 
 ipcRenderer.on(MenuCommands.FileSaveAs, () => {
-  saveProject(true);
+    saveProject(true);
 })
 
 function newProject() {
-  project.name = "Untitled Project";
-  project.path = null;
-  setWindowTitle(project.name);
+    project.name = "Untitled Project";
+    project.path = null;
+    setWindowTitle(project.name);
 }
 
 function openProject(projectPath: string = null) {
-  if (!projectPath) {
-    let paths = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
-      filters: [
-        {
-          name: "Images",
-          extensions: ["jpg"]
-        }
-      ],
-    });
+    if (!projectPath) {
+        let paths = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
+        filters: [
+            {
+            name: "Images",
+            extensions: ["jpg"]
+            }
+        ],
+        });
 
-    if (!paths) return;
+        if (!paths) return;
 
-    projectPath = paths[0];
-  }
-  project = ProjectManager.load(projectPath);
+        projectPath = paths[0];
+    }
+    project = ProjectManager.load(projectPath);
 }
 
 function saveProject(saveAs: boolean = false) {
-  if (!project.path || saveAs) {
-    let path = dialog.showSaveDialogSync(remote.getCurrentWindow(), {
-      // filters: [
-      //   {
-      //     name: "Images",
-      //     extensions: ["jpg"]
-      //   }
-      // ],
-    });
-    if (!path) return;
-    const fileName = path.replace(/^.*[\\/]/, "");
-    project.name = fileName.substring(0, fileName.lastIndexOf(".")) || fileName;
-    project.path = path;
+    if (!project.path || saveAs) {
+        let path = dialog.showSaveDialogSync(remote.getCurrentWindow(), {
+        // filters: [
+        //   {
+        //     name: "Images",
+        //     extensions: ["jpg"]
+        //   }
+        // ],
+        });
+        if (!path) return;
+        const fileName = path.replace(/^.*[\\/]/, "");
+        project.name = fileName.substring(0, fileName.lastIndexOf(".")) || fileName;
+        project.path = path;
 
-    ProjectManager.save(path, project);
-    setWindowTitle(project.name);
+        ProjectManager.save(path, project);
+        setWindowTitle(project.name);
 
-  } else {
-    ProjectManager.save(project.path, project);
-  }
+    } else {
+        ProjectManager.save(project.path, project);
+    }
 }
 
 
