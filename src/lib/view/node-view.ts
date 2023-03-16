@@ -25,8 +25,8 @@ export class NodeView extends BaseView {
 	private isDragging: boolean;
 	private dragingStart: Vector2;
 
-	constructor(title: string, x: number = 0, y: number = 0, w: number = 100, h: number = 100, mappingChannel: string = null, graph: NodeGraph = null) {
-		super(graph);
+	constructor(uuid: string, title: string, x: number = 0, y: number = 0, w: number = 100, h: number = 100, mappingChannel: string = null, graph: NodeGraph = null) {
+		super(uuid, graph);
 		this.area = new Rect(x, y, w, h);
 		this.title = title;
 		this.inPorts = [];

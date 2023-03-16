@@ -47,8 +47,8 @@ export abstract class BaseView {
     protected graph: NodeGraph;
 	protected area: Shape;
 
-	public constructor(graph: NodeGraph = null) {
-		this.uuid = newUUID();
+	public constructor(uuid: string, graph: NodeGraph = null) {
+		this.uuid = uuid;
 		this.hovered = false;
 		this.selected = false;
 

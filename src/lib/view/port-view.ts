@@ -23,8 +23,8 @@ export class PortView extends BaseView {
     private mouseDraggingX: number;
     private mouseDraggingY: number;
 
-    constructor(port: Port, node: NodeView, x: number = 0, y: number = 0, r: number = 8, graph: NodeGraph = null) {
-        super(graph);
+    constructor(uuid: string, port: Port, node: NodeView, x: number = 0, y: number = 0, r: number = 8, graph: NodeGraph = null) {
+        super(uuid, graph);
         this.area = new Circle(x, y, r);
         this.port = port;
         this.node = node;
@@ -130,7 +130,7 @@ export class PortView extends BaseView {
             
             // 3. create and link the new connection
             if (stillDAG && this.connectionValid(this, targetPort)) {
-                const uuid = UUID.newUUID();
+                const uuid = newUUID();
                 const conn = new ConnectionView(uuid);
 
                 if (this.port.type == PortType.Out) {

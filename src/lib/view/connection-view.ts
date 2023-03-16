@@ -14,8 +14,8 @@ export class ConnectionView extends BaseView {
     public in!: PortView;
     public out!: PortView;
 
-	constructor(inPort: PortView = null, outPort: PortView = null, graph: NodeGraph = null) {
-		super(graph);
+	constructor(uuid: string, inPort: PortView = null, outPort: PortView = null, graph: NodeGraph = null) {
+		super(uuid, graph);
 		this.in = inPort;
 		this.out = outPort;
 	}
