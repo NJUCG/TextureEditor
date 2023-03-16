@@ -36,8 +36,8 @@ export class ShaderNode extends BaseNode {
     };
 
     // Constructor并不初始化, 初始化在init函数中进行
-    constructor(uuid: string) {
-        super(uuid);
+    constructor() {
+        super();
         this.vertexSource = null;
         this.fragmentSource = null;
         this.shaderProgram = null;
@@ -45,6 +45,8 @@ export class ShaderNode extends BaseNode {
         this.programInfo["attribLocations"] = {};
         this.programInfo["uniformLocations"] = {};
     }
+
+    public initNode() {}
 
     // 初始化渲染上下文
     public initRenderingCtx(designer: Designer) {

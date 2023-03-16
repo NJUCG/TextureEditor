@@ -1,3 +1,4 @@
+import { newUUID } from '../utils';
 import { Color } from '../utils/color';
 import {
     Property,
@@ -50,8 +51,8 @@ export abstract class BaseNode implements IPropertyHolder {
 
     public needToUpdate: boolean;
 
-    constructor(uuid: string) {
-        this.uuid = uuid;
+    constructor() {
+        this.uuid = newUUID();
         this.name = null;
         this.type = null;
         this.designer = null;
@@ -64,6 +65,10 @@ export abstract class BaseNode implements IPropertyHolder {
         this.propertyGroups = [];
         this.needToUpdate = true;
     }
+
+    public abstract initRenderingCtx(designer: Designer): void;
+
+    public abstract initNode(): void;
 
     public addInput(port: Port) {
         this.inputs.push(port);
