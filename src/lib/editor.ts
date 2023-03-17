@@ -6,20 +6,10 @@ import { NodeGraph } from "./node-graph";
 import { NodeView } from "./view/node-view";
 import { ConnectionView } from "./view/connection-view";
 import { Designer } from "./designer";
-import { TextureCanvas } from "./utils/texture-canvas";
+import { newUUID } from "./utils";
+import { MappingChannel, mappingChannelName } from "./canvas3d";
+import { Color } from "./utils/color";
 import { useMainStore } from "@/store";
-
-export enum MappingChannel {
-    BaseColor,
-    Roughness,
-    Metallic,
-    Albedo,
-    Glossiness,
-    Specular,
-    AmbientOcclusion,
-    Normal,
-    Height,
-}
 
 export class Editor {
     public canvas: HTMLCanvasElement;
@@ -30,13 +20,12 @@ export class Editor {
     public selectedNode: BaseNode;
     public selectedConn: Connection;
 
-    // <key: channel, value: node.uuid>
-    private mappingNodes: Map<string, string>;
+    // <key: enum MappingChannel, value: node.uuid>
+    private mappingNodes: Map<number, string>;
+    private store = useMainStore();
 
     // callbacks
     public onConnectionSelected: (conn: Connection) => void;
-
-    public onTextureMappingUpdated: (texCanvas: TextureCanvas, channel: string) => void;
 
     constructor() {
         this.canvas = null;
@@ -52,12 +41,12 @@ export class Editor {
         this.canvas = canvas;
         this.library = library;
         this.designer = designer;
-        this.mappingNodes = new Map<string, string>();
+        this.mappingNodes = new Map<number, string>();
         this.setup();
     }
 
     public draw() {
-        if(this.graph) 
+        if (this.graph) 
             this.graph.draw();
     }
 
@@ -70,12 +59,12 @@ export class Editor {
         this.clearAllTextureChannels();
         this.setupDesigner();
         this.setupScene();
-        // this.setupDefaultScene();
+        this.setupInitialScene();
     }
 
-    public addNode(node: BaseNode, centerX: number = 0, centerY: number = 0) {
-        console.log("editor.ts: addNode");
-        console.log(node);
+    public addNode(node: BaseNode, centerX: number = 0, centerY: number = 0): NodeView {
+        // console.log("editor.ts: addNode");
+        // console.log(node);
         // 1. add this node to the designer object
         this.designer.addNode(node);
 
@@ -95,6 +84,8 @@ export class Editor {
         nodeView.arrangePortViews(PortType.Out);
 
         this.graph.addNodeView(nodeView);
+
+        return nodeView;
     }
 
     private setupDesigner() {
@@ -105,8 +96,8 @@ export class Editor {
             
             this.designer.renderTextureToCanvas(node.targetTex, nodeView.texCanvas);
             
-            if (this.onTextureMappingUpdated && nodeView.mappingChannel)
-                this.onTextureMappingUpdated(nodeView.texCanvas, nodeView.mappingChannel);
+            if (nodeView.mappingChannel)
+                this.store.updateMappingChannel(nodeView.texCanvas, nodeView.mappingChannel);
         }
     }
 
@@ -159,40 +150,52 @@ export class Editor {
         }
     }
 
-    private setupDefaultScene() {
+    private setupInitialScene() {
         const offset = 100;
         const spacing = 150;
 
-        const mappingChannels = ["BaseColor", "Roughness", "Metallic", "AmbientOcclusion", "Normal", "Height"];
+        const initColors = ["#808080", "#404040", "#000000", "#FFFFFF", "#FFFFFF", "#808080"]
         
-        for (let i = 0; i < mappingChannels.length; ++i) {
-            const node = this.library.createNode("output", NodeType.Atomic, this.designer);
-            this.addNode(node, 800, offset + spacing * i);
-            node.setProperty("name", mappingChannels[i]);
-            this.setMappingChannelByNode(node.uuid, mappingChannels[i]);
+        for (let i = 0; i < mappingChannelName.length; ++i) {
+            // 1. create input node
+            let input: BaseNode = null;
+            if (mappingChannelName[i] == "Normal") {
+                input = this.library.createNode("normal", NodeType.Atomic, this.designer);
+            } else {
+                input = this.library.createNode("color", NodeType.Atomic, this.designer);
+                input.setProperty("Color", initColors[i]);
+            }
+            const inputView = this.addNode(input, 650, offset + spacing * i);
+            // 2. create output node
+            const output = this.library.createNode("output", NodeType.Atomic, this.designer);
+            const outputView = this.addNode(output, 800, offset + spacing * i);
+            output.setProperty("Name", mappingChannelName[i]);
+            // 3. connect the two nodes
+            const conn = new ConnectionView(newUUID(), outputView.inPorts[0], inputView.outPorts[0], this.graph);
+            this.graph.addConnectionView(conn);
+            // 4. update texture mapping channel
+            this.setMappingChannelByNode(output.uuid, i);
         }
     }
 
-    private setMappingChannelByNode(uuid: string, channel: string) {
-        if (this.mappingNodes[channel]) {
-            // clear texture channel from prev NodeView
-            const prev = this.mappingNodes[channel];
+    private setMappingChannelByNode(uuid: string, channel: MappingChannel) {
+        if (this.mappingNodes.has(channel)) {
+            // clear texture channel from prev NodeViewItem
+            const prev = this.mappingNodes.get(channel);
             const prevNodeViewItem = this.graph.getNodeViewById(prev);
             prevNodeViewItem.mappingChannel = null;
-            delete this.mappingNodes[channel];
+            this.mappingNodes.delete(channel);
 
-            if (this.onTextureMappingUpdated)
-                this.onTextureMappingUpdated(null, channel);
+            this.store.updateMappingChannel(null, channel);
         }
 
         // store {channel: uuid} to mappingNodes
         const nodeView = this.graph.getNodeViewById(uuid);
         nodeView.mappingChannel = channel;
-        this.mappingNodes[channel] = uuid;
+        this.mappingNodes.set(channel, uuid);
 
         // update view3d texture mapping
-        if (this.onTextureMappingUpdated)
-            this.onTextureMappingUpdated(nodeView.texCanvas, channel);
+        this.store.updateMappingChannel(nodeView.texCanvas, channel);
     }
 
     private clearAllTextureChannels() {

@@ -12,6 +12,7 @@ import { Port, PortType } from "../node/port";
 import { TextureCanvas } from "../utils/texture-canvas";
 import { Vector2, Rect } from "./basic-item";
 import { PortView } from "./port-view";
+import { MappingChannel, mappingChannelName } from "../canvas3d";
 
 export class NodeView extends BaseView {
 	public title: string;
@@ -20,12 +21,12 @@ export class NodeView extends BaseView {
 	public indexOfPorts: number;
 	public texCanvas: TextureCanvas;
 
-	public mappingChannel: string;
+	public mappingChannel: MappingChannel;
 
 	private isDragging: boolean;
 	private dragingStart: Vector2;
 
-	constructor(uuid: string, title: string, x: number = 0, y: number = 0, w: number = 100, h: number = 100, mappingChannel: string = null, graph: NodeGraph = null) {
+	constructor(uuid: string, title: string, x: number = 0, y: number = 0, w: number = 100, h: number = 100, mappingChannel: MappingChannel = null, graph: NodeGraph = null) {
 		super(uuid, graph);
 		this.area = new Rect(x, y, w, h);
 		this.title = title;
@@ -94,12 +95,13 @@ export class NodeView extends BaseView {
 
 		// 7. draw mapping channel identifier
 		if (this.mappingChannel) {
+			const channelName = mappingChannelName[this.mappingChannel];
 			ctx.font = "12px 'Open Sans'";
 			ctx.fillStyle = Color4Canvas.MappingShowGreen;
-			const textSize = ctx.measureText(this.mappingChannel.toUpperCase());
+			const textSize = ctx.measureText(channelName.toUpperCase());
 			const textLeft = rect.centerX - textSize.width / 2;
 			const textTop = rect.top - 12;
-			ctx.fillText(this.mappingChannel.toUpperCase(), textLeft, textTop);
+			ctx.fillText(channelName.toUpperCase(), textLeft, textTop);
 		}
 	}
 

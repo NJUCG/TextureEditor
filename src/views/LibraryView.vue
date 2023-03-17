@@ -76,12 +76,12 @@ const itemGroup = ref(((): LibraryItemInfo[][] => {
 
 // items列表展开收起
 const toggle = (index: number) => {
-	console.log(isGroupOpen[index]);
+	// console.log(isGroupOpen[index]);
 	isGroupOpen[index] = !isGroupOpen[index];
 }
 
 const hightLight = (item: HTMLLIElement) => {
-	console.log(item);
+	// console.log(item);
 	const list = document.querySelector("#group-items");
 	const listItems = list.querySelectorAll("li");
 
@@ -133,7 +133,7 @@ const addImageNode = () => {//添加图片节点
 }
 
 const onDragStart = (event: DragEvent, data: LibraryItemInfo) => {
-	console.log("LibraryView.vue --- drag data: " + data);
+	// console.log("LibraryView.vue --- drag data: " + data);
 	event.dataTransfer.setData("text/plain", JSON.stringify(data));
 };
 

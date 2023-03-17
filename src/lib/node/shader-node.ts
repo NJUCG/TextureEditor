@@ -220,6 +220,8 @@ export class ShaderNode extends BaseNode {
                 case prop instanceof ColorProperty:
                     code += "uniform vec4 prop" + prop.name + ";\n";
                     break;
+                case prop instanceof StringProperty:
+                    break;
                 default:
                     console.log("ShaderNode: Unexpected property type!");
             }
@@ -278,6 +280,8 @@ export class ShaderNode extends BaseNode {
                 case prop instanceof ColorProperty:
                     const color = (prop as ColorProperty).value;
                     gl.uniform4f(loc, color.r, color.g, color.b, color.a);
+                    break;
+                case prop instanceof StringProperty:
                     break;
                 default:
                     console.log("ShaderNode: Unexpected property type!");

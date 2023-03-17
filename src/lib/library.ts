@@ -52,8 +52,8 @@ export class Library {
 		// atomic
 		this.addNodeCreator("output", NodeType.Atomic, Atomic.OutputNode);
 		this.addNodeCreator("normal", NodeType.Atomic, Atomic.NormalNode);
+		this.addNodeCreator("color", NodeType.Atomic, Atomic.ColorNode);
 		// generators
-		this.addNodeCreator("color", NodeType.Generator, Generator.ColorNode);
 		this.addNodeCreator("simplex", NodeType.Generator, Generator.SimplexNoiseNode);
 		this.addNodeCreator("worley", NodeType.Generator, Generator.WorleyNoiseNode);
 		this.addNodeCreator("brick", NodeType.Generator, Generator.BrickNode);

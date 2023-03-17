@@ -47,19 +47,19 @@ onBeforeUnmount(() => {
 })
 
 const onDrop = (evt: DragEvent) => {
-	console.log("editorView.vue: editor handling onDrop event.");
+	// console.log("editorView.vue: editor handling onDrop event.");
 	evt.preventDefault();
 
 	const item = JSON.parse(evt.dataTransfer.getData('text/plain'));
-	console.log(item);
+	// console.log(item);
 	const rect = canvas.value.getBoundingClientRect();
 	const itemCenter = { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
 
 	switch (item.type) {
 		case LibraryItemType.Node:
 			const node = library.createNode(item.name, item.nodeType, editor.designer);
-			console.log("EditorView.vue: creating new node...");
-			console.log(node);
+			// console.log("EditorView.vue: creating new node...");
+			// console.log(node);
 			editor.addNode(node, itemCenter.x, itemCenter.y);
 			break;
 		case LibraryItemType.Comment:
@@ -73,12 +73,12 @@ const onDrop = (evt: DragEvent) => {
 
 const onDragOver = (evt: DragEvent) => {
 	evt.preventDefault();
-	console.log("onDragOver");
+	// console.log("onDragOver");
 	// console.log(library.value.generators);
 }
 
 const onClick = (evt: Event) => {
-	console.log("click happens!");
+	// console.log("click happens!");
 }
 
 function resize() {

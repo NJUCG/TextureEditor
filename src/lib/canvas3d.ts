@@ -94,77 +94,34 @@ export class View3D {
         this.renderer.setSize(width, height);
     }
 
-    /* Metallic-Roughness Workflow */
-    public setBaseColorTexture(texCanvas: TextureCanvas) {
+    public updateMappingChannel(texCanvas: TextureCanvas, channel: MappingChannel) {
         const tex = new THREE.CanvasTexture(texCanvas.canvas);
-		tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-		tex.repeat.set(this.texRepeat, this.texRepeat);
-		tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(this.texRepeat, this.texRepeat);
+        tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
-		tex.needsUpdate = true;
-		this.material.map = tex;
-		this.material.needsUpdate = true;
-    }
-
-    public setRoughnessTexture(texCanvas: TextureCanvas) {
-        const tex = new THREE.CanvasTexture(texCanvas.canvas);
-		tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-		tex.repeat.set(this.texRepeat, this.texRepeat);
-		tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
-		tex.needsUpdate = true;
-		this.material.roughnessMap = tex;
-        this.material.roughness = 1.0;
-		this.material.needsUpdate = true;
-    }
-
-    public setMetallicTexture(texCanvas: TextureCanvas) {
-		const tex = new THREE.CanvasTexture(texCanvas.canvas);
-		tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-		tex.repeat.set(this.texRepeat, this.texRepeat);
-		tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
-		tex.needsUpdate = true;
-		this.material.metalnessMap = tex;
-		this.material.metalness = 1.0;
-		this.material.needsUpdate = true;
-	}
-
-    /* Specular-Glossiness Workflow */
-
-    public setAmbientOcclusionTexture(texCanvas: TextureCanvas) {
-        const tex = new THREE.CanvasTexture(texCanvas.canvas);
-		tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-		tex.repeat.set(this.texRepeat, this.texRepeat);
-		tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
-		tex.needsUpdate = true;
-		this.material.aoMap = tex;
-        this.material.aoMapIntensity = 1.0;
-		this.material.needsUpdate = true;
-    }
-
-    public setNormalTexture(texCanvas: TextureCanvas) {
-        const tex = new THREE.CanvasTexture(texCanvas.canvas);
-		tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-		tex.repeat.set(this.texRepeat, this.texRepeat);
-		tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
-		tex.needsUpdate = true;
-		this.material.normalMap = tex;
-		this.material.needsUpdate = true;
-    }
-
-    public setHeightTexture(texCanvas: TextureCanvas) {
-        const tex = new THREE.CanvasTexture(texCanvas.canvas);
-		tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-		tex.repeat.set(this.texRepeat, this.texRepeat);
-		tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
-		tex.needsUpdate = true;
-		this.material.displacementMap = tex;
-        this.material.displacementScale = 1.0;
-		this.material.needsUpdate = true;
+        switch (channel) {
+            case MappingChannel.BaseColor:
+                this.setBaseColorTexture(tex);
+                break;
+            case MappingChannel.Roughness:
+                this.setRoughnessTexture(tex);
+                break;
+            case MappingChannel.Metallic:
+                this.setMetallicTexture(tex);
+                break;
+            case MappingChannel.AmbientOcclusion:
+                this.setAmbientOcclusionTexture(tex);
+                break;
+            case MappingChannel.Normal:
+                this.setNormalTexture(tex);
+                break;
+            case MappingChannel.Height:
+                this.setHeightTexture(tex);
+                break;
+            default:
+                console.log("View3D: Unexpected mapping channel type!");
+        }
     }
 
     /* WebGLRenderer docs
@@ -284,6 +241,49 @@ export class View3D {
                 this.envMap = new THREE.Texture();
                 this.envMap.copy(tex);
             });
+    }
+
+    /* Metallic-Roughness Workflow */
+    public setBaseColorTexture(tex: THREE.CanvasTexture) {
+        tex.needsUpdate = true;
+        this.material.map = tex;
+        this.material.needsUpdate = true;
+    }
+
+    public setRoughnessTexture(tex: THREE.CanvasTexture) {
+        tex.needsUpdate = true;
+        this.material.roughnessMap = tex;
+        this.material.roughness = 1.0;
+        this.material.needsUpdate = true;
+    }
+
+    public setMetallicTexture(tex: THREE.CanvasTexture) {
+        tex.needsUpdate = true;
+        this.material.metalnessMap = tex;
+        this.material.metalness = 1.0;
+        this.material.needsUpdate = true;
+    }
+
+    /* Specular-Glossiness Workflow */
+
+    public setAmbientOcclusionTexture(tex: THREE.CanvasTexture) {
+        tex.needsUpdate = true;
+        this.material.aoMap = tex;
+        this.material.aoMapIntensity = 1.0;
+        this.material.needsUpdate = true;
+    }
+
+    public setNormalTexture(tex: THREE.CanvasTexture) {
+        tex.needsUpdate = true;
+        this.material.normalMap = tex;
+        this.material.needsUpdate = true;
+    }
+
+    public setHeightTexture(tex: THREE.CanvasTexture) {
+        tex.needsUpdate = true;
+        this.material.displacementMap = tex;
+        this.material.displacementScale = 1.0;
+        this.material.needsUpdate = true;
     }
 
     private addCameraHelper(camera: THREE.Camera) {

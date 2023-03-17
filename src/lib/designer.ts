@@ -302,8 +302,8 @@ export class Designer {
         const conn = this.conns.get(connId);
         this.nodes.get(conn.inNodeId).inputs[conn.inPortIndex].removeConnection();
         this.nodes.get(conn.outNodeId).outputs[conn.outPortIndex].removeConnection();
-        console.log("designer.removing a connection...");
-        console.log(this.nodes);
+        // console.log("designer.removing a connection...");
+        // console.log(this.nodes);
 
         this.requestToUpdate(this.nodes.get(conn.inNodeId));
         this.conns.delete(connId);

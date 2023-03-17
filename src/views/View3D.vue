@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { View3D } from "@/lib/canvas3d";
-import { nextTick } from "process";
+import { useMainStore } from "@/store";
 
 // add resize observer
 const container3d = ref<HTMLDivElement | null>(null);
@@ -20,6 +20,12 @@ const View3dResizeObserver = new ResizeObserver(resize);
 const preview3d = ref<HTMLCanvasElement | null>(null);
 const showMenu = ref(false);
 const view3d = new View3D();
+
+// 监听pinia
+useMainStore().$subscribe((mutation, state) => {
+	if (state.mappingChannel != null)
+		view3d.updateMappingChannel(state.mappingTexture, state.mappingChannel);
+})
 
 onMounted(() => {
 	view3d.setCanvas(preview3d.value!);

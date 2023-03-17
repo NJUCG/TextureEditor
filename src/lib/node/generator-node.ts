@@ -67,27 +67,6 @@ import { Color } from "@/lib/utils/color";
 //     }
 // }
 
-export class ColorNode extends ShaderNode { 
-    public initNode() {
-        this.name = "Color";
-        this.type = NodeType.Generator;
-
-        const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
-        this.addOutput(outPort);
-
-        const color = new Color(1, 1, 1, 1);
-        this.addColorProperty("Color", "Color", color);
-
-        const processShaderSource = `
-        vec4 process(vec2 uv) {
-            return propColor;
-        }
-        `;
-
-        this.buildShader(processShaderSource);
-    }
-}
-
 export class SimplexNoiseNode extends ShaderNode {
     public initNode() {
         this.name = "Simplex Noise";

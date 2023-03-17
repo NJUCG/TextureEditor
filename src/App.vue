@@ -63,8 +63,6 @@ const designer = new Designer();
 const editorView = ref(null);
 
 onMounted(() => {
-    console.log(editorView.value);
-
     newProject();
 })
 

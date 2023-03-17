@@ -11,7 +11,7 @@ export class TextureCanvas {
 
 	// draw image from src to this.canvas
 	public drawToTextureCanvas(src: HTMLCanvasElement) {
-		console.log("copying from " + src.width + " to " + this.canvas.width);
+		// console.log("copying from " + src.width + " to " + this.canvas.width);
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.context.drawImage(src, 0, 0, this.canvas.width, this.canvas.height);
 	}
