@@ -23,7 +23,7 @@
                             <!-- <PropertyView></PropertyView> -->
                         </template>
                         <template #B>
-                            <LibraryView ref="libraryCanvas" :library="library"></LibraryView>
+                            <LibraryView ref="libraryView" :library="library"></LibraryView>
                             <!-- <LibraryView class="library-pane" ref="libraryCanvas" :library="library"></LibraryView> -->
                         </template>
                     </split-view>
@@ -60,36 +60,12 @@ let project = new Project();
 
 const library = new Library();
 const designer = new Designer();
-const editor = ref(null);
-const store = useMainStore();
-const state = reactive({
-    timer:0
-})
+const editorView = ref(null);
 
-watch(
-    // pointer函数，监听的是什么
-    () => store.change,
-    // change函数，监听值的变化
-    (newV, oldV) => {
-      console.log("检测到store变化")
-      state.timer=new Date().getTime();
-
-    },
-    {
-      immediate: true, // 立即执行
-      deep: true // 深度监听
-    }
-)
 onMounted(() => {
-    console.log(editor.value);
+    console.log(editorView.value);
 
     newProject();
-
-    // const draw = () => {
-    //   // editor.value.draw();//通过editor逐层重绘
-    //   requestAnimationFrame(draw);
-    // };
-    // requestAnimationFrame(draw);
 })
 
 // 处理menu指令

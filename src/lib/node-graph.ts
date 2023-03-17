@@ -15,8 +15,8 @@ export class NodeGraph {
 	public ctx: CanvasRenderingContext2D;
 	public view: SceneView;
 	
-	public nodes: NodeView[];
-	public conns: ConnectionView[];
+	public nodes: Map<string, NodeView>;
+	public conns: Map<string, ConnectionView>;
 	
 	public selectedItem: BaseView;
 	public hoveredItem: BaseView;
@@ -38,8 +38,8 @@ export class NodeGraph {
 		this.canvas = canvas;
 		this.ctx = this.canvas.getContext("2d");
 		this.view = new SceneView(canvas);
-		this.nodes = [];
-		this.conns = [];
+		this.nodes = new Map<string, NodeView>();
+		this.conns = new Map<string, ConnectionView>();
 		this.selectedItem = null;
 		this.hoveredItem = null;
 
@@ -67,12 +67,14 @@ export class NodeGraph {
 		this.reset();
 		
 		// draw nodes
-		for (const node of this.nodes)
+		this.nodes.forEach((node) => {
 			node.draw(this.ctx);
+		})
 
 		// draw connections
-		for (const conn of this.conns)
+		this.conns.forEach((conn) => {
 			conn.draw(this.ctx);
+		})
 	}
 
 	public clear() {
@@ -82,26 +84,24 @@ export class NodeGraph {
 		this.canvas = null;
 		this.ctx = null;
 		this.view = null;
-		this.nodes = [];
-		this.conns = [];
+		this.nodes = null;
+		this.conns = null;
 		this.selectedItem = null;
 		this.hoveredItem = null;
 	}
 
 	public addNodeView(node: NodeView) {
 		node.setGraph(this);
-		this.nodes.push(node);
+		this.nodes.set(node.uuid, node);
 	}
 
 	public removeNodeView(node: NodeView) {
-		this.nodes.splice(this.nodes.indexOf(node), 1);
-
 		for (const port of node.inPorts)
 			if (port.connection)
 				this.removeConnectionView(port.connection);
 		
 		node.setGraph(null);
-		this.nodes.splice(this.nodes.indexOf(node), 1);
+		this.nodes.delete(node.uuid);
 		// need to implement
 		if (this.onNodeViewDeleted)
 			this.onNodeViewDeleted(node);
@@ -111,7 +111,7 @@ export class NodeGraph {
 		conn.setGraph(this);
 		// link in/out ports
 		conn.in.connection = conn;
-		this.conns.push(conn);
+		this.conns.set(conn.uuid, conn);
 
 		// callback
 		if (this.onConnectionViewCreated)
@@ -121,7 +121,7 @@ export class NodeGraph {
 	public removeConnectionView(conn: ConnectionView) {
 		conn.setGraph(null);
 		conn.in.connection = null;
-		this.conns.splice(this.conns.indexOf(conn), 1);
+		this.conns.delete(conn.uuid);
 
 		// callback
 		if (this.onConnectionViewDestroyed)
@@ -129,7 +129,7 @@ export class NodeGraph {
 	}
 
 	public getHitPort(x: number, y: number): PortView {
-		for (const node of this.nodes)
+		for (const node of this.nodes.values())
 			for (const port of node.ports)
 				if (port.isPointInside(x, y))
 					return port;
@@ -138,7 +138,7 @@ export class NodeGraph {
 	}
 
 	public getNodeViewById(uuid: string): NodeView {
-		for (const node of this.nodes)
+		for (const node of this.nodes.values())
 			if (node.uuid == uuid)
 				return node;
 
@@ -333,7 +333,7 @@ export class NodeGraph {
 	 */
 	private getHitItem(x: number, y: number): BaseView {
 		// 1. check nodes and their ports
-		for (const node of this.nodes) {
+		for (const node of this.nodes.values()) {
 			for (const port of node.ports) {
 				if (port.isPointInside(x, y))
 					return port;

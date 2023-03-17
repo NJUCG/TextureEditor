@@ -6,7 +6,7 @@ import { NodeGraph } from "./node-graph";
 import { NodeView } from "./view/node-view";
 import { ConnectionView } from "./view/connection-view";
 import { Designer } from "./designer";
-import { ImageCanvas } from "./utils/image-canvas";
+import { TextureCanvas } from "./utils/texture-canvas";
 import { useMainStore } from "@/store";
 
 export enum MappingChannel {
@@ -34,11 +34,9 @@ export class Editor {
     private mappingNodes: Map<string, string>;
 
     // callbacks
-    public onNodeSelected: (node: BaseNode) => void;
-
     public onConnectionSelected: (conn: Connection) => void;
 
-    public onTextureMappingUpdated: (imageCanvas: ImageCanvas, channel: string) => void;
+    public onTextureMappingUpdated: (texCanvas: TextureCanvas, channel: string) => void;
 
     constructor() {
         this.canvas = null;
@@ -105,10 +103,10 @@ export class Editor {
             if (!nodeView)
                 return;
             
-            this.designer.renderTextureToCanvas(node.targetTex, nodeView.imageCanvas);
+            this.designer.renderTextureToCanvas(node.targetTex, nodeView.texCanvas);
             
             if (this.onTextureMappingUpdated && nodeView.mappingChannel)
-                this.onTextureMappingUpdated(nodeView.imageCanvas, nodeView.mappingChannel);
+                this.onTextureMappingUpdated(nodeView.texCanvas, nodeView.mappingChannel);
         }
     }
 
@@ -124,12 +122,9 @@ export class Editor {
             if (nodeView == null)
                 return;
             
-            const node = this.designer.nodes[nodeView.uuid];
+            const node = this.designer.nodes.get(nodeView.uuid);
             this.selectedNode = node;
             useMainStore().updateFocusedNode(node);
-            
-            if (this.onNodeSelected)
-                this.onNodeSelected(node);
         }
 
         this.graph.onNodeViewDeleted = (nodeView: NodeView) => {
@@ -138,6 +133,7 @@ export class Editor {
                 this.clearTextureChannel(nodeView.uuid);
             
             this.designer.removeNode(nodeView.uuid);
+            useMainStore().updateFocusedNode(null);
         }
 
         this.graph.onConnectionViewSelected = (connView: ConnectionView) => {
@@ -196,7 +192,7 @@ export class Editor {
 
         // update view3d texture mapping
         if (this.onTextureMappingUpdated)
-            this.onTextureMappingUpdated(nodeView.imageCanvas, channel);
+            this.onTextureMappingUpdated(nodeView.texCanvas, channel);
     }
 
     private clearAllTextureChannels() {
@@ -206,56 +202,4 @@ export class Editor {
     private clearTextureChannel(uuid: string) {
 
     }
-
-    // private updateMappingNode(nodeView: NodeView) {
-    //     if (!this.view3d)
-    //         return;
-        
-    //     if (this.view3d.pbr == "metallic") {
-    //         switch (nodeView.uuid) {
-    //             case (mappings.baseColorNodeId):
-    //                 this.view3d.setBaseColorTexture(nodeView.imageCanvas);
-    //                 break;
-    //             case (mappings.roughnessNodeId):
-    //                 this.view3d.setRoughnessTexture(nodeView.imageCanvas);
-    //                 break;
-    //             case (mappings.metallicNodeId):
-    //                 this.view3d.setMetallicTexture(nodeView.imageCanvas);
-    //                 break;
-    //             case (mappings.ambientOcclusionNodeId):
-    //                 this.view3d.setAmbientOcclusionTexture(nodeView.imageCanvas);
-    //                 break;
-    //             case (mappings.normalNodeId):
-    //                 this.view3d.setNormalTexture(nodeView.imageCanvas);
-    //                 break;
-    //             case (mappings.heightNodeId):
-    //                 this.view3d.setHeightTexture(nodeView.imageCanvas);
-    //                 break;
-    //             default:
-    //                 console.log("editor.ts: nodeView metallic-roughness mapping type is not valid!");
-    //         }
-    //     } 
-    //     /**
-    //     else {
-    //         const mappings = this.mappingNodes as SpecularMappingNodes;
-    //         switch (nodeView.uuid) {
-    //             case (mappings.albedoNodeId):
-    //                 break;
-    //             case (mappings.glossinessNodeId):
-    //                 break;
-    //             case (mappings.specularNodeId):
-    //                 break;
-    //             case (mappings.ambientOcclusionNodeId):
-    //                 break;
-    //             case (mappings.normalNodeId):
-    //                 break;
-    //             case (mappings.heightNodeId):
-    //                 break;
-    //             default:
-    //                 console.log("editor.ts: nodeView specular-glossiness mapping type is not valid!");
-    //         }
-    //     }
-    //     */
-        
-    // }
 }

@@ -1,6 +1,6 @@
 import { useMainStore } from '@/store/index';
 import { Designer } from './designer';
-import { ImageCanvas } from './utils/image-canvas';
+import { TextureCanvas } from './utils/texture-canvas';
 import { Vector2 } from './view/basic-item';
 
 export class View2D {
@@ -8,7 +8,7 @@ export class View2D {
 	public context: CanvasRenderingContext2D;
 
 	public designer: Designer;
-	public imageCanvas: ImageCanvas;
+	public texCanvas: TextureCanvas;
 
 	public renderSize: number;
 
@@ -25,7 +25,7 @@ export class View2D {
 		this.context = null;
 
 		this.designer = null;
-		this.imageCanvas = null;
+		this.texCanvas = null;
 
 		this.renderSize = null;
 
@@ -40,7 +40,7 @@ export class View2D {
 		this.context = canvas.getContext("2d");
 
 		this.designer = designer;
-		this.imageCanvas = new ImageCanvas(800, 800);
+		this.texCanvas = new TextureCanvas(800, 800);
 
 		this.renderSize = 800;
 
@@ -72,20 +72,26 @@ export class View2D {
 			this.offset.y
 		);
 
-		const focusedNode = useMainStore().focusedNode;
-		if (focusedNode) {
-			this.designer.renderTextureToCanvas(focusedNode.targetTex, this.imageCanvas);
+		if (this.texCanvas) {
 			ctx.lineWidth = 4;
 			ctx.strokeStyle = "black";
 			ctx.strokeRect(-this.renderSize / 2, -this.renderSize / 2, this.renderSize, this.renderSize);
 			ctx.drawImage(
-				this.imageCanvas.canvas, 
+				this.texCanvas.canvas, 
 				-this.renderSize / 2,
 				-this.renderSize / 2,
 				this.renderSize, 
 				this.renderSize
 			);
 		}
+	}
+
+	public updateTexureCanvas(texture: WebGLTexture) {
+		this.designer.renderTextureToCanvas(texture, this.texCanvas);
+	}
+
+	public clearTextureCanvas() {
+		this.texCanvas.clear();
 	}
 
 	public resize() {

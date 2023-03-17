@@ -2,7 +2,7 @@ import { BaseNode } from "./node/base-node";
 import { ShaderNode } from "./node/shader-node";
 import { Connection } from "./node/connection";
 import { createShaderProgram } from "./webgl-utils";
-import { ImageCanvas } from "./utils/image-canvas";
+import { TextureCanvas } from "./utils/texture-canvas";
 
 export class NodeInputInfo {
     name: string;
@@ -60,7 +60,7 @@ export class Designer {
         this.canvas = document.createElement("canvas");
         this.gl = this.canvas.getContext("webgl2");
         // designer texture's resolution
-        this.texSize = this.canvas.width = this.canvas.height = 1024;
+        this.texSize = this.canvas.width = this.canvas.height = 2048;
         this.randomSeed = 32;
 
         /** webgl2 query extension */
@@ -221,7 +221,7 @@ export class Designer {
      * @param texture
      * @param canvas 
      */
-    public renderTextureToCanvas(texture: WebGLTexture, canvas: ImageCanvas) {
+    public renderTextureToCanvas(texture: WebGLTexture, targetCanvas: TextureCanvas) {
         const gl = this.gl;
 
         // bind shader
@@ -264,7 +264,7 @@ export class Designer {
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindTexture(gl.TEXTURE_2D, null);
 
-		canvas.copyFromCanvas(this.canvas);
+		targetCanvas.drawToTextureCanvas(this.canvas);
     }
 
     public addNode(node: BaseNode) {

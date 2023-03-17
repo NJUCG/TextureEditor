@@ -1,10 +1,9 @@
 import { BaseNode } from "@/lib/node/base-node";
 import { defineStore } from "pinia";
 import { ref, toRaw } from "vue";
+
 export const useMainStore = defineStore('main', () => {
     const focusedNode = ref<BaseNode>(null);
-    const property = ref<[]>([]);
-    const change = ref<boolean>(true);
 
     function updateFocusedNode(node: BaseNode) {
         focusedNode.value = node;
@@ -30,8 +29,6 @@ export const useMainStore = defineStore('main', () => {
 
     return {
         focusedNode,
-        property,
-        change,
 
         updateFocusedNode,
         changeProperties,

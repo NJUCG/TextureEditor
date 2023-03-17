@@ -14,6 +14,18 @@ import {
     PropertyGroup
 } from "./node-property";
 
+class ShaderProgramInfo {
+    program: WebGLProgram;
+    attribLocations: { [key:string]: number; };
+    uniformLocations: { [key:string]: WebGLUniformLocation; };
+
+    constructor(program: WebGLProgram = null, attribLoc: { [key:string]: number; } = {}, uniformLoc: { [key:string]: WebGLUniformLocation; } = {}) {
+        this.program = program;
+        this.attribLocations = attribLoc;
+        this.uniformLocations = uniformLoc;
+    }
+}
+
 /**
  * ShaderNode类, 使用GLSL渲染结果
  * ShaderNode没有自己的Canvas, 所有的结果利用FBO渲染到Texture, 在NodeViewItem中使用Canvas绘制
@@ -25,15 +37,7 @@ export class ShaderNode extends BaseNode {
     protected vertexSource: string;
     protected fragmentSource: string;
     protected shaderProgram: WebGLProgram;
-    protected programInfo: {           // shader program的结构
-        program: WebGLProgram
-        attribLocations: {
-            [key:string]: number;
-        },
-        uniformLocations: {
-            [key:string]: WebGLUniformLocation;
-        },
-    };
+    protected programInfo: ShaderProgramInfo
 
     // Constructor并不初始化, 初始化在init函数中进行
     constructor() {
@@ -41,9 +45,7 @@ export class ShaderNode extends BaseNode {
         this.vertexSource = null;
         this.fragmentSource = null;
         this.shaderProgram = null;
-        this.programInfo["program"] = null;
-        this.programInfo["attribLocations"] = {};
-        this.programInfo["uniformLocations"] = {};
+        this.programInfo = null;
     }
 
     public initNode() {}
@@ -52,6 +54,7 @@ export class ShaderNode extends BaseNode {
     public initRenderingCtx(designer: Designer) {
         this.designer = designer;
         this.gl = designer.gl;
+        this.texSize = designer.texSize;
         this.createTexture();
         this.vertexSource = `#version 300 es
         precision highp float;
@@ -80,6 +83,7 @@ export class ShaderNode extends BaseNode {
 			fragColor = clamp(result, 0.0, 1.0);
         }
         `;
+        this.programInfo = new ShaderProgramInfo();
     }
     
     // 利用fbo离屏渲染到targetTex
@@ -165,16 +169,17 @@ export class ShaderNode extends BaseNode {
         this.programInfo["program"] = this.shaderProgram;
         this.programInfo.attribLocations["aVertPosition"] = gl.getAttribLocation(this.shaderProgram, "aVertPosition");
         this.programInfo.attribLocations["aTexCoord"] = gl.getAttribLocation(this.shaderProgram, "aTexCoord");
+        this.setUniformsLocation();
+        this.setInputsLocation();
+        this.setPropsLocation();
     }
 
     // 该节点的Uniform变量声明
     private createCodeForUniforms() {
         let code = "";
         
-        code += "uniform float _seed\n";
+        code += "uniform float _seed;\n";
         code += "uniform vec2 uTexSize;\n";
-        this.programInfo.uniformLocations["_seed"] = this.gl.getUniformLocation(this.shaderProgram, "_seed");
-        this.programInfo.uniformLocations["uTexSize"] = this.gl.getUniformLocation(this.shaderProgram, "uTexSize");
 
         code += "\n";
         return code;
@@ -187,8 +192,6 @@ export class ShaderNode extends BaseNode {
         for (const port of this.inputs) {
             code += "uniform sampler2D input" + port.name + ";\n";
             code += "uniform bool input" + port.name + "Connected;\n";
-            this.programInfo.uniformLocations["input" + port.name] = this.gl.getUniformLocation(this.shaderProgram, "input" + port.name);
-            this.programInfo.uniformLocations["input" + port.name + "Connected"] = this.gl.getUniformLocation(this.shaderProgram, "input" + port.name + "Connected");
         }
 
         code += "\n";
@@ -220,12 +223,28 @@ export class ShaderNode extends BaseNode {
                 default:
                     console.log("ShaderNode: Unexpected property type!");
             }
-            this.programInfo.uniformLocations["prop" + prop.name] = this.gl.getUniformLocation(this.shaderProgram, "prop" + prop.name);
 		}
 
         code += "\n";
 
         return code;
+    }
+
+    private setUniformsLocation() {
+        this.programInfo.uniformLocations["_seed"] = this.gl.getUniformLocation(this.shaderProgram, "_seed");
+        this.programInfo.uniformLocations["uTexSize"] = this.gl.getUniformLocation(this.shaderProgram, "uTexSize");
+    }
+
+    private setInputsLocation() {
+        for (const port of this.inputs) {
+            this.programInfo.uniformLocations["input" + port.name] = this.gl.getUniformLocation(this.shaderProgram, "input" + port.name);
+            this.programInfo.uniformLocations["input" + port.name + "Connected"] = this.gl.getUniformLocation(this.shaderProgram, "input" + port.name + "Connected");
+        }
+    }
+
+    private setPropsLocation() {
+        for (const prop of this.properties)
+            this.programInfo.uniformLocations["prop" + prop.name] = this.gl.getUniformLocation(this.shaderProgram, "prop" + prop.name);
     }
 
     // 赋值unifom
@@ -282,7 +301,7 @@ export class ShaderNode extends BaseNode {
 }
 
 // //copy canvas result from webgl canvas to 2d canvas
-// export function copyFromCanvas(src: HTMLCanvasElement, dest: HTMLCanvasElement,size:GLuint) {
+// export function drawToTextureCanvas(src: HTMLCanvasElement, dest: HTMLCanvasElement,size:GLuint) {
 // 	const context = dest.getContext("2d");
 //     console.log(dest);
 //     console.log("copy from canvas context");

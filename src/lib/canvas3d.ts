@@ -172,17 +172,6 @@ export class View3D {
         this.renderer.setSize(width, height);
     }
 
-	// setAlbedoTexture(imageCanvas: ImageCanvas, channelName: string) {
-	// 	const tex = new THREE.CanvasTexture(imageCanvas.canvas);
-	// 	tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-	// 	tex.repeat.set(this.texRepeat, this.texRepeat);
-	// 	tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
-	// 	tex.needsUpdate = true;
-	// 	this.material.map = tex;
-	// 	this.material.needsUpdate = true;
-	// }
-
     addCameraHelper(camera: THREE.Camera) {
         this.scene.add(new THREE.CameraHelper(camera));
     }

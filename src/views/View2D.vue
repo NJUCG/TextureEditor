@@ -13,10 +13,7 @@
 import { ref, onMounted } from 'vue';
 import { View2D } from '@/lib/canvas2d';
 import { Designer } from '@/lib/designer';
-
-const electron = require("electron");
-const remote = require("@electron/remote");
-const { dialog, app, BrowserWindow, Menu } = remote;
+import { useMainStore } from '@/store';
 
 const props = defineProps<{ designer: Designer }>();
 const designer = props.designer;
@@ -25,6 +22,14 @@ const container2d = ref<HTMLDivElement | null>(null);
 const preview2d = ref<HTMLCanvasElement | null>(null);
 const preview2dResizeObserver = new ResizeObserver(resize);
 const view2d = new View2D();
+
+// 监听pinia
+useMainStore().$subscribe((mutation, state) => {
+	if (state.focusedNode == null)
+		view2d.clearTextureCanvas();
+	else
+		view2d.updateTexureCanvas(state.focusedNode.targetTex);
+})
 
 onMounted(() => {
 	view2d.init(preview2d.value!, designer);

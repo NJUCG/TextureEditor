@@ -9,7 +9,7 @@ import {
 } from "./base-view";
 import { NodeGraph } from "../node-graph";
 import { Port, PortType } from "../node/port";
-import { ImageCanvas } from "../utils/image-canvas";
+import { TextureCanvas } from "../utils/texture-canvas";
 import { Vector2, Rect } from "./basic-item";
 import { PortView } from "./port-view";
 
@@ -18,7 +18,7 @@ export class NodeView extends BaseView {
 	public inPorts: PortView[];
 	public outPorts: PortView[];
 	public indexOfPorts: number;
-	public imageCanvas: ImageCanvas;
+	public texCanvas: TextureCanvas;
 
 	public mappingChannel: string;
 
@@ -32,7 +32,7 @@ export class NodeView extends BaseView {
 		this.inPorts = [];
 		this.outPorts = [];
 		this.indexOfPorts = 0;
-		this.imageCanvas = new ImageCanvas(w, h);
+		this.texCanvas = new TextureCanvas(w, h);
 		this.mappingChannel = mappingChannel;
 		// this.viewItemState = new NodeViewItemState();
 		this.isDragging = false;
@@ -70,7 +70,7 @@ export class NodeView extends BaseView {
 		// ctx.fillRect(rect.left, rect.top, rect.width, rect.height);
 		
 		// 3. draw the thumbnail
-		ctx.drawImage(this.imageCanvas.canvas, rect.left, rect.top, rect.width, rect.height);
+		ctx.drawImage(this.texCanvas.canvas, rect.left, rect.top, rect.width, rect.height);
 		
 		// 4. draw the node's title
 		if (!this.hovered) {

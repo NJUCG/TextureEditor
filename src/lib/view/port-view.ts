@@ -19,7 +19,6 @@ export class PortView extends BaseView {
     public node: NodeView;
     // 只有In Port存储对应的Connection
     private conn: ConnectionView;
-    private numberOfConnections: number;
     private mouseDraggingX: number;
     private mouseDraggingY: number;
 
@@ -29,7 +28,6 @@ export class PortView extends BaseView {
         this.port = port;
         this.node = node;
         this.conn = null;
-        this.numberOfConnections = 0;
         this.mouseDraggingX = 0;
         this.mouseDraggingY = 0;
     }
