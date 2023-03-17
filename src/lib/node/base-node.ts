@@ -1,16 +1,6 @@
 import { newUUID } from '../utils';
 import { Color } from '../utils/color';
-import {
-    Property,
-    PropertyGroup,
-    FloatProperty,
-    IntProperty,
-    BoolProperty,
-    ColorProperty,
-    EnumProperty,
-    IPropertyHolder,
-    PropertyType,
-} from "./node-property";
+import * as PROPERTY from "./node-property";
 import { Designer } from '../designer';
 import { Port } from './port';
 
@@ -29,7 +19,7 @@ export enum NodeType {
 /**
  * 节点抽象类, 保存节点的基本信息和基本方法
  */
-export abstract class BaseNode implements IPropertyHolder {
+export abstract class BaseNode implements PROPERTY.IPropertyHolder {
     // node info
     public uuid: string;
     public name: string;
@@ -46,8 +36,8 @@ export abstract class BaseNode implements IPropertyHolder {
     // outpus' ports of this node
     public outputs: Port[];
     // node properties
-    public properties: Property[];
-    public propertyGroups: PropertyGroup[];
+    public properties: PROPERTY.Property[];
+    public propertyGroups: PROPERTY.PropertyGroup[];
 
     public needToUpdate: boolean;
 
@@ -89,7 +79,7 @@ export abstract class BaseNode implements IPropertyHolder {
         });
 
         if (prop) {
-            if (prop.type == PropertyType.Image) {
+            if (prop.type == PROPERTY.PropertyType.Image) {
 				prop.setValue(value, () => {
 					this.requestToUpdate();
 				});
@@ -101,7 +91,7 @@ export abstract class BaseNode implements IPropertyHolder {
     }
 
     protected addIntProperty(name: string, displayName: string, defaultValue = 1, minVal = 1, maxVal = 100, increment = 1) {
-        const prop = new IntProperty(name, displayName, defaultValue, increment);
+        const prop = new PROPERTY.IntProperty(name, displayName, defaultValue, increment);
         prop.minValue = minVal;
         prop.maxValue = maxVal;
 
@@ -109,7 +99,7 @@ export abstract class BaseNode implements IPropertyHolder {
     }
 
     protected addFloatProperty(name: string, displayName: string, defaultValue = 0, minVal = 0, maxVal = 1, increment = 0.1) {
-        const prop = new FloatProperty(name, displayName, defaultValue, increment);
+        const prop = new PROPERTY.FloatProperty(name, displayName, defaultValue, increment);
         prop.minValue = minVal;
         prop.maxValue = maxVal;
 
@@ -117,19 +107,25 @@ export abstract class BaseNode implements IPropertyHolder {
     }
 
     protected addBoolProperty(name: string, displayName: string, defaultValue = false) {
-        const prop = new BoolProperty(name, displayName, defaultValue);
+        const prop = new PROPERTY.BoolProperty(name, displayName, defaultValue);
 
         this.properties.push(prop);
     }
 
     protected addColorProperty(name: string, displayName: string, defaultValue: Color = Color.parse("#000000")) {
-        const prop = new ColorProperty(name, displayName, defaultValue);
+        const prop = new PROPERTY.ColorProperty(name, displayName, defaultValue);
 
         this.properties.push(prop);
     }
 
     protected addEnumProperty(name: string, displayName: string, defaultValue: string[] = [], index: number = 0) {
-        const prop = new EnumProperty(name, displayName, defaultValue, index);
+        const prop = new PROPERTY.EnumProperty(name, displayName, defaultValue, index);
+
+        this.properties.push(prop);
+    }
+
+    protected addStringProperty(name: string, displayName: string, defaultValue = "") {
+        const prop = new PROPERTY.StringProperty(name, displayName, defaultValue);
 
         this.properties.push(prop);
     }

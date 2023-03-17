@@ -1,3 +1,4 @@
+import * as Atomic from "./node/atomic-node";
 import * as Generator from "./node/generator-node";
 import * as Filter from "./node/filter-node";
 import { BaseNode, NodeType } from "./node/base-node";
@@ -48,6 +49,9 @@ export class Library {
 		this.filter = new Map<string, NodeCreator>();
 		this.view3d = new Map<string, NodeCreator>();
 
+		// atomic
+		this.addNodeCreator("output", NodeType.Atomic, Atomic.OutputNode);
+		this.addNodeCreator("normal", NodeType.Atomic, Atomic.NormalNode);
 		// generators
 		this.addNodeCreator("color", NodeType.Generator, Generator.ColorNode);
 		this.addNodeCreator("simplex", NodeType.Generator, Generator.SimplexNoiseNode);

@@ -160,9 +160,9 @@ export class ShaderNode extends BaseNode {
 
         const fragSource = 
             this.fragmentSource + 
-            this.createCodeForUniforms() +
-            this.createCodeForInputs() + 
-            this.createCodeForProps() + 
+            this.getCodeForUniforms() +
+            this.getCodeForInputs() + 
+            this.getCodeForProps() + 
             "#line 0\n" + processShaderSource;
 
         this.shaderProgram = createShaderProgram(gl, this.vertexSource, fragSource);
@@ -175,7 +175,7 @@ export class ShaderNode extends BaseNode {
     }
 
     // 该节点的Uniform变量声明
-    private createCodeForUniforms() {
+    private getCodeForUniforms() {
         let code = "";
         
         code += "uniform float _seed;\n";
@@ -186,7 +186,7 @@ export class ShaderNode extends BaseNode {
     }
 
     // 输入节点的GLSL声明   
-    private createCodeForInputs() {
+    private getCodeForInputs() {
         let code = "";
 
         for (const port of this.inputs) {
@@ -200,7 +200,7 @@ export class ShaderNode extends BaseNode {
     }
 
     // 属性构建GLSL声明
-	private createCodeForProps() {
+	private getCodeForProps() {
 		let code = "";
 
 		for (const prop of this.properties) {
