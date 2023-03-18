@@ -73,7 +73,7 @@ let updateValue=(evt)=>{
   color: white;
   background: #222;
   padding: 0.5em;
-  font-family: "Open Sans";
+  font-family: Arial;
 }
 </style>
 

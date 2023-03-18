@@ -64,7 +64,7 @@ export class PortView extends BaseView {
             ctx.fillStyle = Color4Canvas.TextShowGray;
             if (this.hovered)
                 ctx.fillStyle = "white";
-            ctx.font = "9px 'Open Sans'";
+            ctx.font = "9px Arial";
             const w = ctx.measureText(this.port.name).width;
             if (this.port.type == PortType.In)
                 ctx.fillText(this.port.name, circle.centerX - circle.radius - 4 - w, circle.centerY + 3);

@@ -7,7 +7,7 @@ export enum Color4Canvas {
 	PortFillGray = "rgb(150, 150, 150)",
 	NodeBorderGray = "rgb(25, 25, 25)",
 	PortBorderGray = "rgb(40, 40, 40)",
-	MappingShowGreen = "rgb(200, 255, 200)",
+	MappingShowGray = "rgb(140, 140, 140)",
 	InnerDotGray = "rgb(100, 100, 100)",
 	DashLineGray = "rgb(170, 170, 170)",
 	ConnectionGray = "rgb(175, 175, 175)",

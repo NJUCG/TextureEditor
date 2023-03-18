@@ -79,7 +79,7 @@ export class NodeView extends BaseView {
 			ctx.fillStyle = "black";
 			ctx.fillRect(rect.left, rect.top, rect.width, 20);
 			// title name
-			ctx.font = "bold 9px 'Open Sans'";
+			ctx.font = "bold 9px Arial";
 			ctx.fillStyle = "white";
 			const textSize = ctx.measureText(this.title);
 			const textLeft = rect.centerX - textSize.width / 2;
@@ -95,13 +95,14 @@ export class NodeView extends BaseView {
 
 		// 7. draw mapping channel identifier
 		if (this.mappingChannel) {
-			const channelName = mappingChannelName[this.mappingChannel];
-			ctx.font = "12px 'Open Sans'";
-			ctx.fillStyle = Color4Canvas.MappingShowGreen;
-			const textSize = ctx.measureText(channelName.toUpperCase());
+			const channelName = "(" + mappingChannelName[this.mappingChannel] + ")";
+			ctx.font = "italic 10px Arial";
+			ctx.fillStyle = "rgb(140, 140, 140)";
+			ctx.fillStyle = Color4Canvas.MappingShowGray;
+			const textSize = ctx.measureText(channelName);
 			const textLeft = rect.centerX - textSize.width / 2;
-			const textTop = rect.top - 12;
-			ctx.fillText(channelName.toUpperCase(), textLeft, textTop);
+			const textTop = rect.top - 10;
+			ctx.fillText(channelName, textLeft, textTop);
 		}
 	}
 
