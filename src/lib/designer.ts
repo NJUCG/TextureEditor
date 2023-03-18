@@ -189,8 +189,8 @@ export class Designer {
 
         // update input nodes
         for (const port of inputs) {
-            if (port.conn) {
-                const outNode = this.nodes.get(port.conn.outNodeId);
+            if (port.conns.length) {
+                const outNode = this.nodes.get(port.conns[0].outNodeId);
                 if (outNode.needToUpdate) {
                     this.updateNode(outNode);
 
@@ -203,8 +203,8 @@ export class Designer {
         // set rendering context
         const context = new NodeRenderingContext(this.canvas, this.gl, this.fbo, [], this.texSize, this.texSize, this.randomSeed);
         for (const port of node.inputs) {
-            if (port.conn) {
-                const input = new NodeInputInfo(port.name, this.nodes.get(port.conn.outNodeId));
+            if (port.conns.length) {
+                const input = new NodeInputInfo(port.name, this.nodes.get(port.conns[0].outNodeId));
                 context.inputs.push(input);
             }
         }
@@ -214,6 +214,8 @@ export class Designer {
         // emit event: texture updated
         if (this.onNodeTextureUpdated)
             this.onNodeTextureUpdated(node);
+        
+        node.needToUpdate = false;
     }
 
     /**
@@ -271,6 +273,7 @@ export class Designer {
         this.nodes.set(node.uuid, node);
         node.gl = this.gl;
         node.designer = this;
+        console.log("Designer-addNode...", node);
         this.requestToUpdate(node);
     }
 
@@ -289,6 +292,7 @@ export class Designer {
         this.nodes.get(inNodeId).inputs[inPortIndex].addConnection(conn);
         this.nodes.get(outNodeId).outputs[outPortIndex].addConnection(conn);
 
+        console.log("Designer-addConnection", conn);
         this.requestToUpdate(this.nodes.get(inNodeId));
 
         // return conn;
@@ -300,8 +304,8 @@ export class Designer {
             return;
 
         const conn = this.conns.get(connId);
-        this.nodes.get(conn.inNodeId).inputs[conn.inPortIndex].removeConnection();
-        this.nodes.get(conn.outNodeId).outputs[conn.outPortIndex].removeConnection();
+        this.nodes.get(conn.inNodeId).inputs[conn.inPortIndex].removeConnection(conn);
+        this.nodes.get(conn.outNodeId).outputs[conn.outPortIndex].removeConnection(conn);
         // console.log("designer.removing a connection...");
         // console.log(this.nodes);
 
@@ -316,14 +320,17 @@ export class Designer {
      */
     public requestToUpdate(node: BaseNode) {
         if (this.queueToUpdate.indexOf(node) == -1) {
+            console.log("requestToUpdate: addtoqueue");
+            console.log(node);
             node.needToUpdate = true;
             this.queueToUpdate.push(node);
         }
 
         // add all right nodes of this node
         for (const port of node.outputs) {
-            if (port.conn)
-                this.requestToUpdate(this.nodes.get(port.conn.inNodeId));
+            for (const conn of port.conns) {
+                this.requestToUpdate(this.nodes.get(conn.inNodeId));
+            }
         }
     }
 }

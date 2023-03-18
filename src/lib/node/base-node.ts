@@ -85,6 +85,7 @@ export abstract class BaseNode implements PROPERTY.IPropertyHolder {
 				});
 			} else {
 				prop.setValue(value);
+                console.log("BaseNode-setProperty", this);
 				this.requestToUpdate();
 			}
         }

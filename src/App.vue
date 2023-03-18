@@ -43,26 +43,27 @@ import PropertyView from './views/PropertyView.vue';
 import LibraryView from './views/LibraryView.vue';
 import EditorView from './views/EditorView.vue';
 // libs
-import { onMounted, ref, reactive } from "vue";
+import { onMounted, ref } from "vue";
 import { MenuCommands } from "./menu";
 import { Project, ProjectManager } from "@/lib/project";
 import { Editor } from "@/lib/editor";
 import { Library } from '@/lib/library';
 import { Designer } from './lib/designer';
-import { watch } from "vue";
-import { useMainStore } from "@/store";
 // electron related
 const { ipcRenderer } = require('electron')
 const remote = require("@electron/remote");
 const { dialog, app, BrowserWindow, Menu } = remote;
 
 let project = new Project();
+let setupSceneFunc = () => {};
 
 const library = new Library();
 const designer = new Designer();
 const editorView = ref(null);
 
 onMounted(() => {
+    const { setupInitialScene } = editorView.value;
+    setupSceneFunc = setupInitialScene;
     newProject();
 })
 
@@ -73,6 +74,7 @@ ipcRenderer.on(MenuCommands.FileOpen, () => {
 
 ipcRenderer.on(MenuCommands.FileNew, () => {
     newProject();
+    
 })
 
 ipcRenderer.on(MenuCommands.FileSave, () => {
@@ -87,6 +89,7 @@ function newProject() {
     project.name = "Untitled Project";
     project.path = null;
     setWindowTitle(project.name);
+    setupSceneFunc();
 }
 
 function openProject(projectPath: string = null) {

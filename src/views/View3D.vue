@@ -23,7 +23,7 @@ const view3d = new View3D();
 
 // 监听pinia
 useMainStore().$subscribe((mutation, state) => {
-	if (state.mappingChannel != null)
+	if (state.mappingChannel)
 		view3d.updateMappingChannel(state.mappingTexture, state.mappingChannel);
 })
 

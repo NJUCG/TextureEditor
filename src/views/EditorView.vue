@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
+import { ref, defineProps, defineExpose, onMounted, onBeforeUnmount } from 'vue';
 import { Editor } from "@/lib/editor";
 import { Designer } from '@/lib/designer';
 import { Library, LibraryItemType } from '@/lib/library';
@@ -22,6 +22,18 @@ const canvas = ref<HTMLCanvasElement | null>(null);
 const designer = props.designer;
 const library = props.library;
 const editor = new Editor();
+
+const setupInitialScene = () => {
+	editor.setupInitialScene();
+}
+
+defineExpose({ setupInitialScene });
+
+onBeforeUnmount(() => {
+	canvas.value.removeEventListener("drop", onDrop);
+	canvas.value.removeEventListener("dragover", onDragOver);
+	canvas.value.removeEventListener("click", onClick);
+})
 
 onMounted(() => {
 	editor.init(canvas.value, library, designer);
@@ -39,13 +51,6 @@ onMounted(() => {
   	requestAnimationFrame(draw);
 })
 
-
-onBeforeUnmount(() => {
-	canvas.value.removeEventListener("drop", onDrop);
-	canvas.value.removeEventListener("dragover", onDragOver);
-	canvas.value.removeEventListener("click", onClick);
-})
-
 const onDrop = (evt: DragEvent) => {
 	// console.log("editorView.vue: editor handling onDrop event.");
 	evt.preventDefault();
@@ -58,8 +63,6 @@ const onDrop = (evt: DragEvent) => {
 	switch (item.type) {
 		case LibraryItemType.Node:
 			const node = library.createNode(item.name, item.nodeType, editor.designer);
-			// console.log("EditorView.vue: creating new node...");
-			// console.log(node);
 			editor.addNode(node, itemCenter.x, itemCenter.y);
 			break;
 		case LibraryItemType.Comment:

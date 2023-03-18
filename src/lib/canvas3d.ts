@@ -17,9 +17,10 @@ import { TextureCanvas } from "./utils/texture-canvas";
  * https://blog.csdn.net/weixin_43854673/article/details/119671467
  */
 
-export const mappingChannelName: string[] = ["BaseColor", "Roughness", "Metallic", "AmbientOcclusion", "Normal", "Height"];
+export const mappingChannelName: string[] = ["None", "BaseColor", "Roughness", "Metallic", "AmbientOcclusion", "Normal", "Height"];
 
 export enum MappingChannel {
+    None,
     BaseColor,
     Roughness,
     Metallic,
@@ -100,6 +101,7 @@ export class View3D {
         tex.repeat.set(this.texRepeat, this.texRepeat);
         tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
+        console.log(channel);
         switch (channel) {
             case MappingChannel.BaseColor:
                 this.setBaseColorTexture(tex);
@@ -153,6 +155,7 @@ export class View3D {
     }
 
     private setupModelAndMaterial() {
+        console.log("View3D: setup Model and Material");
         this.material = new THREE.MeshStandardMaterial(
             {
                 // color: 0x3F51B5

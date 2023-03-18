@@ -11,7 +11,7 @@ export class Port {
     public type: PortType;
     public index: number;
     public name: string;
-    public conn: Connection;
+    public conns: Connection[];
 
     /**
      * 构造函数
@@ -25,14 +25,14 @@ export class Port {
         this.type = type;
         this.index = index;
         this.name = name;
-        this.conn = null;
+        this.conns = [];
     }
 
     public addConnection(conn: Connection) {
-        this.conn = conn;
+        this.conns.push(conn);
     }
 
-    public removeConnection() {
-        this.conn = null;
+    public removeConnection(conn: Connection) {
+        this.conns.splice(this.conns.indexOf(conn), 1);
     }
 }

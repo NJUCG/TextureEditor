@@ -41,7 +41,7 @@ export class PortView extends BaseView {
         ctx.fill();
 
         // 2. draw a inner dot if port has connections
-        if (this.port.conn) {
+        if (this.port.conns.length) {
             ctx.beginPath();
             ctx.fillStyle = Color4Canvas.InnerDotGray;
             ctx.arc(circle.centerX, circle.centerY, circle.radius / 3, 0, 2 * Math.PI);
@@ -168,7 +168,7 @@ export class PortView extends BaseView {
 
         ctx.beginPath();
         ctx.strokeStyle = Color4Canvas.DashLineGray;
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 2;
         ctx.moveTo(port.centerX, port.centerY);
 
         if (this.port.type == PortType.In) {
