@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { ref, toRaw } from "vue";
 import { TextureCanvas } from "@/lib/utils/texture-canvas";
 import { MappingChannel } from "@/lib/canvas3d";
+import { View3D } from "@/lib/canvas3d";
 
 export const useMainStore = defineStore('main', () => {
     const focusedNode = ref<BaseNode>(null);

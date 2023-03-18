@@ -22,13 +22,18 @@ const container2d = ref<HTMLDivElement | null>(null);
 const preview2d = ref<HTMLCanvasElement | null>(null);
 const preview2dResizeObserver = new ResizeObserver(resize);
 const view2d = new View2D();
+const store = useMainStore();
 
 // 监听pinia
-useMainStore().$subscribe((mutation, state) => {
-	if (state.focusedNode == null)
-		view2d.clearTextureCanvas();
-	else
-		view2d.updateTexureCanvas(state.focusedNode.targetTex);
+store.$onAction(({ name, store, after }) => {
+	after(result => {
+		if (name == "updateFocusedNode") {
+			if (store.focusedNode == null)
+				view2d.clearTextureCanvas();
+			else
+				view2d.updateTexureCanvas(store.focusedNode.targetTex);
+		}
+	})
 })
 
 onMounted(() => {

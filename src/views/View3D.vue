@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { View3D } from "@/lib/canvas3d";
 import { useMainStore } from "@/store";
 
@@ -20,12 +20,16 @@ const View3dResizeObserver = new ResizeObserver(resize);
 const preview3d = ref<HTMLCanvasElement | null>(null);
 const showMenu = ref(false);
 const view3d = new View3D();
+const store = useMainStore();
 
 // 监听pinia
-useMainStore().$subscribe((mutation, state) => {
-	if (state.mappingChannel)
-		view3d.updateMappingChannel(state.mappingTexture, state.mappingChannel);
-})
+store.$onAction(({ name, store, after }) => {
+	after(result => {
+		if (name == "updateMappingChannel") {
+			view3d.updateMappingChannel(store.mappingTexture, store.mappingChannel);
+		}
+	})
+});
 
 onMounted(() => {
 	view3d.setCanvas(preview3d.value!);
