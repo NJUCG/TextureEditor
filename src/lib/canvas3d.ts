@@ -58,7 +58,7 @@ export class View3D {
     constructor() {
         this.pbrWorkflow = PBRWorkflow.Metallic;
 
-        this.skyPath = "./assets/env/wide_street_01_1k.hdr";
+        this.skyPath = "./assets/env/lake_pier_2k.hdr";
         this.envMap = null;
         this.texRepeat = 1;
         
