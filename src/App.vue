@@ -41,11 +41,11 @@ import nodeView from './views/nodeView.vue';
 
 import SplitView from 'vue-split-view'
 // import all views of texture editor
-import view2D from './views/view2D.vue';
-import view3D from './views/view3D.vue';
-import propertyView from './views/propertyView.vue';
-import libraryView from './views/libraryView.vue';
-import editorView from './views/editorView.vue';
+import view2D from './views/View2D.vue';
+import view3D from './views/View3D.vue';
+import propertyView from './views/PropertyView.vue';
+import libraryView from './views/LibraryView.vue';
+import editorView from './views/EditorView.vue';
 import { computed, onMounted, ref } from "vue";
 import { MenuCommands, setupMenu } from "./menu";
 import { Project, ProjectManager } from "@/lib/project"
