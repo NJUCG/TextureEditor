@@ -138,9 +138,8 @@ export class NodeGraph {
 	}
 
 	public getNodeViewById(uuid: string): NodeView {
-		for (const node of this.nodes.values())
-			if (node.uuid == uuid)
-				return node;
+		if (this.nodes.has(uuid))
+			return this.nodes.get(uuid);
 
 		return null;
 	}

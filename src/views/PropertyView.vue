@@ -11,15 +11,14 @@
 </template>
 
 <script  setup lang="ts">
-import { Color } from "@/lib/utils/color";
-import floatView from "@/components/properties/PropFloat.vue";
-import boolView from "@/components/properties/PropBool.vue";
-import enumView from "@/components/properties/PropEnum.vue";
-import imageView from "@/components/properties/PropImage.vue"
-import colorView from "@/components/properties/PropColor.vue";
-import textureChannel from "@/components/properties/PropTextureChannel.vue";
-import RandomSeedPropertyView from "@/components/properties/PropRandomSeed.vue";
-import stringView from "@/components/properties/PropString.vue";
+import floatView from "@/components/properties/FloatView.vue";
+import boolView from "@/components/properties/BoolView.vue";
+import enumView from "@/components/properties/EnumView.vue";
+import imageView from "@/components/properties/ImageView.vue"
+import colorView from "@/components/properties/ColorView.vue";
+import textureChannel from "@/components/properties/MappingChannelView.vue";
+import RandomSeedPropertyView from "@/components/properties/RandomSeedView.vue";
+import stringView from "@/components/properties/StringView.vue";
 import {
   IProperyUi,
   PropertyChangeComplete
