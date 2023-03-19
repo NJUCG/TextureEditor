@@ -1,31 +1,25 @@
 <template>
-  <div class="field">
-    <label>{{ prop.displayName }}</label>
-    <label>TEST</label>
-    <div>
-      <button class="bool" @click="toggleValue()">
-<!--        {{ val ? "True" : "False" }}-->
-        {{val}}
-      </button>
+    <div class="field">
+        <label>{{ property.displayName }}</label>
+        <el-button @click="updateBoolProperty">{{ boolValue }}</el-button>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
-import {useMainStore} from "@/store";
+import { ref, defineProps } from "vue";
+import { useMainStore } from "@/store";
+import { BoolProperty } from "@/lib/node/node-property";
 
-let val=ref(false);
-import {defineProps, ref} from 'vue'
-const props=defineProps(
-        {
-          prop:Object
-        }
-    );
+const props = defineProps<{ prop: BoolProperty }>();
+const property = props.prop;
+const boolValue = ref(property.getValue());
 
-const toggleValue = () => {
-        val.value=!val.value;
-        const store=useMainStore();
-        store.changeProperties(props.prop.name,val.value);
+const store = useMainStore();
+
+const updateBoolProperty = () => {
+    boolValue.value = !boolValue.value;
+    store.updatePropertyByName(property.name, boolValue.value);
+    console.log("BoolView.vue: update bool property: ", boolValue.value);
 }
 
 </script>
@@ -42,16 +36,5 @@ const toggleValue = () => {
   font-weight: bold;
   padding: 0.4em;
   padding-left: 0;
-}
-
-.bool {
-  margin-top: 0.4em;
-  width: 100%;
-  border: none;
-  border-radius: 2px;
-  color: white;
-  background: #222;
-  padding: 4px;
-  outline: none;
 }
 </style>

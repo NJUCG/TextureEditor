@@ -1,6 +1,7 @@
-import { BaseNode } from "@/lib/node/base-node";
 import { defineStore } from "pinia";
-import { ref, toRaw } from "vue";
+import { ref } from "vue";
+import { BaseNode } from "@/lib/node/base-node";
+import { BaseView } from "@/lib/view/base-view";
 import { TextureCanvas } from "@/lib/utils/texture-canvas";
 import { MappingChannel } from "@/lib/canvas3d";
 
@@ -18,22 +19,8 @@ export const useMainStore = defineStore('main', () => {
         mappingChannel.value = channel;
     }
 
-    function changeProperties(name: String, newValue: any) {//供properties component调用用来修改property的值
-        //遍历整个properties数组，找出需要修改的那一个property（通过name属性）
-        for (let property of toRaw(this.focusedNode).node.properties) {
-
-            if (property.name == name) {
-                if (property.values) {
-                    property.index = newValue;
-                }
-                else {
-                    property.value = newValue;
-                    console.log("已经在store内修改");
-                }
-            }
-        }
-
-        console.log(this.property);
+    function updatePropertyByName(name: string, newValue: any) {
+        focusedNode.value.setProperty(name, newValue);
     }
 
     return {
@@ -43,7 +30,7 @@ export const useMainStore = defineStore('main', () => {
 
         updateFocusedNode,
         updateMappingChannel,
-        changeProperties,
+        updatePropertyByName,
     };
 }
 );

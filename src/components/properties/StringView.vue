@@ -1,44 +1,25 @@
 <template>
-  <div class="field">
-    <div>
-      <label>{{ prop.displayName }}</label>
+    <div class="field">
+        <label>{{ prop.displayName }}</label>
+        <el-input v-model="inputString" placeholder="" @change="updateStringProperty" />
     </div>
-    <div class="input-holder">
-      <div style="width:95%; margin-right:10px">
-				<textarea
-            v-if="prop.isMultiline"
-            :value="prop.value"
-            @blur="updateValue"
-            style="width:100%"
-            rows="5"
-        ></textarea>
-        <input
-            v-if="!prop.isMultiline"
-            type="text"
-            :value="prop.value"
-            @blur="updateValue"
-            style="width:100%"
-        />
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, defineProps } from "vue";
+import { StringProperty } from "@/lib/node/node-property";
+import { useMainStore } from "@/store";
 
-import {defineProps, onMounted, ref} from 'vue'
-import {useMainStore} from "@/store";
-const store=useMainStore();
-const props=defineProps(
-    {
-      prop:Object
-    }
-);
-const updateValue=(evt)=>{
-  console.log("修改值为"+evt.target.value);
-  store.changeProperties(props.prop.name,evt.target.value);
+const props = defineProps<{ prop: StringProperty }>();
+const property = props.prop;
+const inputString = ref(property.getValue());
+
+const store = useMainStore();
+
+const updateStringProperty = (value: string) => {
+    store.updatePropertyByName(property.name, value);
+    console.log("StringView.vue: update string property: ", value);
 }
-
 </script>
 
 <style scoped>

@@ -177,6 +177,12 @@ export class NodeGraph {
 		return true;
 	}
 
+	public connectionValid(outPort: PortView, inPort: PortView): boolean {
+        return inPort != outPort
+            && inPort.port.type != outPort.port.type
+            && inPort.node != outPort.node
+    }
+
 	private reset() {
 		// clear and draw grid
 		this.view.clear(this.ctx, "#4A5050");

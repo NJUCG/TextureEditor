@@ -20,7 +20,7 @@
                     <split-view direction="vertical">
                         <template #A>
                             PropertyView
-                            <!-- <PropertyView></PropertyView> -->
+                            <PropertyView></PropertyView>
                         </template>
                         <template #B>
                             <LibraryView ref="libraryView" :library="library"></LibraryView>

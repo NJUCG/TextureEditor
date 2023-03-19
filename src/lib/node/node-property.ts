@@ -1,13 +1,14 @@
 import { Color } from "../utils/color";
+
 export enum PropertyType {
-    Float = "float",
-    Int = "int",
-    Bool = "bool",
-    Color = "color",
-    Enum = "enum",
-    String = "string",
+    Float,
+    Int,
+    Bool,
+    Color,
+    Enum,
+    String,
     // Gradient = "gradient",
-    Image = "image"
+    Image,
 }
 
 export class PropertyGroup {
@@ -24,7 +25,7 @@ export class PropertyGroup {
 export class Property {
     public name: string;
     public displayName: string;
-    public type: string;
+    public type: PropertyType;
 
     public group: PropertyGroup;
 
@@ -43,7 +44,7 @@ export class Property {
 export interface IPropertyHolder {
     properties: Property[];
     propertyGroups: PropertyGroup[];
-    setProperty(name: string, value: any);
+    setProperty(name: string, value: any): void;
 }
 
 export class FloatProperty extends Property {
@@ -183,7 +184,7 @@ export class EnumProperty extends Property {
         this.displayName = displayName;
         this.values = values;
         this.type = PropertyType.Enum;
-        this.index=index;
+        this.index = index;
     }
 
     public getValues(): string[] {
@@ -296,39 +297,39 @@ export class ColorProperty extends Property {
     }
 }
 
-export class ImageProperty extends Property {
-    value: string;
-    public constructor(
-        name: string,
-        displayName: string,
-        value = "",
-    ) {
-        super();
-        this.name = name;
-        this.displayName = displayName;
-        this.value = value;
-        this.type = PropertyType.Image;
-    }
+// export class ImageProperty extends Property {
+//     value: string;
+//     public constructor(
+//         name: string,
+//         displayName: string,
+//         value = "",
+//     ) {
+//         super();
+//         this.name = name;
+//         this.displayName = displayName;
+//         this.value = value;
+//         this.type = PropertyType.Image;
+//     }
 
-    public getValue(): any {
-        return this.value;
-    }
+//     public getValue(): any {
+//         return this.value;
+//     }
 
-    public setValue(val: any) {
-        // todo: validate
-        this.value = val;
-    }
+//     public setValue(val: any) {
+//         // todo: validate
+//         this.value = val;
+//     }
 
-    public clone(): Property {
-        const prop = new ImageProperty(this.name, this.displayName, this.value);
+//     public clone(): Property {
+//         const prop = new ImageProperty(this.name, this.displayName, this.value);
 
-        return prop;
-    }
+//         return prop;
+//     }
 
-    public copyValuesFrom(prop:ImageProperty) {
-        this.value = prop.value;
-    }
-}
+//     public copyValuesFrom(prop:ImageProperty) {
+//         this.value = prop.value;
+//     }
+// }
 
 
 

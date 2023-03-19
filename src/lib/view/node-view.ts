@@ -8,6 +8,7 @@ import {
 	Color4Canvas,
 } from "./base-view";
 import { NodeGraph } from "../node-graph";
+import { BaseNode } from "../node/base-node";
 import { Port, PortType } from "../node/port";
 import { TextureCanvas } from "../utils/texture-canvas";
 import { Vector2, Rect } from "./basic-item";
@@ -18,7 +19,6 @@ export class NodeView extends BaseView {
 	public title: string;
 	public inPorts: PortView[];
 	public outPorts: PortView[];
-	public indexOfPorts: number;
 	public texCanvas: TextureCanvas;
 
 	public mappingChannel: MappingChannel;
@@ -32,10 +32,8 @@ export class NodeView extends BaseView {
 		this.title = title;
 		this.inPorts = [];
 		this.outPorts = [];
-		this.indexOfPorts = 0;
 		this.texCanvas = new TextureCanvas(w, h);
 		this.mappingChannel = mappingChannel;
-		// this.viewItemState = new NodeViewItemState();
 		this.isDragging = false;
 		this.dragingStart = null;
 	}

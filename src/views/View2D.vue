@@ -27,7 +27,7 @@ const store = useMainStore();
 // 监听pinia
 store.$onAction(({ name, store, after }) => {
 	after(result => {
-		if (name == "updateFocusedNode") {
+		if (name == "updateFocusedNode" || name == "updatePropertyByName") {
 			if (store.focusedNode == null)
 				view2d.clearTextureCanvas();
 			else

@@ -1,38 +1,31 @@
 <template>
-  <div class="field">
-    <label>{{ prop.displayName }}</label>
-    <div>
-      <select class="enum" @change="updateValue" ref="selectEnum">
-        <option
-            v-for="(opt, index) in prop.values"
-            :value="index"
-            :key="index"
-            :selected="index == enumIndex"
-        >{{ opt }}</option
-        >
-      </select>
+    <div class="field">
+        <label>{{ property.displayName }}</label>
+        <el-select v-model="enumList" class="m-2" placeholder="None" @change="updateEnumProperty">
+            <el-option
+                v-for="(name, index) in enumList"
+                :key="index"
+                :value="name"
+            />
+        </el-select>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, defineProps } from "vue";
+import { EnumProperty } from "@/lib/node/node-property";
+import { useMainStore } from "@/store";
 
-import {defineProps, onMounted, ref} from 'vue'
-import {useMainStore} from "@/store";
-let enumIndex=ref(0);
-const props=defineProps(
-    {
-      prop:Object
-    }
-);
-onMounted(() => {
-  enumIndex.value=props.prop.index;
-})
-const updateValue=(evt)=> {
-    const store=useMainStore();
-    store.changeProperties(props.prop.name,evt.target.options.selectedIndex)
-    console.log("修改index为"+evt.target.options.selectedIndex);
-  }
+const props = defineProps<{ prop: EnumProperty }>();
+const property = props.prop;
+const enumList = ref(property.getValues());
+
+const store = useMainStore();
+
+const updateEnumProperty = (value: string) => {
+    store.updatePropertyByName(property.name, enumList.value.indexOf(value));
+    console.log("EnumView.vue: update enum property: ", value);
+}
 
 </script>
 

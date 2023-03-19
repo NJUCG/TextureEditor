@@ -1,30 +1,32 @@
 <template>
     <div class="field">
-    <div>
         <label>{{ property.displayName }}</label>
-    </div>
-    <el-color-picker
-        v-model="colorValue"
-        @active-change="updateColorProperty"
-    >
-    </el-color-picker>
+        <el-slider
+            v-model="floatValue"
+            :min="property.minValue"
+            :max="property.maxValue"
+            :step="property.step"
+            @input="updateNumberProperty"
+            show-input 
+        >
+        </el-slider>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, defineProps } from "vue";
-import { ColorProperty } from "@/lib/node/node-property";
+import { FloatProperty, IntProperty } from "@/lib/node/node-property";
 import { useMainStore } from "@/store";
 
-const props = defineProps<{ prop: ColorProperty }>();
+const props = defineProps<{ prop: FloatProperty | IntProperty }>();
 const property = props.prop;
-const colorValue = ref(property.getValue().toHex());
+const floatValue = ref(property.getValue());
 
 const store = useMainStore();
 
-const updateColorProperty = (value: string) => {
+const updateNumberProperty = (value: number) => {
     store.updatePropertyByName(property.name, value);
-    console.log("ColorView.vue: update color property: ", value);
+    console.log("NumberView.vue: update number property: ", value);
 }
 
 </script>
@@ -42,6 +44,5 @@ const updateColorProperty = (value: string) => {
   padding: 0.4em;
   padding-left: 0;
 }
-
 
 </style>

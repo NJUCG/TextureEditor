@@ -127,7 +127,7 @@ export class PortView extends BaseView {
                 stillDAG ||= this.graph.checkIfDAG(targetPort.node, this.node);
             
             // 3. create and link the new connection
-            if (stillDAG && this.connectionValid(this, targetPort)) {
+            if (stillDAG && this.graph.connectionValid(this, targetPort)) {
                 const uuid = newUUID();
                 const conn = new ConnectionView(uuid);
 
@@ -195,11 +195,4 @@ export class PortView extends BaseView {
         ctx.stroke();
         ctx.setLineDash([]);
     }
-
-    private connectionValid(outPort: PortView, inPort: PortView): boolean {
-        return inPort != outPort
-            && inPort.port.type != outPort.port.type
-            && inPort.node != outPort.node
-    }
-
 }

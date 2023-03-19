@@ -22,7 +22,7 @@ export class Editor {
 
     // <key: enum MappingChannel, value: node.uuid>
     private mappingNodes: Map<number, string>;
-    private store = useMainStore();
+    private store: any;
 
     // callbacks
     public onConnectionSelected: (conn: Connection) => void;
@@ -35,6 +35,7 @@ export class Editor {
         this.selectedNode = null;
         this.selectedConn = null;
         this.mappingNodes = null;
+        this.store = null;
     }
 
     public init(canvas: HTMLCanvasElement, library: Library, designer: Designer) {
@@ -42,6 +43,7 @@ export class Editor {
         this.library = library;
         this.designer = designer;
         this.mappingNodes = new Map<number, string>();
+        this.store = useMainStore();
         this.setup();
     }
 
@@ -145,7 +147,8 @@ export class Editor {
             
             const node = this.designer.nodes.get(nodeView.uuid);
             this.selectedNode = node;
-            useMainStore().updateFocusedNode(node);
+            // update 2d view
+            this.store.updateFocusedNode(node);
         }
 
         this.graph.onNodeViewDeleted = (nodeView: NodeView) => {
@@ -154,7 +157,8 @@ export class Editor {
                 this.clearTextureChannel(nodeView.uuid);
             
             this.designer.removeNode(nodeView.uuid);
-            useMainStore().updateFocusedNode(null);
+            // update 2d view
+            this.store.updateFocusedNode(null);
         }
 
         this.graph.onConnectionViewSelected = (connView: ConnectionView) => {
