@@ -2,17 +2,7 @@ import { BaseNode } from "./base-node";
 import { createShaderProgram } from "../webgl-utils";
 import { Designer, NodeRenderingContext, NodeInputInfo } from "../designer";
 import { Port } from "./port";
-import {
-    Property,
-    FloatProperty,
-    IntProperty,
-    BoolProperty,
-    EnumProperty,
-    StringProperty,
-    ColorProperty,
-    PropertyType,
-    PropertyGroup
-} from "./node-property";
+import * as PROPERTY from "./node-property";
 
 class ShaderProgramInfo {
     program: WebGLProgram;
@@ -205,22 +195,22 @@ export class ShaderNode extends BaseNode {
 
 		for (const prop of this.properties) {
 			switch (true) {
-                case prop instanceof FloatProperty:
+                case prop instanceof PROPERTY.FloatProperty:
                     code += "uniform float prop" + prop.name + ";\n";
                     break;
-                case prop instanceof IntProperty:
+                case prop instanceof PROPERTY.IntProperty:
                     code += "uniform int prop" + prop.name + ";\n";
                     break;
-                case prop instanceof BoolProperty:
+                case prop instanceof PROPERTY.BoolProperty:
                     code += "uniform bool prop" + prop.name + ";\n";
                     break;
-                case prop instanceof EnumProperty:
+                case prop instanceof PROPERTY.EnumProperty:
                     code += "uniform int prop" + prop.name + ";\n";
                     break;
-                case prop instanceof ColorProperty:
+                case prop instanceof PROPERTY.ColorProperty:
                     code += "uniform vec4 prop" + prop.name + ";\n";
                     break;
-                case prop instanceof StringProperty:
+                case prop instanceof PROPERTY.StringProperty:
                     break;
                 default:
                     console.log("ShaderNode: Unexpected property type!");
@@ -265,23 +255,23 @@ export class ShaderNode extends BaseNode {
             const loc = locations["prop" + prop.name];
 			switch (true) {
                 // https://stackoverflow.com/questions/36332665/how-to-use-instanceof-in-a-switch-statement
-                case prop instanceof FloatProperty:
-                    gl.uniform1f(loc, (prop as FloatProperty).value);
+                case prop instanceof PROPERTY.FloatProperty:
+                    gl.uniform1f(loc, (prop as PROPERTY.FloatProperty).value);
                     break;
-                case prop instanceof IntProperty:
-                    gl.uniform1i(loc, (prop as IntProperty).value);
+                case prop instanceof PROPERTY.IntProperty:
+                    gl.uniform1i(loc, (prop as PROPERTY.IntProperty).value);
                     break;
-                case prop instanceof BoolProperty:
-                    gl.uniform1i(loc, (prop as BoolProperty).value == false ? 0 : 1);
+                case prop instanceof PROPERTY.BoolProperty:
+                    gl.uniform1i(loc, (prop as PROPERTY.BoolProperty).value == false ? 0 : 1);
                     break;
-                case prop instanceof EnumProperty:
-                    gl.uniform1i(loc, (prop as EnumProperty).index);
+                case prop instanceof PROPERTY.EnumProperty:
+                    gl.uniform1i(loc, (prop as PROPERTY.EnumProperty).index);
                     break;
-                case prop instanceof ColorProperty:
-                    const color = (prop as ColorProperty).value;
+                case prop instanceof PROPERTY.ColorProperty:
+                    const color = (prop as PROPERTY.ColorProperty).value;
                     gl.uniform4f(loc, color.r, color.g, color.b, color.a);
                     break;
-                case prop instanceof StringProperty:
+                case prop instanceof PROPERTY.StringProperty:
                     break;
                 default:
                     console.log("ShaderNode: Unexpected property type!");
