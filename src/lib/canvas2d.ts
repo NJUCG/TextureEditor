@@ -1,118 +1,124 @@
 import { useMainStore } from '@/store/index';
-import { copyFromCanvas } from '@/lib/node/Node';
-import { NodeScene } from "./scene/nodescene";
-class Vector2 {
-	x: number;
-	y: number;
-	constructor(x: number, y: number) {
-		this.x = x;
-		this.y = y;
+import { Designer } from './designer';
+import { TextureCanvas } from './utils/texture-canvas';
+import { Vector2 } from './view/basic-item';
+
+export class View2D {
+	public canvas: HTMLCanvasElement;
+	public context: CanvasRenderingContext2D;
+
+	public designer: Designer;
+	public texCanvas: TextureCanvas;
+
+	public renderSize: number;
+
+	public mousePos: Vector2;		// 鼠标位置
+
+	public zoomScale: number;		// 缩放参数
+	public offset: Vector2;			// 缩放&平移offset
+
+	// handlers
+	private mouseWheelHandler: (evt: MouseEvent) => void;
+
+	constructor() {
+		this.canvas = null;
+		this.context = null;
+
+		this.designer = null;
+		this.texCanvas = null;
+
+		this.renderSize = null;
+
+		this.mousePos = null;
+
+		this.zoomScale = null;
+		this.offset = null;
 	}
-}
-//记录边界
-class Box {
-	posX: number = 0;
-	posY: number = 0;
-	width: number = 1;
-	height: number = 1;
-	bgColor: number[] = [255, 50, 50];
-	public setSize(w: number, h: number) {
-		this.width = w;
-		this.height = h;
-	}
-}
 
-//画布
-export class CanvasMonitor2D {
-	myCanvas: HTMLCanvasElement;
-	image: HTMLImageElement;
-	context: CanvasRenderingContext2D;
-	box: Box;
-	mousePos: Vector2;//鼠标位置
-	zoomFactor: number;//缩放参数
-	focusNode: any;//鼠标位于2dview界面
-	offsetX: number;//鼠标拖动界面x位移
-	offsetY: number;//鼠标拖动界面y位移
-	t: boolean;
+	public init(canvas: HTMLCanvasElement, designer: Designer) {
+		this.canvas = canvas;
+		this.context = canvas.getContext("2d");
 
+		this.designer = designer;
+		this.texCanvas = new TextureCanvas(800, 800);
 
-	constructor(canvas: HTMLCanvasElement) {
+		this.renderSize = 800;
 
-		this.myCanvas = canvas;
-		this.context = this.myCanvas.getContext("2d");
 		this.mousePos = new Vector2(0, 0);
-		this.image = new Image();
-		this.zoomFactor = 1.0;
-		this.offsetX = 0;
-		this.offsetY = 0;
-		this.t = false;
 
+		this.zoomScale = 1.0;
+		this.offset = new Vector2(canvas.width / 2, canvas.width / 2);
+
+		// event listeners
+		this.mouseWheelHandler = (evt: MouseEvent) => {
+			this.onMouseWheel(evt);
+		}
+
+		this.canvas.addEventListener("mousewheel", this.mouseWheelHandler);
 	}
 
-	public draw(focused:NodeScene): void {
+	public draw() {
 		const ctx = this.context;
 
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
-		ctx.fillStyle = "rgb(50,50,50)";
-		ctx.fillRect(0, 0, this.myCanvas.width, this.myCanvas.height);
+		ctx.fillStyle = "rgb(32, 32, 32)";
+		ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+		ctx.setTransform(
+			this.zoomScale,
+			0,
+			0,
+			this.zoomScale,
+			this.offset.x,
+			this.offset.y
+		);
 
-		if (focused) {
-			ctx.clearRect(0, 0, this.myCanvas.width, this.myCanvas.height);
-			ctx.drawImage(focused.nodecanvas.canvas, 0, 0, this.myCanvas.width, this.myCanvas.height);
-
-			// const dataImage = ctx.createImageData(512, 512);
-			// if (dataImage.data.set) {
-			// 	dataImage.data.set(focused);
-			// }
-
-			// const canvas2: HTMLCanvasElement = document.createElement('canvas');
-			// canvas2.width = 512;
-			// canvas2.height = 512;
-			// const cavans2Ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
-			// cavans2Ctx.putImageData(dataImage, 0, 0);
-
-			// this.myCanvas = canvas2;
-			// this.image.src = canvas2.toDataURL("image/png");
-
-			// ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
-
-		} else if (this.image) {
-			ctx.drawImage(this.image, this.offsetX, this.offsetY, this.myCanvas.width * this.zoomFactor, this.myCanvas.height * this.zoomFactor);
+		if (this.texCanvas) {
+			ctx.lineWidth = 4;
+			ctx.strokeStyle = "black";
+			ctx.strokeRect(-this.renderSize / 2, -this.renderSize / 2, this.renderSize, this.renderSize);
+			ctx.drawImage(
+				this.texCanvas.canvas, 
+				-this.renderSize / 2,
+				-this.renderSize / 2,
+				this.renderSize, 
+				this.renderSize
+			);
 		}
 	}
 
-	setFocusNode(node) {
-		this.focusNode = node;
+	public updateTexureCanvas(texture: WebGLTexture) {
+		this.designer.renderTextureToCanvas(texture, this.texCanvas);
 	}
 
-	setImage(image: HTMLImageElement) {
-		this.image = image;
+	public clearTextureCanvas() {
+		this.texCanvas.clear();
 	}
 
-	setSize(width: number, height: number) {
-		this.myCanvas.width = width;
-		this.myCanvas.height = height;
+	public resize() {
+		this.offset.x = this.canvas.width / 2;
+		this.offset.y = this.canvas.height / 2;
 	}
 
-	getMousePos(evt: MouseEvent) {
-		const rect = this.myCanvas.getBoundingClientRect();
+	public reset() {
+		this.offset.x = this.canvas.width / 2;
+		this.offset.y = this.canvas.height / 2;
+		this.zoomScale = 1.0;
+		this.renderSize = Math.min(this.canvas.width, this.canvas.height);
+	}
+
+	private onMouseWheel(evt: MouseEvent) {
+		const pos = this.getMouseCanvasPos(evt);
+		const delta = (<WheelEvent>evt).deltaY < 0 ? 1.1 : 1.0 / 1.1;
+
+		this.zoomScale *= delta;
+		this.offset.x = pos.x - (pos.x - this.offset.x) * delta;
+		this.offset.y = pos.y - (pos.y - this.offset.y) * delta;
+
+		evt.preventDefault();
+	}
+
+	private getMouseCanvasPos(evt: MouseEvent): Vector2 {
+		const rect = this.canvas.getBoundingClientRect();
 		return new Vector2(evt.clientX - rect.left, evt.clientY - rect.top);
 	}
-
-	setMousePos(x: number, y: number) {
-		this.mousePos = new Vector2(x, y);
-	}
-
-	zoom(factor: number, pos: Vector2) {
-		this.zoomFactor *= factor;
-		this.offsetX = pos.x - (pos.x - this.offsetX) * factor;
-		this.offsetY = pos.y - (pos.y - this.offsetY) * factor;
-	}
-
-	resetImage() {//图片复位
-		this.offsetX = 0;
-		this.offsetY = 0;
-		this.zoomFactor = 1.0;
-	}
-
 }

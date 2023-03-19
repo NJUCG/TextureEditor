@@ -1,49 +1,36 @@
-
 import { defineStore } from "pinia";
-import { NodeScene } from "@/lib/scene/nodescene";
-import { ColorNode } from "@/lib/node/generatorNode";
-import { Node } from "@/lib/node/Node";
-import { Property } from "@/lib/node/NodeProperty";
-import { EnumProperty } from "@/lib/node/NodeProperty";
-import { toRaw } from "vue";
-import { SocketScene } from "@/lib/scene/socketscene";
-import {GeneratorNodeScene} from "@/lib/scene/generatornodescene";
-export const useMainStore = defineStore('main', {
-    state: () => {
-        return {
-            focusedNode: null,
-            colornode: null,
-            property: [],
-            change:true
-        }
-    },
-    getters: {},
-    actions: {
-        displayNodeOnComponents(node: GeneratorNodeScene) {//editor中选中node，展示在2d视图
-            this.focusedNode = node;
-            // this.colornode = node;
-            this.property=node.node.properties;
-            this.change=!this.change;
-            console.log("color node");
-            console.log(node);
-        },
-        changeProperties(name: String, newValue: any) {//供properties component调用用来修改property的值
-            //遍历整个properties数组，找出需要修改的那一个property（通过name属性）
-            for (let property of toRaw(this.focusedNode).node.properties) {
+import { ref } from "vue";
+import { BaseNode } from "@/lib/node/base-node";
+import { BaseView } from "@/lib/view/base-view";
+import { TextureCanvas } from "@/lib/utils/texture-canvas";
+import { MappingChannel } from "@/lib/canvas3d";
 
-                if (property.name == name) {
-                    if (property.values) {
-                        property.index = newValue;
-                    }
-                    else {
-                        property.value = newValue;
-                        console.log("已经在store内修改");
-                    }
-                }
-            }
+export const useMainStore = defineStore('main', () => {
+    const focusedNode = ref<BaseNode>(null);
+    const mappingTexture = ref<TextureCanvas>(null);
+    const mappingChannel = ref<MappingChannel>(null);
 
-            console.log(this.property);
-        },
+    function updateFocusedNode(node: BaseNode) {
+        focusedNode.value = node;
     }
+
+    function updateMappingChannel(texCanvas: TextureCanvas, channel: MappingChannel) {
+        mappingTexture.value = texCanvas;
+        mappingChannel.value = channel;
+    }
+
+    function updatePropertyByName(name: string, newValue: any) {
+        focusedNode.value.setProperty(name, newValue);
+    }
+
+    return {
+        focusedNode,
+        mappingTexture,
+        mappingChannel,
+
+        updateFocusedNode,
+        updateMappingChannel,
+        updatePropertyByName,
+    };
 }
 );

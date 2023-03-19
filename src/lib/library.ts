@@ -1,127 +1,149 @@
-import { resolveComponent, withCtx } from "vue";
-import { PatternNode,ColorNode,SimplexNoiseNode, WorleyNoiseNode, BrickNode, PolygonNode, GradientNode, CellNode} from "./node/generatorNode";
-import { BlurNode,BlendNode, InvertNode } from "./node/filterNode";
-import { Connection } from "./node/connection";
-import { Node } from "./node/Node";
-import { Color } from "./designer/color";
-
-
-
-interface NodeItem<V> {
-	[key: string]: V;
-}
+import * as Atomic from "./node/atomic-node";
+import * as Generator from "./node/generator-node";
+import * as Filter from "./node/filter-node";
+import { BaseNode, NodeType } from "./node/base-node";
+import { Designer } from "./designer";
 
 export enum LibraryItemType {
-	Utils = "utils",//comment frame pin...
-	AtomicNodes = "atomicnodes",//自定义原子节点
-	FunctionNodes = "functionnodes",//函数节点
-	Generators = "generators",
-	Filters = "filters",
-	View3D = "view3d",//环境参数
+	Node = "node",
+	Comment = "comment",
+	Frame = "frame",
 }
-
-export class LibraryItem {//新建节点模块
-	type: string;
+/** 资源库物品信息类, 用于在drag&drop传递相关物品的信息
+ * params:
+ *  type -- 物品类型: node, comment, frame等
+ *  name -- 该物品的名称, 用于drop时创建对应物品
+ */
+export class LibraryItemInfo {
+	type: LibraryItemType;
+	nodeType: NodeType;
 	name: string;
-	node: Node;
 
-	constructor(
-		type: string,
-		name: string = "",
-		node: Node,
-	) {
+	constructor(type: LibraryItemType, nodeType: NodeType, name: string = "") {
 		this.type = type;
+		this.nodeType = nodeType;
 		this.name = name;
-		this.node = node;
 	}
 }
 
-export class LibraryMonitor {
-	utils: NodeItem<LibraryItem>;
-	atomicNodes: NodeItem<LibraryItem>;
-	functionnodes: NodeItem<LibraryItem>;
-	generators: NodeItem<LibraryItem>;
-	filterNodes: NodeItem<LibraryItem>;
-	view3D: NodeItem<LibraryItem>;
-	connect: NodeItem<LibraryItem>;
+// 节点构造器类, 用于创建name类型的节点
+export class NodeCreator {
+	public name: string;
+	public type: NodeType;
+	public create: () => BaseNode;
+}
+
+export class Library {
+	public util: Map<string, NodeCreator>;
+	public atom: Map<string, NodeCreator>;
+	public function: Map<string, NodeCreator>;
+	public generator: Map<string, NodeCreator>;
+	public filter: Map<string, NodeCreator>;
+	public view3d: Map<string, NodeCreator>;
 
 	constructor() {
-		this.utils = {};
-		this.functionnodes = {};
-		this.view3D = {};
-		this.generators = {};
-		this.filterNodes = {};
-		this.connect = {};
-		this.atomicNodes = {};
+		this.util = new Map<string, NodeCreator>();
+		this.atom = new Map<string, NodeCreator>();
+		this.function = new Map<string, NodeCreator>();
+		this.generator = new Map<string, NodeCreator>();
+		this.filter = new Map<string, NodeCreator>();
+		this.view3d = new Map<string, NodeCreator>();
 
-		//add generator node
-		const colorNode = new ColorNode();
-		colorNode.initCanvas();
-		this.addNode("generators", "colorNode", colorNode);
+		// atomic
+		this.addNodeCreator("output", NodeType.Atomic, Atomic.OutputNode);
+		this.addNodeCreator("normal", NodeType.Atomic, Atomic.NormalNode);
+		this.addNodeCreator("color", NodeType.Atomic, Atomic.ColorNode);
+		// generators
+		this.addNodeCreator("simplex", NodeType.Generator, Generator.SimplexNoiseNode);
+		this.addNodeCreator("worley", NodeType.Generator, Generator.WorleyNoiseNode);
+		this.addNodeCreator("brick", NodeType.Generator, Generator.BrickNode);
+		this.addNodeCreator("polygon", NodeType.Generator, Generator.PolygonNode);
+		this.addNodeCreator("gradient", NodeType.Generator, Generator.GradientNode);
+		this.addNodeCreator("cell", NodeType.Generator, Generator.CellNode);
 		
-		const simplexNoiseNode = new SimplexNoiseNode();
-		simplexNoiseNode.initCanvas();
-		this.addNode("generators","simplexNoiseNode",simplexNoiseNode);
-
-		const worleyNoiseNode = new WorleyNoiseNode();
-		worleyNoiseNode.initCanvas();
-		this.addNode("generators","WorleyNoiseNode",worleyNoiseNode);
-
-		const brickNode = new BrickNode();
-		brickNode.initCanvas();
-		this.addNode("generators","brickNode",brickNode);
-
-		const polygonNode = new PolygonNode();
-		polygonNode.initCanvas();
-		this.addNode("generators","polygonNode",polygonNode);
-
-		const gradientNode = new GradientNode();
-		gradientNode.initCanvas();
-		this.addNode("generators","gradientNode",gradientNode);
-
-		const cellNode = new CellNode();
-		cellNode.initCanvas();
-		this.addNode("generators","cellNode",cellNode);
-
-		//add filter node
-		const blendNode = new BlendNode();
-		blendNode.initCanvas();
-		this.addNode("filters","blendNode",blendNode);
-
-		//add blur node
-		const blurNode = new BlurNode();
-		blurNode.initCanvas();
-		this.addNode("filters","blurNode",blurNode);
-
-		//add invert node
-		const invertNode = new InvertNode();
-		invertNode.initCanvas();
-		this.addNode("filters","invertNode",invertNode);
+		// filters
+		this.addNodeCreator("invert", NodeType.Filter, Filter.InvertNode);
+		this.addNodeCreator("blend", NodeType.Filter, Filter.BlendNode);
+		this.addNodeCreator("blur", NodeType.Filter, Filter.BlurNode);
 	}
 
-	public addNode(//向libraryItem中添加节点
-		type: string,
-		name: string = "",
-		nodeItem: Node,
+	/** 用于建立节点库
+	 * refs: https://blog.rsuter.com/how-to-instantiate-a-generic-type-in-typescript/
+	 *       https://stackoverflow.com/questions/39622778/what-is-new-in-typescript
+	 * params:
+	 *  name -- 节点名称, 用于访问不同的构造器
+	 *  type -- 节点对应的类
+	 *  */
+	public addNodeCreator<T extends BaseNode>(
+		name: string,
+		type: NodeType,
+		node: (new() => T)
 	) {
-		if (type == "generators") {
-			const node = new LibraryItem(type, name, nodeItem);
-			this.generators[name] = node;
-			console.log(this.generators);
+		const creator = new NodeCreator();
+		creator.name = name;
+		creator.type = type;
+		creator.create = (): BaseNode => {
+			return new node();
 		}
-		else if (type == "atomicNodes") {
-			const node = new LibraryItem(type, name, nodeItem);
-			this.atomicNodes[name] = node;
-		}
-		else if (type == "filters") {
-			const node = new LibraryItem(type, name, nodeItem);
-			this.filterNodes[name] = node;
+		switch (type) {
+			case NodeType.Util:
+				this.util.set(name, creator);
+				break;
+			case NodeType.Atomic:
+				this.atom.set(name, creator);
+				break;
+			case NodeType.Function:
+				this.function.set(name, creator);
+				break;
+			case NodeType.Generator:
+				this.generator.set(name, creator);
+				break;
+			case NodeType.Filter:
+				this.filter.set(name, creator);
+				break;
+			case NodeType.View3D:
+				this.view3d.set(name, creator);
+				break;
+			default:
+				console.log("Library-addNodeCreator: Unexpected node creator type!");
 		}
 	}
 
-	// public addConnection(connect: Connection)//添加连接
-	// {
-	// 	this.connect[name] = connect;
-	// }
+	// 建立节点库以后, 通过该函数创建不同种类的节点
+	public createNode(name: string, type: NodeType, designer: Designer): BaseNode {
+		let creator = null;
+		switch (type) {
+			case NodeType.Util:
+				creator = this.util.get(name);
+				break;
+			case NodeType.Atomic:
+				creator = this.atom.get(name);
+				break;
+			case NodeType.Function:
+				creator = this.function.get(name);
+				break;
+			case NodeType.Generator:
+				creator = this.generator.get(name);
+				break;
+			case NodeType.Filter:
+				creator = this.filter.get(name);
+				break;
+			case NodeType.View3D:
+				creator = this.view3d.get(name);
+				break;
+			default:
+				console.log("Library-createNode: Unexpected node creator type!");
+		}
+		
+		if (creator == undefined) {
+			console.log("Library-creatorNode: Undefined node creator!");
+			return;
+		}
+		const node = creator.create();
+		node.initRenderingCtx(designer);
+		node.initNode();
+
+		return node;
+	}
 }
 

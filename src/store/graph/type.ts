@@ -1,4 +1,4 @@
-import { NodeGraph } from "@/lib/nodegraph"
+import { NodeGraph } from "@/lib/node-graph"
 
 export interface GraphState {
     nodeGraph: NodeGraph,//整张节点图
