@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineExpose, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Editor } from "@/lib/editor";
 import { Designer } from '@/lib/designer';
 import { Library, LibraryItemType } from '@/lib/library';

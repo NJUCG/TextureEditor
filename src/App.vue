@@ -46,15 +46,14 @@ import EditorView from './views/EditorView.vue';
 import { onMounted, ref } from "vue";
 import { MenuCommands } from "./menu";
 import { Project, ProjectManager } from "@/lib/project";
-import { Editor } from "@/lib/editor";
 import { Library } from '@/lib/library';
 import { Designer } from './lib/designer';
 // electron related
 const { ipcRenderer } = require('electron')
 const remote = require("@electron/remote");
-const { dialog, app, BrowserWindow, Menu } = remote;
+const { dialog } = remote;
 
-let project = new Project();
+let project = null;
 let setupSceneFunc = () => {};
 
 const library = new Library();
@@ -64,17 +63,22 @@ const editorView = ref(null);
 onMounted(() => {
     const { setupInitialScene } = editorView.value;
     setupSceneFunc = setupInitialScene;
-    newProject();
+    project = newProject();
+    setWindowTitle(project.name);
+    setupSceneFunc();
 })
 
 // 处理menu指令
 ipcRenderer.on(MenuCommands.FileOpen, () => {
-    openProject();
+    project = openProject();
+    setWindowTitle(project.name);
+    setupSceneFunc();
 })
 
 ipcRenderer.on(MenuCommands.FileNew, () => {
-    newProject();
-    
+    project = newProject();
+    setWindowTitle(project.name);
+    setupSceneFunc();
 })
 
 ipcRenderer.on(MenuCommands.FileSave, () => {
@@ -85,14 +89,12 @@ ipcRenderer.on(MenuCommands.FileSaveAs, () => {
     saveProject(true);
 })
 
-function newProject() {
-    project.name = "Untitled Project";
-    project.path = null;
-    setWindowTitle(project.name);
-    setupSceneFunc();
+function newProject(): Project {
+    const project = new Project("Untitled Project");
+    return project;
 }
 
-function openProject(projectPath: string = null) {
+function openProject(projectPath: string = null): Project {
     if (!projectPath) {
         let paths = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
         filters: [
@@ -107,7 +109,7 @@ function openProject(projectPath: string = null) {
 
         projectPath = paths[0];
     }
-    project = ProjectManager.load(projectPath);
+    return ProjectManager.load(projectPath);
 }
 
 function saveProject(saveAs: boolean = false) {

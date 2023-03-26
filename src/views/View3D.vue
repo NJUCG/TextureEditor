@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { View3D } from "@/lib/canvas3d";
 import { useMainStore } from "@/store";
 

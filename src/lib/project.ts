@@ -1,14 +1,19 @@
-import exp from "constants";
 import fs from "fs";
 
 export class Project {
-    name: string = null;
-    path: string = null;
-    data: object = null;
+    public name: string;
+    public path: string;
+    public data: {};
+
+    constructor(name: string = null, path: string = null, data: {} = null) {
+        this.name = name;
+        this.path = path;
+        this.data = data;
+    }
 }
 
 export class ProjectManager {
-    static load(path: string): Project {
+    public static load(path: string): Project {
         const project = new Project();
 
         project.path = path;
@@ -20,7 +25,7 @@ export class ProjectManager {
         return project;
     }
 
-    static save(path: string, project: Project) {
+    public static save(path: string, project: Project) {
         fs.writeFileSync(path, JSON.stringify(project.data));
     }
 }
