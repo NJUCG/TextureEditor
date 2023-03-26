@@ -17,6 +17,7 @@ export enum MenuCommands {
 	EditCopy = "edit_copy",
 	EditPaste = "edit_paste",
 
+	ExportPng = "export_png",
 	ExportZip = "export_zip",
 	ExportUnity = "export_unity",
 	ExportUnityZip = "export_unity_zip",
@@ -78,6 +79,20 @@ export function setupMenu(){
 					click: () => {
 						BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.FileSaveAs);
 					}
+				},
+                {
+                    type: 'separator'
+                },
+				{
+					label: "导出纹理",
+					submenu: [
+						{
+							label: "导出为图片(.PNG)",
+							click: () => {
+								BrowserWindow.getFocusedWindow().webContents.send(MenuCommands.ExportPng);
+							}
+						},
+					]
 				},
                 {
                     type: 'separator'

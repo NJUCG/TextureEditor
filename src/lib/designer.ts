@@ -333,4 +333,11 @@ export class Designer {
             }
         }
     }
+
+    public getNodeById(uuid: string): BaseNode {
+		if (this.nodes.has(uuid))
+			return this.nodes.get(uuid);
+
+		return null;
+	}
 }
