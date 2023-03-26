@@ -21,7 +21,7 @@ export class Editor {
     public selectedConn: Connection;
 
     // <key: enum MappingChannel, value: node.uuid>
-    private mappingNodes: Map<number, string>;
+    public mappingNodes: Map<number, string>;
     private store: any;
 
     // callbacks

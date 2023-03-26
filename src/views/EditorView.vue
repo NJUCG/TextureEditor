@@ -27,7 +27,7 @@ const setupInitialScene = () => {
 	editor.setupInitialScene();
 }
 
-defineExpose({ setupInitialScene });
+defineExpose({ editor, setupInitialScene });
 
 onBeforeUnmount(() => {
 	canvas.value.removeEventListener("drop", onDrop);

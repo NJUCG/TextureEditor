@@ -36,6 +36,8 @@
 <script setup lang="ts">
 
 import SplitView from 'vue-split-view'
+// element-plus related
+import { ElMessage } from 'element-plus';
 // view components
 import View2D from './views/View2D.vue';
 import View3D from './views/View3D.vue';
@@ -48,12 +50,16 @@ import { MenuCommands } from "./menu";
 import { Project, ProjectManager } from "@/lib/project";
 import { Library } from '@/lib/library';
 import { Designer } from './lib/designer';
+import { Editor } from './lib/editor';
+import { ImageExportManager } from './lib/manager/exporter';
 // electron related
-const { ipcRenderer } = require('electron')
+const { ipcRenderer, shell } = require('electron')
 const remote = require("@electron/remote");
 const { dialog } = remote;
 
-let project = null;
+let project: Project = null;
+let exportManager: ImageExportManager = null;
+let exportEditor: Editor = null;
 let setupSceneFunc = () => {};
 
 const library = new Library();
@@ -61,9 +67,11 @@ const designer = new Designer();
 const editorView = ref(null);
 
 onMounted(() => {
-    const { setupInitialScene } = editorView.value;
+    const { editor, setupInitialScene } = editorView.value;
+    exportEditor = editor;
     setupSceneFunc = setupInitialScene;
     project = newProject();
+    exportManager = new ImageExportManager(project);
     setWindowTitle(project.name);
     setupSceneFunc();
 })
@@ -87,6 +95,11 @@ ipcRenderer.on(MenuCommands.FileSave, () => {
 
 ipcRenderer.on(MenuCommands.FileSaveAs, () => {
     saveProject(true);
+})
+
+ipcRenderer.on(MenuCommands.ExportPng, () => {
+    const folder = setExportFolder();
+    exportTexturesToPng(folder);
 })
 
 function newProject(): Project {
@@ -135,10 +148,28 @@ function saveProject(saveAs: boolean = false) {
     }
 }
 
-
 function setWindowTitle(newTitle: string) {
   // document.title = newTitle; //修改editor的title
 
+}
+
+async function exportTexturesToPng(folder: string) {
+    exportManager.getMappingTextures(exportEditor);
+    exportManager.exportFilesToFolder(folder);
+
+    ElMessage({
+        message: "Textures exported successfully!",
+        type: "success",
+    });
+}
+
+function setExportFolder(): string {
+    const path = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
+        properties: ["openDirectory", "createDirectory"]
+    });
+    if (path && path.length > 0)
+        return path[0];
+    return null;
 }
 
 </script>
