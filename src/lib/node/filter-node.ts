@@ -2,6 +2,86 @@ import { NodeType } from "@/lib/node/base-node";
 import { ShaderNode } from "@/lib/node/shader-node";
 import { Port, PortType } from "@/lib/node/port";
 
+export  class Transform2DNode extends ShaderNode {
+    public initNode() {
+        this.name = "Transform2D";
+        this.type = NodeType.Filter;
+
+        const inPort = new Port(this.uuid, PortType.In, 0, "Image");
+        this.addInput(inPort);
+        const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
+        this.addOutput(outPort);
+        
+		this.addFloatProperty("TranslateX", "Translate X", 0, -1.0, 1.0, 0.01);
+		this.addFloatProperty("TranslateY", "Translate Y", 0, -1.0, 1.0, 0.01);
+
+		this.addFloatProperty("Scale", "Scale", 1, 0.0, 2.0, 0.01);
+		this.addFloatProperty("ScaleX", "Scale X", 1, -2.0, 2.0, 0.01);
+		this.addFloatProperty("ScaleY", "Scale Y", 1, -2.0, 2.0, 0.01);
+
+		this.addFloatProperty("Rot", "Rotation", 0, 0.0, 360.0, 0.01);
+
+		this.addBoolProperty("Clamp", "Clamp", true);
+
+        const processShaderSource = `
+        mat2 buildScale(float sx, float sy)
+        {
+            return mat2(sx, 0.0, 0.0, sy);
+        }
+
+        // rot is in degrees
+        mat2 buildRot(float rot)
+        {
+            float r = radians(rot);
+            return mat2(cos(r), -sin(r), sin(r), cos(r));
+        }
+        
+        mat3 transMat(vec2 t)
+        {
+            return mat3(vec3(1.0,0.0,0.0), vec3(0.0,1.0,0.0), vec3(t, 1.0));
+        }
+
+        mat3 scaleMat(vec2 s)
+        {
+            return mat3(vec3(s.x,0.0,0.0), vec3(0.0,s.y,0.0), vec3(0.0, 0.0, 1.0));
+        }
+
+        mat3 rotMat(float rot)
+        {
+            float r = radians(rot);
+            return mat3(vec3(cos(r), -sin(r),0.0), vec3(sin(r), cos(r),0.0), vec3(0.0, 0.0, 1.0));
+        }
+
+        vec4 process(vec2 uv)
+        {
+            // transform by (-0.5, -0.5)
+            // scale
+            // rotate
+            // transform
+            // transform by (0.5, 0.5)  
+
+            mat3 trans = transMat(vec2(0.5, 0.5)) *
+                transMat(vec2(propTranslateX, propTranslateY)) *
+                rotMat(propRot) *
+                scaleMat(vec2(propScaleX, propScaleY) * propScale) *
+                transMat(vec2(-0.5, -0.5));
+
+            vec3 res = inverse(trans) * vec3(uv, 1.0);
+            uv = res.xy;
+
+
+            if (propClamp)
+                return texture(inputImage, clamp(uv,vec2(0.0), vec2(1.0)));
+            return texture(inputImage, uv);
+        }
+        `;
+
+        this.buildShader(processShaderSource);
+    }
+}
+
+
+
 export  class InvertNode extends ShaderNode {
     public initNode() {
         this.name = "Invert";

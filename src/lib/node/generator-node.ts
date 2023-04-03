@@ -66,6 +66,45 @@ import { Color } from "@/lib/utils/color";
 
 //     }
 // }
+export class CircleNode extends ShaderNode{
+    public initNode(): void {
+        this.name = "Circle";
+        this.type = NodeType.Generator;
+
+        const outport = new Port(this.uuid,PortType.Out,0,"Output");
+        this.addOutput(outport);
+        
+        this.addFloatProperty("Radius","Radius",0.4,0.1,0.01);
+        this.addEnumProperty("ColorGen","ColorGeneration",[
+            "Flat","Linea","Exponent"
+        ]);
+
+
+        const processShaderSource = `
+            vec4 process(vec2 uv)
+            {
+                float dist = distance(uv, vec2(0.5));
+                if( dist <= propRadius) {
+                    if (propColorGen==0)
+                        return vec4(vec3(1.0), 1.0);
+                    else if (propColorGen==1)
+                        return vec4(vec3(1.0 - dist / propRadius), 1.0);
+                    else if (propColorGen==2)
+                    {
+                        float val = dist / propRadius;
+                        return vec4(vec3(1.0 - val * val), 1.0);
+                    }
+                    
+                }
+
+                return vec4(vec3(0.0), 1.0);
+            }
+        `;
+
+        this.buildShader(processShaderSource);
+    }
+}
+
 
 export class SimplexNoiseNode extends ShaderNode {
     public initNode() {
