@@ -30,27 +30,28 @@ const library = Library.getInstance();
 const editor = Editor.getInstance();
 const project = ProjectManager.getInstance();
 
-ipcRenderer.on(MenuCommands.FileSave, () => {
-	const data = editor.save();
-    ProjectManager.save(data);
-})
-
-ipcRenderer.on(MenuCommands.FileSaveAs, () => {
-	const data = editor.save();
-    ProjectManager.save(data, true);
-})
-
-ipcRenderer.on(MenuCommands.ExportPng, () => {
-	const exportManager = new ImageExportManager(project, editor);
-	exportManager.exportTexturesToPng();
-});
-
 onMounted(() => {
 	editor.setCanvas(canvas.value);
 	editorResizeObserver.observe(containerEditor.value!);
 	canvas.value.addEventListener("drop", onDrop);
 	canvas.value.addEventListener("dragover", onDragOver);
 	canvas.value.addEventListener("click", onClick);
+
+	ipcRenderer.on(MenuCommands.FileSave, () => {
+		const data = editor.save();
+		ProjectManager.save(data);
+	});
+
+	ipcRenderer.on(MenuCommands.FileSaveAs, () => {
+		const data = editor.save();
+		ProjectManager.save(data, true);
+	});
+
+	ipcRenderer.on(MenuCommands.ExportPng, () => {
+		const exportManager = new ImageExportManager(project, editor);
+		exportManager.exportTexturesToPng();
+	});
+
 
 	if (isNewProject)
 		editor.setupInitialScene();
@@ -72,7 +73,10 @@ onBeforeUnmount(() => {
 
 onUnmounted(() => {
 	editor.clear();
-	project.clear();
+	ProjectManager.clear();
+	ipcRenderer.removeAllListeners(MenuCommands.FileSave);
+	ipcRenderer.removeAllListeners(MenuCommands.FileSaveAs);
+	ipcRenderer.removeAllListeners(MenuCommands.ExportPng);
 });
 
 const onDrop = (evt: DragEvent) => {

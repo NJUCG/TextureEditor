@@ -68,14 +68,14 @@ export class NodeGraph {
 		// clear content then draw grid background
 		this.drawScene();
 		
-		// draw nodes
-		this.nodes.forEach((node) => {
-			node.draw(this.ctx);
-		})
-
 		// draw connections
 		this.conns.forEach((conn) => {
 			conn.draw(this.ctx);
+		})
+		
+		// draw nodes
+		this.nodes.forEach((node) => {
+			node.draw(this.ctx);
 		})
 	}
 
@@ -132,6 +132,7 @@ export class NodeGraph {
 			const outPort = outNode.outPorts[conn.outPortIndex];
 
 			const connView = new ConnectionView(conn.uuid, inPort, outPort, graph);
+			connView.in.connection = connView;
 			// link in/out ports
 			graph.conns.set(conn.uuid, connView);
 		});

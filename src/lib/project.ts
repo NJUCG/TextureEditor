@@ -11,12 +11,6 @@ export class Project {
         this.path = path;
         this.data = data;
     }
-
-    public clear() {
-        this.name = null;
-        this.path = null;
-        this.data = null;
-    }
 }
 
 export class ProjectManager {
@@ -98,5 +92,9 @@ export class ProjectManager {
 
     public static setWindowTitle(newTitle: string) {
         document.title = newTitle;
+    }
+
+    public static clear() {
+        ProjectManager.instance = null;
     }
 }
