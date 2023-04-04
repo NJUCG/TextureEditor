@@ -17,6 +17,15 @@ export enum NodeType {
 };
 
 /**
+ * 描述纹理像素信息
+ */
+export class PixelDataInfo {
+    data: Float32Array;         // 像素数组
+    width: number;              // 纹理宽
+    height: number;             // 纹理高
+}
+
+/**
  * 节点抽象类, 保存节点的基本信息和基本方法
  */
 export abstract class BaseNode implements PROPERTY.IPropertyHolder {
@@ -29,6 +38,7 @@ export abstract class BaseNode implements PROPERTY.IPropertyHolder {
     public gl: WebGL2RenderingContext;
     public targetTex: WebGLTexture;
     public texSize: GLuint;
+    public texData: PixelDataInfo;
     // every node has a randomSeed
     public randomSeed: number;
     // inputs' ports of this node
@@ -48,6 +58,7 @@ export abstract class BaseNode implements PROPERTY.IPropertyHolder {
         this.designer = null;
         this.targetTex = null;
         this.texSize = 2048;
+        // this.texData = new PixelDataInfo();
         this.randomSeed = 0;
         this.inputs = [];
         this.outputs = [];
@@ -145,7 +156,7 @@ export abstract class BaseNode implements PROPERTY.IPropertyHolder {
         gl.bindTexture(gl.TEXTURE_2D, targetTex);
 
         const level = 0;
-        const internalFormat = gl.RGBA16F;
+        const internalFormat = gl.RGBA32F;
         const border = 0;
         const format = gl.RGBA;
         const type = gl.FLOAT;
@@ -161,5 +172,8 @@ export abstract class BaseNode implements PROPERTY.IPropertyHolder {
 		gl.bindTexture(gl.TEXTURE_2D, null);
 
 		this.targetTex = targetTex;
+        // this.texData.data = new Float32Array(this.texSize * this.texSize * 4);
+        // this.texData.width = this.texSize;
+        // this.texData.height = this.texSize;
     }
 }

@@ -125,7 +125,7 @@ export class ShaderNode extends BaseNode {
         // console.log("完成绑定位置坐标, 纹理坐标");
 
         // 设定渲染窗口为纹理大小
-        gl.viewport(0, 0, context.textureWidth, context.textureHeight);
+        gl.viewport(0, 0, this.texSize, this.texSize);
         gl.clearColor(1, 1, 1, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.bindVertexArray(vao);
@@ -134,6 +134,9 @@ export class ShaderNode extends BaseNode {
         // 绘制顶点, 组成矩形 https://juejin.cn/post/6992934014411620365
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         // console.log("完成绘制顶点, 组成矩形");
+
+        // 读取纹理数据
+        // gl.readPixels(0, 0, this.texData.width, this.texData.height, gl.RGBA, gl.FLOAT, this.texData.data);
 
         // 清空webgl状态
         gl.disableVertexAttribArray(posLoc);

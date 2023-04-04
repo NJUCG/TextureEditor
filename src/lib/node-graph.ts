@@ -9,6 +9,8 @@ import {
 import { NodeView } from "./view/node-view";
 import { PortView } from "./view/port-view";
 import { ConnectionView } from "./view/connection-view";
+import { Designer } from "./designer";
+import { PortType } from "./node/port";
 
 export class NodeGraph {
 	public canvas: HTMLCanvasElement;
@@ -64,7 +66,7 @@ export class NodeGraph {
 
 	public draw() {
 		// clear content then draw grid background
-		this.reset();
+		this.drawScene();
 		
 		// draw nodes
 		this.nodes.forEach((node) => {
@@ -77,6 +79,66 @@ export class NodeGraph {
 		})
 	}
 
+	public save() {
+		const data = {};
+
+		// node info 
+		const nodeInfo = [];
+		this.nodes.forEach((node) => {
+			const info = {};
+			info["uuid"] = node.uuid;
+			info["title"] = node.title;
+			info["left"] = node.left;
+			info["top"] = node.top;
+
+			nodeInfo.push(info);
+		});
+
+		data["nodes"] = nodeInfo;
+
+		return data;
+	}
+
+	public static load(data: {}, designer: Designer, canvas: HTMLCanvasElement): NodeGraph {
+		const graph = new NodeGraph(canvas);
+
+		// load nodeViews
+		const nodes = data["nodes"];
+		for (const nodeInfo of nodes) {
+			const uuid = nodeInfo["uuid"];
+			const title = nodeInfo["title"];
+			const left = nodeInfo["left"];
+			const top = nodeInfo["top"];
+
+			const nodeView = new NodeView(uuid, title, left, top);
+			const node = designer.getNodeById(uuid);
+			
+			for (const port of node.inputs)
+				nodeView.addPortView(port);
+			nodeView.arrangePortViews(PortType.In);
+			for (const port of node.outputs)
+				nodeView.addPortView(port);
+			nodeView.arrangePortViews(PortType.Out);
+
+			graph.addNodeView(nodeView);
+		}
+
+		// load connectionViews
+		const conns = designer.conns;
+		conns.forEach((conn) => {
+			const inNode = graph.nodes.get(conn.inNodeId);
+			const inPort = inNode.inPorts[conn.inPortIndex];
+			const outNode = graph.nodes.get(conn.outNodeId);
+			const outPort = outNode.outPorts[conn.outPortIndex];
+
+			const connView = new ConnectionView(conn.uuid, inPort, outPort, graph);
+			// link in/out ports
+			graph.conns.set(conn.uuid, connView);
+		});
+
+		return graph;
+	}
+
 	public clear() {
 		this.canvas.removeEventListener("mouseup", this.mouseUpHandler);
 		this.canvas.removeEventListener("mousemove", this.mouseMoveHandler);
@@ -86,6 +148,13 @@ export class NodeGraph {
 		this.view = null;
 		this.nodes = null;
 		this.conns = null;
+		this.selectedItem = null;
+		this.hoveredItem = null;
+	}
+
+	public reset() {
+		this.nodes.clear();
+		this.conns.clear();
 		this.selectedItem = null;
 		this.hoveredItem = null;
 	}
@@ -183,7 +252,7 @@ export class NodeGraph {
             && inPort.node != outPort.node
     }
 
-	private reset() {
+	private drawScene() {
 		// clear and draw grid
 		this.view.clear(this.ctx, "#4A5050");
 		this.view.setViewMatrix(this.ctx);

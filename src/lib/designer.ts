@@ -1,8 +1,9 @@
 import { BaseNode } from "./node/base-node";
 import { ShaderNode } from "./node/shader-node";
 import { Connection } from "./node/connection";
-import { createShaderProgram } from "./webgl-utils";
-import { TextureCanvas } from "./utils/texture-canvas";
+import { ThumbnailRenderer } from "./manager/thumbnail";
+import { PropertyType } from "./node/node-property";
+import { Library } from "./library";
 
 export class NodeInputInfo {
     name: string;
@@ -36,6 +37,13 @@ export class NodeRenderingContext {
 }
 
 export class Designer {
+    private static instance: Designer = null;
+    public static getInstance() {
+        if (!Designer.instance)
+            Designer.instance = new Designer();
+        return Designer.instance;
+    }
+
     public canvas: HTMLCanvasElement;
     // rendering ctx
     public gl: WebGL2RenderingContext;
@@ -45,8 +53,6 @@ export class Designer {
     public texSize: number;
     public randomSeed: number;
 
-    public thumbnailProgram: WebGLProgram;      // 仅用于从targetTex绘制缩略图
-
     public nodes: Map<string, BaseNode>;
     public conns: Map<string, Connection>;
 
@@ -55,10 +61,12 @@ export class Designer {
     // callbacks
     public onNodeTextureUpdated: (Node: BaseNode) => void;
 
-    public constructor() {
+    private constructor() {
         // webgl2 context
         this.canvas = document.createElement("canvas");
         this.gl = this.canvas.getContext("webgl2");
+        // init thumbnail renderer
+        ThumbnailRenderer.getInstance().initRenderingCtx(this.canvas, this.gl);
         // designer texture's resolution
         this.texSize = this.canvas.width = this.canvas.height = 2048;
         this.randomSeed = 32;
@@ -103,12 +111,105 @@ export class Designer {
             }
         }
     }
+
+    public reset() {
+        this.nodes.clear();
+        this.conns.clear();
+        this.queueToUpdate = [];
+    }
+
+    public save() {
+        const data = {};
+        data["texSize"] = this.texSize;
+        data["randomSeed"] = this.randomSeed;
+
+        // node info
+        const nodeInfo = [];
+        this.nodes.forEach((node) => {
+            // basic info
+            const info = {};
+            info["uuid"] = node.uuid;
+            info["name"] = node.name;
+            info["type"] = node.type;
+            info["randomSeed"] = node.randomSeed;
+            // properties
+            const propInfo = {};
+            for (const prop of node.properties) {
+                if (prop.type == PropertyType.Image) {
+                    // 需要实现
+                } else {
+                    propInfo[prop.name] = prop.getValue();
+                }
+            }
+            info["properties"] = propInfo;
+
+            nodeInfo.push(info);
+        });
+        
+        // connection info
+        const connInfo = [];
+        this.conns.forEach((conn) => {
+            // basic info
+            const info = {};
+            info["uuid"] = conn.uuid;
+            info["outNodeId"] = conn.outNodeId;
+            info["outPortIndex"] = conn.outPortIndex;
+            info["inNodeId"] = conn.inNodeId;
+            info["inPortIndex"] = conn.inPortIndex;
+            
+            connInfo.push(info);
+        });
+
+        data["nodes"] = nodeInfo;
+        data["conns"] = connInfo;
+
+        return data;
+    }
+
+    public static load(data: {}, library: Library) {
+        const designer = new Designer();
+        designer.texSize = data["texSize"];
+        designer.randomSeed = data["randomSeed"];
+
+        // load nodes
+        const nodeInfo = data["nodes"];
+        for (const info of nodeInfo) {
+            const uuid = info["uuid"];
+            const name = info["name"];
+            const type = info["type"];
+            const randomSeed = info["randomSeed"];
+            
+            const node = library.createNode(name, type, designer);
+            node.uuid = uuid;
+            node.randomSeed = randomSeed;
+
+            const props = info["properties"];
+            for (const propName of props) {
+                node.setProperty(propName, props[propName]);
+            }
+
+            designer.addNode(node);
+        }
+
+        // load connections
+        const connInfo = data["conns"];
+        for (const info of connInfo) {
+            const uuid = info["uuid"];
+            const outNodeId = info["outNodeId"];
+            const outPortIndex = info["outPortIndex"];
+            const inNodeId = info["inNodeId"];
+            const inPortIndex = info["inPortIndex"];
+
+            designer.addConnection(uuid, outNodeId, outPortIndex, inNodeId, inPortIndex);
+        }
+
+        return designer;
+    }
     
     private init() {
         // buffer, fbo, shader是所有节点共用的, 用于节点渲染和生成节点缩略图
         this.initBuffers();
         this.initFBO();
-        this.initThumbnailProgram();
     }
 
     private initBuffers() {
@@ -147,34 +248,6 @@ export class Designer {
     private initFBO() {
         const gl = this.gl;
         this.fbo = gl.createFramebuffer();
-    }
-
-    private initThumbnailProgram() {
-        const vertSource = `#version 300 es
-        precision highp float;
-
-        in vec3 aVertPosition;
-        in vec2 aTexCoord;
-            
-        out vec2 vTexCoord;
-
-        void main() {
-            gl_Position = vec4(aVertPosition, 1.0);
-            vTexCoord = aTexCoord;
-        }`
-        const fragSource = `#version 300 es
-        precision highp float;
-
-        in vec2 vTexCoord;
-        uniform sampler2D uTex;
-        
-        out vec4 outColor;
-        
-        void main() {
-            outColor = texture(uTex, vTexCoord);
-        }`
-
-        this.thumbnailProgram = createShaderProgram(this.gl, vertSource, fragSource);
     }
     
     /**
@@ -216,57 +289,6 @@ export class Designer {
             this.onNodeTextureUpdated(node);
         
         node.needToUpdate = false;
-    }
-
-    /**
-     * render node's texture then draw it on the image canvas
-     * @param texture
-     * @param canvas 
-     */
-    public renderTextureToCanvas(texture: WebGLTexture, targetCanvas: TextureCanvas) {
-        const gl = this.gl;
-
-        // bind shader
-        gl.useProgram(this.thumbnailProgram);
-		// bind mesh
-		const posLoc = gl.getAttribLocation(this.thumbnailProgram, "aVertPosition");
-		const texCoordLoc = gl.getAttribLocation(
-			this.thumbnailProgram,
-			"aTexCoord"
-		);
-
-		// provide texture coordinates for the rectangle.
-        const vao = gl.createVertexArray();
-        gl.bindVertexArray(vao);
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
-		gl.enableVertexAttribArray(posLoc);
-		gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-		gl.enableVertexAttribArray(texCoordLoc);
-		gl.vertexAttribPointer(texCoordLoc, 2, gl.FLOAT, false, 0, 0);
-
-		// send texture
-		gl.uniform1i(gl.getUniformLocation(this.thumbnailProgram, "uTex"), 0);
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-
-        gl.clearColor(1, 1, 1, 1);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        gl.bindVertexArray(vao);
-
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-		// cleanup
-		gl.disableVertexAttribArray(posLoc);
-		gl.disableVertexAttribArray(texCoordLoc);
-        gl.bindVertexArray(null);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-
-		targetCanvas.drawToTextureCanvas(this.canvas);
     }
 
     public addNode(node: BaseNode) {

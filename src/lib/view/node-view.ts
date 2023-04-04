@@ -156,6 +156,14 @@ export class NodeView extends BaseView {
 		return ports;
 	}
 
+	public get left() {
+		return (this.area as Rect).left;
+	}
+
+	public get top() {
+		return (this.area as Rect).top;
+	}
+
 	/**
      * handle mouse events
      * @param evt 

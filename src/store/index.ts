@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { Project } from "@/lib/project";
 import { BaseNode } from "@/lib/node/base-node";
-import { BaseView } from "@/lib/view/base-view";
 import { TextureCanvas } from "@/lib/utils/texture-canvas";
 import { MappingChannel } from "@/lib/canvas3d";
 

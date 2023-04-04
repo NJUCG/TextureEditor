@@ -3,10 +3,10 @@
         <template #A>
             <split-view direction="vertical">
                 <template #A>
-                    <View2D :designer="designer"></View2D>
+                    <View2D v-if="hasProject"></View2D>
                 </template>
                 <template #B>
-                    <View3D></View3D>
+                    <View3D v-if="hasProject"></View3D>
                 </template>
             </split-view>
         </template>
@@ -14,16 +14,16 @@
         <template #B>
             <split-view direction="horizontal" a-init="75%">
                 <template #A>
-                    <EditorView ref="editorView" :designer="designer" :library="library"></EditorView>
+                    <EditorView v-if="hasProject" ref="editorView" :isNewProject="isNewProject"></EditorView>
                 </template>
                 <template #B>
                     <split-view direction="vertical">
                         <template #A>
                             PropertyView
-                            <PropertyView></PropertyView>
+                            <PropertyView v-if="hasProject"></PropertyView>
                         </template>
                         <template #B>
-                            <LibraryView ref="libraryView" :library="library"></LibraryView>
+                            <LibraryView ref="libraryView"></LibraryView>
                             <!-- <LibraryView class="library-pane" ref="libraryCanvas" :library="library"></LibraryView> -->
                         </template>
                     </split-view>
@@ -36,8 +36,6 @@
 <script setup lang="ts">
 
 import SplitView from 'vue-split-view'
-// element-plus related
-import { ElMessage } from 'element-plus';
 // view components
 import View2D from './views/View2D.vue';
 import View3D from './views/View3D.vue';
@@ -45,132 +43,36 @@ import PropertyView from './views/PropertyView.vue';
 import LibraryView from './views/LibraryView.vue';
 import EditorView from './views/EditorView.vue';
 // libs
-import { onMounted, ref } from "vue";
+import { ref, nextTick } from "vue";
 import { MenuCommands } from "./menu";
-import { Project, ProjectManager } from "@/lib/project";
-import { Library } from '@/lib/library';
-import { Designer } from './lib/designer';
-import { Editor } from './lib/editor';
-import { ImageExportManager } from './lib/manager/exporter';
+import { ProjectManager } from "@/lib/project";
 // electron related
-const { ipcRenderer, shell } = require('electron')
-const remote = require("@electron/remote");
-const { dialog } = remote;
+import { ipcRenderer } from "electron";
 
-let project: Project = null;
-let exportManager: ImageExportManager = null;
-let exportEditor: Editor = null;
-let setupSceneFunc = () => {};
-
-const library = new Library();
-const designer = new Designer();
 const editorView = ref(null);
 
-onMounted(() => {
-    const { editor, setupInitialScene } = editorView.value;
-    exportEditor = editor;
-    setupSceneFunc = setupInitialScene;
-    project = newProject();
-    exportManager = new ImageExportManager(project);
-    setWindowTitle(project.name);
-    setupSceneFunc();
-})
+const hasProject = ref(false);
+const isNewProject = ref(false);
 
 // 处理menu指令
 ipcRenderer.on(MenuCommands.FileOpen, () => {
-    project = openProject();
-    setWindowTitle(project.name);
-    setupSceneFunc();
+    hasProject.value = false;
+    nextTick(() => {
+        const project = ProjectManager.open();
+        hasProject.value = true;
+        ProjectManager.setWindowTitle(project.name);
+    });
 })
 
 ipcRenderer.on(MenuCommands.FileNew, () => {
-    project = newProject();
-    setWindowTitle(project.name);
-    setupSceneFunc();
-})
-
-ipcRenderer.on(MenuCommands.FileSave, () => {
-    saveProject();
-})
-
-ipcRenderer.on(MenuCommands.FileSaveAs, () => {
-    saveProject(true);
-})
-
-ipcRenderer.on(MenuCommands.ExportPng, () => {
-    const folder = setExportFolder();
-    exportTexturesToPng(folder);
-})
-
-function newProject(): Project {
-    const project = new Project("Untitled Project");
-    return project;
-}
-
-function openProject(projectPath: string = null): Project {
-    if (!projectPath) {
-        let paths = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
-        filters: [
-            {
-            name: "Images",
-            extensions: ["jpg"]
-            }
-        ],
-        });
-
-        if (!paths) return;
-
-        projectPath = paths[0];
-    }
-    return ProjectManager.load(projectPath);
-}
-
-function saveProject(saveAs: boolean = false) {
-    if (!project.path || saveAs) {
-        let path = dialog.showSaveDialogSync(remote.getCurrentWindow(), {
-        // filters: [
-        //   {
-        //     name: "Images",
-        //     extensions: ["jpg"]
-        //   }
-        // ],
-        });
-        if (!path) return;
-        const fileName = path.replace(/^.*[\\/]/, "");
-        project.name = fileName.substring(0, fileName.lastIndexOf(".")) || fileName;
-        project.path = path;
-
-        ProjectManager.save(path, project);
-        setWindowTitle(project.name);
-
-    } else {
-        ProjectManager.save(project.path, project);
-    }
-}
-
-function setWindowTitle(newTitle: string) {
-  // document.title = newTitle; //修改editor的title
-
-}
-
-async function exportTexturesToPng(folder: string) {
-    exportManager.getMappingTextures(exportEditor);
-    exportManager.exportFilesToFolder(folder);
-
-    ElMessage({
-        message: "Textures exported successfully!",
-        type: "success",
+    hasProject.value = false;
+    nextTick(() => {
+        const project = ProjectManager.new();
+        hasProject.value = true;
+        isNewProject.value = true;
+        ProjectManager.setWindowTitle(project.name);
     });
-}
-
-function setExportFolder(): string {
-    const path = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
-        properties: ["openDirectory", "createDirectory"]
-    });
-    if (path && path.length > 0)
-        return path[0];
-    return null;
-}
+})
 
 </script>
 

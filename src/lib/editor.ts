@@ -6,12 +6,22 @@ import { NodeGraph } from "./node-graph";
 import { NodeView } from "./view/node-view";
 import { ConnectionView } from "./view/connection-view";
 import { Designer } from "./designer";
+import { ThumbnailRenderer } from "./manager/thumbnail";
 import { newUUID } from "./utils";
 import { MappingChannel, mappingChannelName } from "./canvas3d";
-import { Color } from "./utils/color";
 import { useMainStore } from "@/store";
 
 export class Editor {
+    private static instance: Editor = null;
+    public static getInstance() {
+        if (!Editor.instance) {
+            const library = Library.getInstance();
+            const designer = Designer.getInstance();
+            Editor.instance = new Editor(library, designer);
+        }
+        return Editor.instance;
+    }
+
     public canvas: HTMLCanvasElement;
 
     public library: Library;
@@ -27,10 +37,10 @@ export class Editor {
     // callbacks
     public onConnectionSelected: (conn: Connection) => void;
 
-    constructor() {
+    constructor(library: Library, designer: Designer) {
         this.canvas = null;
-        this.library = null;
-        this.designer = null;
+        this.library = library;
+        this.designer = designer;
         this.graph = null;
         this.selectedNode = null;
         this.selectedConn = null;
@@ -38,10 +48,8 @@ export class Editor {
         this.store = null;
     }
 
-    public init(canvas: HTMLCanvasElement, library: Library, designer: Designer) {
+    public setCanvas(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-        this.library = library;
-        this.designer = designer;
         this.mappingNodes = new Map<number, string>();
         this.store = useMainStore();
         this.setup();
@@ -58,9 +66,16 @@ export class Editor {
     }
 
     public setup() {
-        this.clearAllTextureChannels();
         this.setupDesigner();
         this.setupScene();
+    }
+
+    public clear() {
+        this.designer.reset();
+        this.graph.reset();
+        this.selectedNode = null;
+        this.selectedConn = null;
+        this.mappingNodes.clear();
     }
 
     public setupInitialScene() {
@@ -94,6 +109,29 @@ export class Editor {
         }
     }
 
+    public save(): {} {
+        const data = {};
+        data["designer"] =  this.designer.save();
+        data["graph"] = this.graph.save();
+
+        const mappings = {};
+        this.mappingNodes.forEach((value, key) => {
+            mappings[key] = value; 
+        });
+        data["mappings"] = mappings;
+
+        return data;
+    }
+
+    public load(data: {}, canvas: HTMLCanvasElement) {
+        this.designer = Designer.load(data["designer"], this.library);
+        this.graph = NodeGraph.load(data["graph"], this.designer, canvas);
+        const mappings = data["mappings"];
+        for (const [channel, uuid] of mappings) {
+            this.setMappingChannelByNode(uuid, channel);
+        }
+    }
+
     public addNode(node: BaseNode, centerX: number = 0, centerY: number = 0): NodeView {
         // console.log("editor.ts: addNode");
         // console.log(node);
@@ -122,11 +160,13 @@ export class Editor {
 
     private setupDesigner() {
         this.designer.onNodeTextureUpdated = (node: BaseNode) => {
+            const renderer = ThumbnailRenderer.getInstance();
             const nodeView = this.graph.getNodeViewById(node.uuid);
             if (!nodeView)
                 return;
             
-            this.designer.renderTextureToCanvas(node.targetTex, nodeView.texCanvas);
+            console.log(renderer);
+            renderer.renderTextureToCanvas(node.targetTex, nodeView.texCanvas);
             
             if (nodeView.mappingChannel)
                 this.store.updateMappingChannel(nodeView.texCanvas, nodeView.mappingChannel);
@@ -134,10 +174,6 @@ export class Editor {
     }
 
     private setupScene() {
-        // clear prev graph
-        // if (this.graph)
-        //     this.graph.clear();
-        
         this.graph = new NodeGraph(this.canvas);
 
         // set NodeGraph callbacks
@@ -203,10 +239,6 @@ export class Editor {
         // update view3d texture mapping
         this.store.updateMappingChannel(nodeView.texCanvas, channel);
         // console.log(channel);
-    }
-
-    private clearAllTextureChannels() {
-
     }
 
     private clearTextureChannel(uuid: string) {

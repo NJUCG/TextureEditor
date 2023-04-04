@@ -12,11 +12,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { View2D } from '@/lib/canvas2d';
-import { Designer } from '@/lib/designer';
 import { useMainStore } from '@/store';
-
-const props = defineProps<{ designer: Designer }>();
-const designer = props.designer;
 
 const container2d = ref<HTMLDivElement | null>(null);
 const preview2d = ref<HTMLCanvasElement | null>(null);
@@ -37,7 +33,7 @@ store.$onAction(({ name, store, after }) => {
 })
 
 onMounted(() => {
-	view2d.init(preview2d.value!, designer);
+	view2d.init(preview2d.value!);
 	preview2dResizeObserver.observe(container2d.value!);
 
 	const draw = () => {
