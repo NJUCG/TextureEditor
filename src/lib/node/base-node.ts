@@ -32,6 +32,7 @@ export abstract class BaseNode implements PROPERTY.IPropertyHolder {
     // node info
     public uuid: string;
     public name: string;
+    public title: string;
     public type: NodeType;
     // rendering context for texture
     public designer: Designer;
@@ -69,7 +70,7 @@ export abstract class BaseNode implements PROPERTY.IPropertyHolder {
 
     public abstract initRenderingCtx(designer: Designer): void;
 
-    public abstract initNode(): void;
+    public abstract initNode(name: string): void;
 
     public addInput(port: Port) {
         this.inputs.push(port);

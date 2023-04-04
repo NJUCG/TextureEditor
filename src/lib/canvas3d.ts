@@ -101,7 +101,7 @@ export class View3D {
         tex.repeat.set(this.texRepeat, this.texRepeat);
         tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
-        console.log(channel);
+        // console.log(channel);
         switch (channel) {
             case MappingChannel.BaseColor:
                 this.setBaseColorTexture(tex);

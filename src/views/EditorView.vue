@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, onUnmounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue';
 import { Editor } from "@/lib/editor";
 import { Designer } from '@/lib/designer';
 import { ProjectManager } from '@/lib/project';
@@ -52,9 +52,10 @@ onMounted(() => {
 		exportManager.exportTexturesToPng();
 	});
 
-
 	if (isNewProject)
 		editor.setupInitialScene();
+	else
+		editor.updateAllChannels();
 
 	const draw = () => {
 		editor.update();

@@ -46,6 +46,7 @@ import EditorView from './views/EditorView.vue';
 import { ref, nextTick } from "vue";
 import { MenuCommands } from "./menu";
 import { ProjectManager } from "@/lib/project";
+import { Editor } from "@/lib/editor";
 // electron related
 import { ipcRenderer } from "electron";
 
@@ -57,8 +58,10 @@ const isNewProject = ref(false);
 // 处理menu指令
 ipcRenderer.on(MenuCommands.FileOpen, () => {
     hasProject.value = false;
+    isNewProject.value = false;
     nextTick(() => {
         const project = ProjectManager.open();
+        Editor.load(project.data);
         hasProject.value = true;
         ProjectManager.setWindowTitle(project.name);
     });
@@ -66,6 +69,7 @@ ipcRenderer.on(MenuCommands.FileOpen, () => {
 
 ipcRenderer.on(MenuCommands.FileNew, () => {
     hasProject.value = false;
+    isNewProject.value = false;
     nextTick(() => {
         const project = ProjectManager.new();
         hasProject.value = true;

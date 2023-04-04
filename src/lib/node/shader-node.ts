@@ -38,7 +38,7 @@ export class ShaderNode extends BaseNode {
         this.programInfo = null;
     }
 
-    public initNode() {}
+    public initNode(name: string) {}
 
     // 初始化渲染上下文
     public initRenderingCtx(designer: Designer) {

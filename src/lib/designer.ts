@@ -1,8 +1,8 @@
-import { BaseNode } from "./node/base-node";
+import { BaseNode, NodeType } from "./node/base-node";
 import { ShaderNode } from "./node/shader-node";
 import { Connection } from "./node/connection";
 import { ThumbnailRenderer } from "./manager/thumbnail";
-import { PropertyType } from "./node/node-property";
+import { PropertyType, EnumProperty } from "./node/node-property";
 import { Library } from "./library";
 
 export class NodeInputInfo {
@@ -174,19 +174,20 @@ export class Designer {
         // load nodes
         const nodeInfo = data["nodes"];
         for (const info of nodeInfo) {
-            const uuid = info["uuid"];
-            const name = info["name"];
-            const type = info["type"];
-            const randomSeed = info["randomSeed"];
+            // console.log(info);
+            const uuid: string = info["uuid"];
+            const name: string = info["name"];
+            const type: NodeType = info["type"];
+            const randomSeed: number = info["randomSeed"];
             
             const node = library.createNode(name, type, designer);
             node.uuid = uuid;
             node.randomSeed = randomSeed;
 
-            const props = info["properties"];
-            for (const propName of props) {
-                node.setProperty(propName, props[propName]);
-            }
+            const propInfo = info["properties"];
+            // console.log(typeof(props), props);
+            for (const name of Object.keys(propInfo))
+                node.setProperty(name, propInfo[name]);
 
             designer.addNode(node);
         }

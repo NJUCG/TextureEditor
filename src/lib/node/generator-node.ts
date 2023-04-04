@@ -68,8 +68,9 @@ import { Color } from "@/lib/utils/color";
 // }
 
 export class SimplexNoiseNode extends ShaderNode {
-    public initNode() {
-        this.name = "Simplex Noise";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Simplex Noise";
         this.type = NodeType.Generator;
 
         const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
@@ -145,8 +146,9 @@ export class SimplexNoiseNode extends ShaderNode {
 
 // Worley Noise(Cell Noise)
 export class WorleyNoiseNode extends ShaderNode {
-    public initNode() {
-        this.name = "Worley Noise";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Worley Noise";
         this.type = NodeType.Generator;
 
         const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
@@ -232,8 +234,9 @@ export class WorleyNoiseNode extends ShaderNode {
 }
 
 export class BrickNode extends ShaderNode {
-    public initNode() {
-        this.name = "Brick";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Brick";
         this.type = NodeType.Generator;
 
         const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
@@ -361,8 +364,9 @@ export class BrickNode extends ShaderNode {
 }
 
 export class PolygonNode extends ShaderNode {
-    public initNode() {
-        this.name = "Polygon";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Polygon";
         this.type = NodeType.Generator;
 
         const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
@@ -407,8 +411,9 @@ export class PolygonNode extends ShaderNode {
 }
 
 export class GradientNode extends ShaderNode {
-    public initNode() {
-        this.name = "Gradient";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Gradient";
         this.type = NodeType.Generator;
 
         const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
@@ -505,8 +510,9 @@ export class GradientNode extends ShaderNode {
 }
 
 export class CellNode extends ShaderNode {
-    public initNode() {
-        this.name = "Cell";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Cell";
         this.type = NodeType.Generator;
 
         const outPort = new Port(this.uuid, PortType.Out, 0, "Output");

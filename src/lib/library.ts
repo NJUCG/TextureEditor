@@ -148,7 +148,7 @@ export class Library {
 		}
 		const node = creator.create();
 		node.initRenderingCtx(designer);
-		node.initNode();
+		node.initNode(name);
 
 		return node;
 	}

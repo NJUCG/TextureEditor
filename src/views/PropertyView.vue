@@ -15,7 +15,7 @@ import EnumView from "@/components/properties/EnumView.vue";
 import NumberView from "@/components/properties/NumberView.vue";
 import StringView from "@/components/properties/StringView.vue";
 
-import { ref, markRaw } from "vue";
+import { ref, markRaw, onMounted } from "vue";
 import { useMainStore } from '@/store/index';
 import { Property } from "@/lib/node/node-property";
 
@@ -33,13 +33,16 @@ const propViews = ref([]);
 
 // 监听pinia
 store.$onAction(({ name, store, after }) => {
-	after(result => {
-		if (name == "updateFocusedNode") {
-			if (store.focusedNode)
-				updatePropertyView(store.focusedNode.properties);
-		}
-	})
+    after(result => {
+        if (name == "updateFocusedNode") {
+            if (store.focusedNode)
+                updatePropertyView(store.focusedNode.properties);
+        }
+    })
 });
+
+onMounted(() => {
+})
 
 const updatePropertyView = (properties: Property[]) => {
     propViews.value = properties.map((prop) => {

@@ -13,6 +13,14 @@ import { Designer } from "./designer";
 import { PortType } from "./node/port";
 
 export class NodeGraph {
+	private static instance: NodeGraph = null;
+    public static getInstance() {
+        if (!NodeGraph.instance)
+            NodeGraph.instance = new NodeGraph();
+
+        return NodeGraph.instance;
+    }
+
 	public canvas: HTMLCanvasElement;
 	public ctx: CanvasRenderingContext2D;
 	public view: SceneView;
@@ -36,14 +44,32 @@ export class NodeGraph {
 	private mouseUpHandler: (evt: MouseEvent) => void;
 	private keyDownHanlder: (evt: KeyboardEvent) => void;
 
-	constructor(canvas: HTMLCanvasElement) {
-		this.canvas = canvas;
-		this.ctx = this.canvas.getContext("2d");
-		this.view = new SceneView(canvas);
+	constructor() {
 		this.nodes = new Map<string, NodeView>();
 		this.conns = new Map<string, ConnectionView>();
 		this.selectedItem = null;
 		this.hoveredItem = null;
+	}
+
+	public draw() {
+		// clear content then draw grid background
+		this.drawScene();
+		
+		// draw connections
+		this.conns.forEach((conn) => {
+			conn.draw(this.ctx);
+		})
+		
+		// draw nodes
+		this.nodes.forEach((node) => {
+			node.draw(this.ctx);
+		})
+	}
+
+	public setCanvas(canvas: HTMLCanvasElement) {
+		this.canvas = canvas;
+		this.ctx = this.canvas.getContext("2d");
+		this.view = new SceneView(canvas);
 
 		// bind MouseEvents
 		this.mouseDownHandler = (evt: MouseEvent) => {
@@ -62,21 +88,6 @@ export class NodeGraph {
 		canvas.addEventListener("mousemove", this.mouseMoveHandler);
 		canvas.addEventListener("mouseup", this.mouseUpHandler);
 		canvas.addEventListener("keydown", this.keyDownHanlder);
-	}
-
-	public draw() {
-		// clear content then draw grid background
-		this.drawScene();
-		
-		// draw connections
-		this.conns.forEach((conn) => {
-			conn.draw(this.ctx);
-		})
-		
-		// draw nodes
-		this.nodes.forEach((node) => {
-			node.draw(this.ctx);
-		})
 	}
 
 	public save() {
@@ -99,8 +110,8 @@ export class NodeGraph {
 		return data;
 	}
 
-	public static load(data: {}, designer: Designer, canvas: HTMLCanvasElement): NodeGraph {
-		const graph = new NodeGraph(canvas);
+	public static load(data: {}, designer: Designer): NodeGraph {
+		const graph = new NodeGraph();
 
 		// load nodeViews
 		const nodes = data["nodes"];

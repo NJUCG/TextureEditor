@@ -3,8 +3,9 @@ import { ShaderNode } from "@/lib/node/shader-node";
 import { Port, PortType } from "@/lib/node/port";
 
 export  class InvertNode extends ShaderNode {
-    public initNode() {
-        this.name = "Invert";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Invert";
         this.type = NodeType.Filter;
 
         const inPort = new Port(this.uuid, PortType.In, 0, "Color");
@@ -25,8 +26,9 @@ export  class InvertNode extends ShaderNode {
 }
 
 export class BlendNode extends ShaderNode {
-    public initNode() {
-        this.name = "Blend";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Blend";
         this.type = NodeType.Filter;
 
         // inputs and outputs
@@ -104,8 +106,9 @@ export class BlendNode extends ShaderNode {
 }
 
 export  class BlurNode extends ShaderNode {
-    public initNode() {
-        this.name = "Blur";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Blur";
         this.type = NodeType.Filter;
 
         // inputs and outputs

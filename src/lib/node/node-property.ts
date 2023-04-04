@@ -266,7 +266,7 @@ export class ColorProperty extends Property {
     }
 
     public getValue(): any {
-        return this.value;
+        return this.value.toHex();
     }
 
     public setValue(val: any) {

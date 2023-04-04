@@ -4,8 +4,9 @@ import { Port, PortType } from "@/lib/node/port";
 import { Color } from "@/lib/utils/color";
 
 export class OutputNode extends ShaderNode { 
-    public initNode() {
-        this.name = "Output";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Output";
         this.type = NodeType.Atomic;
 
         const inPort = new Port(this.uuid, PortType.In, 0, "Input");
@@ -48,8 +49,9 @@ export class OutputNode extends ShaderNode {
 }
 
 export class NormalNode extends ShaderNode {
-    public initNode() {
-        this.name = "Normal";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Normal";
         this.type = NodeType.Atomic;
 
         const inPort = new Port(this.uuid, PortType.In, 0, "Input");
@@ -88,8 +90,9 @@ export class NormalNode extends ShaderNode {
 }
 
 export class ColorNode extends ShaderNode { 
-    public initNode() {
-        this.name = "Color";
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Color";
         this.type = NodeType.Atomic;
 
         const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
