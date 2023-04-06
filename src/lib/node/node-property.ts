@@ -195,6 +195,10 @@ export class EnumProperty extends Property {
         return this.index;
     }
 
+    public getValueName(): string {
+        return this.values[this.index];
+    }
+
     public setValue(val: any) {
         // todo: validate
         this.index = val;

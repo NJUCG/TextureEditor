@@ -1,7 +1,7 @@
 <template>
     <div class="field">
         <label>{{ property.displayName }}</label>
-        <el-select v-model="enumList" class="m-2" placeholder="None" @change="updateEnumProperty">
+        <el-select v-model="enumValue" class="m-2" placeholder="None" @change="updateEnumProperty">
             <el-option
                 v-for="(name, index) in enumList"
                 :key="index"
@@ -19,10 +19,12 @@ import { useMainStore } from "@/store";
 const props = defineProps<{ prop: EnumProperty }>();
 const property = props.prop;
 const enumList = ref(property.getValues());
+const enumValue = ref(property.getValueName());
 
 const store = useMainStore();
 
 const updateEnumProperty = (value: string) => {
+    enumValue.value = value;
     store.updatePropertyByName(property.name, enumList.value.indexOf(value));
     console.log("EnumView.vue: update enum property: ", value);
 }
