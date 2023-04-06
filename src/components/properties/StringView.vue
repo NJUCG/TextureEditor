@@ -20,6 +20,7 @@ const updateStringProperty = (value: string) => {
     store.updatePropertyByName(property.name, value);
     console.log("StringView.vue: update string property: ", value);
 }
+
 </script>
 
 <style scoped>

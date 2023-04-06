@@ -1,9 +1,9 @@
 <template>
     <component
-        v-for="(value, index) in propViews"
+        v-for="value in propViews"
         :is="value.component"
         :prop="value.prop"
-        :key="index"
+        :key="value.key"
     ></component>
 </template>
 
@@ -30,6 +30,7 @@ const propComponentMapping = [
 
 const store = useMainStore();
 const propViews = ref([]);
+let componentKey = 0;
 
 // 监听pinia
 store.$onAction(({ name, store, after }) => {
@@ -45,9 +46,12 @@ onMounted(() => {
 })
 
 const updatePropertyView = (properties: Property[]) => {
+    console.log(properties);
     propViews.value = properties.map((prop) => {
+        componentKey = (componentKey + 1) % 100;
         return {
             prop: prop,
+            key: componentKey,
             component: markRaw(propComponentMapping[prop.type])
         }
     });

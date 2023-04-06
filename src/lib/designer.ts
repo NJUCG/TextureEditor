@@ -315,7 +315,7 @@ export class Designer {
         this.nodes.get(inNodeId).inputs[inPortIndex].addConnection(conn);
         this.nodes.get(outNodeId).outputs[outPortIndex].addConnection(conn);
 
-        console.log("Designer-addConnection", conn);
+        console.log("Designer-addConnection...", conn);
         this.requestToUpdate(this.nodes.get(inNodeId));
 
         // return conn;
@@ -343,8 +343,8 @@ export class Designer {
      */
     public requestToUpdate(node: BaseNode) {
         if (this.queueToUpdate.indexOf(node) == -1) {
-            console.log("requestToUpdate: addtoqueue");
-            console.log(node);
+            // console.log("requestToUpdate: addtoqueue");
+            // console.log(node);
             node.needToUpdate = true;
             this.queueToUpdate.push(node);
         }

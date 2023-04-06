@@ -18,7 +18,7 @@ import { useMainStore } from "@/store";
 
 const props = defineProps<{ prop: ColorProperty }>();
 const property = props.prop;
-const colorValue = ref(property.getValue().toHex());
+const colorValue = ref(property.getValue());
 
 const store = useMainStore();
 

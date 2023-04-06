@@ -98,8 +98,8 @@ export class Editor {
             const outputView = this.addNode(output, 800, offset + spacing * i);
             // 3. connect the two nodes
             const conn = new ConnectionView(newUUID(), outputView.inPorts[0], inputView.outPorts[0], this.graph);
-            console.log("index = ", i);
-            console.log(conn);
+            // console.log("index = ", i);
+            // console.log(conn);
             this.graph.addConnectionView(conn);
             // 4. update texture mapping channel
             this.setMappingChannelByNode(output.uuid, i);
@@ -121,7 +121,7 @@ export class Editor {
     }
 
     public static load(data: {}) {
-        console.log(data);
+        console.log("Loading data...", data);
         const library = Library.getInstance();
         const designer = Designer.load(data["designer"], library);
         const graph = NodeGraph.load(data["graph"], designer);
