@@ -56,8 +56,7 @@ const libraryItems = ref(null);
 const categoryNames = ref(["Utils", "Atomic Nodes", "Functions", "Generators", "Filters", "3D View"]);
 const isGroupOpen = ref([true, true, true, true, true, true]);
 
-const props = defineProps<{ library: Library }>();
-const library = props.library;
+const library = Library.getInstance();
 const creators = [library.util, library.atom, library.function, library.generator, library.filter, library.view3d];
 
 const itemGroup = ref(((): LibraryItemInfo[][] => {

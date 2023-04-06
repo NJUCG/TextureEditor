@@ -9,8 +9,18 @@ import {
 import { NodeView } from "./view/node-view";
 import { PortView } from "./view/port-view";
 import { ConnectionView } from "./view/connection-view";
+import { Designer } from "./designer";
+import { PortType } from "./node/port";
 
 export class NodeGraph {
+	private static instance: NodeGraph = null;
+    public static getInstance() {
+        if (!NodeGraph.instance)
+            NodeGraph.instance = new NodeGraph();
+
+        return NodeGraph.instance;
+    }
+
 	public canvas: HTMLCanvasElement;
 	public ctx: CanvasRenderingContext2D;
 	public view: SceneView;
@@ -34,14 +44,32 @@ export class NodeGraph {
 	private mouseUpHandler: (evt: MouseEvent) => void;
 	private keyDownHanlder: (evt: KeyboardEvent) => void;
 
-	constructor(canvas: HTMLCanvasElement) {
-		this.canvas = canvas;
-		this.ctx = this.canvas.getContext("2d");
-		this.view = new SceneView(canvas);
+	constructor() {
 		this.nodes = new Map<string, NodeView>();
 		this.conns = new Map<string, ConnectionView>();
 		this.selectedItem = null;
 		this.hoveredItem = null;
+	}
+
+	public draw() {
+		// clear content then draw grid background
+		this.drawScene();
+		
+		// draw connections
+		this.conns.forEach((conn) => {
+			conn.draw(this.ctx);
+		})
+		
+		// draw nodes
+		this.nodes.forEach((node) => {
+			node.draw(this.ctx);
+		})
+	}
+
+	public setCanvas(canvas: HTMLCanvasElement) {
+		this.canvas = canvas;
+		this.ctx = this.canvas.getContext("2d");
+		this.view = new SceneView(canvas);
 
 		// bind MouseEvents
 		this.mouseDownHandler = (evt: MouseEvent) => {
@@ -62,19 +90,65 @@ export class NodeGraph {
 		canvas.addEventListener("keydown", this.keyDownHanlder);
 	}
 
-	public draw() {
-		// clear content then draw grid background
-		this.reset();
-		
-		// draw nodes
-		this.nodes.forEach((node) => {
-			node.draw(this.ctx);
-		})
+	public save() {
+		const data = {};
 
-		// draw connections
-		this.conns.forEach((conn) => {
-			conn.draw(this.ctx);
-		})
+		// node info 
+		const nodeInfo = [];
+		this.nodes.forEach((node) => {
+			const info = {};
+			info["uuid"] = node.uuid;
+			info["title"] = node.title;
+			info["left"] = node.left;
+			info["top"] = node.top;
+
+			nodeInfo.push(info);
+		});
+
+		data["nodes"] = nodeInfo;
+
+		return data;
+	}
+
+	public static load(data: {}, designer: Designer): NodeGraph {
+		const graph = new NodeGraph();
+
+		// load nodeViews
+		const nodes = data["nodes"];
+		for (const nodeInfo of nodes) {
+			const uuid = nodeInfo["uuid"];
+			const title = nodeInfo["title"];
+			const left = nodeInfo["left"];
+			const top = nodeInfo["top"];
+
+			const nodeView = new NodeView(uuid, title, left, top);
+			const node = designer.getNodeById(uuid);
+			
+			for (const port of node.inputs)
+				nodeView.addPortView(port);
+			nodeView.arrangePortViews(PortType.In);
+			for (const port of node.outputs)
+				nodeView.addPortView(port);
+			nodeView.arrangePortViews(PortType.Out);
+
+			graph.addNodeView(nodeView);
+		}
+
+		// load connectionViews
+		const conns = designer.conns;
+		conns.forEach((conn) => {
+			const inNode = graph.nodes.get(conn.inNodeId);
+			const inPort = inNode.inPorts[conn.inPortIndex];
+			const outNode = graph.nodes.get(conn.outNodeId);
+			const outPort = outNode.outPorts[conn.outPortIndex];
+
+			const connView = new ConnectionView(conn.uuid, inPort, outPort, graph);
+			connView.in.connection = connView;
+			// link in/out ports
+			graph.conns.set(conn.uuid, connView);
+		});
+
+		return graph;
 	}
 
 	public clear() {
@@ -86,6 +160,13 @@ export class NodeGraph {
 		this.view = null;
 		this.nodes = null;
 		this.conns = null;
+		this.selectedItem = null;
+		this.hoveredItem = null;
+	}
+
+	public reset() {
+		this.nodes.clear();
+		this.conns.clear();
 		this.selectedItem = null;
 		this.hoveredItem = null;
 	}
@@ -183,7 +264,7 @@ export class NodeGraph {
             && inPort.node != outPort.node
     }
 
-	private reset() {
+	private drawScene() {
 		// clear and draw grid
 		this.view.clear(this.ctx, "#4A5050");
 		this.view.setViewMatrix(this.ctx);

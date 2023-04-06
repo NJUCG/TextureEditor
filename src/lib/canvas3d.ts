@@ -101,7 +101,7 @@ export class View3D {
         tex.repeat.set(this.texRepeat, this.texRepeat);
         tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
-        console.log(channel);
+        // console.log(channel);
         switch (channel) {
             case MappingChannel.BaseColor:
                 this.setBaseColorTexture(tex);
@@ -285,7 +285,7 @@ export class View3D {
     public setHeightTexture(tex: THREE.CanvasTexture) {
         tex.needsUpdate = true;
         this.material.displacementMap = tex;
-        this.material.displacementScale = 1.0;
+        this.material.displacementScale = 0.3;
         this.material.needsUpdate = true;
     }
 

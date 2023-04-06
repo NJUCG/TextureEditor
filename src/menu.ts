@@ -1,6 +1,4 @@
-import { app } from "electron";
-
-const { BrowserWindow, Menu } = require("electron");
+import { app, BrowserWindow, Menu } from "electron";
 
 
 export enum MenuCommands {

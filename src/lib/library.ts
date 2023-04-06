@@ -34,6 +34,13 @@ export class NodeCreator {
 }
 
 export class Library {
+	private static instance: Library = null;
+    public static getInstance() {
+        if (!Library.instance)
+            Library.instance = new Library();
+        return Library.instance;
+    }
+
 	public util: Map<string, NodeCreator>;
 	public atom: Map<string, NodeCreator>;
 	public function: Map<string, NodeCreator>;
@@ -41,7 +48,7 @@ export class Library {
 	public filter: Map<string, NodeCreator>;
 	public view3d: Map<string, NodeCreator>;
 
-	constructor() {
+	private constructor() {
 		this.util = new Map<string, NodeCreator>();
 		this.atom = new Map<string, NodeCreator>();
 		this.function = new Map<string, NodeCreator>();
@@ -143,7 +150,7 @@ export class Library {
 		}
 		const node = creator.create();
 		node.initRenderingCtx(designer);
-		node.initNode();
+		node.initNode(name);
 
 		return node;
 	}

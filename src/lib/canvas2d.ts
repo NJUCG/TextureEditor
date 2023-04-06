@@ -1,13 +1,12 @@
-import { useMainStore } from '@/store/index';
-import { Designer } from './designer';
+import { ThumbnailRenderer } from './manager/thumbnail';
 import { TextureCanvas } from './utils/texture-canvas';
 import { Vector2 } from './view/basic-item';
+import { PixelDataInfo } from './node/base-node';
 
 export class View2D {
 	public canvas: HTMLCanvasElement;
 	public context: CanvasRenderingContext2D;
 
-	public designer: Designer;
 	public texCanvas: TextureCanvas;
 
 	public renderSize: number;
@@ -24,7 +23,6 @@ export class View2D {
 		this.canvas = null;
 		this.context = null;
 
-		this.designer = null;
 		this.texCanvas = null;
 
 		this.renderSize = null;
@@ -35,11 +33,10 @@ export class View2D {
 		this.offset = null;
 	}
 
-	public init(canvas: HTMLCanvasElement, designer: Designer) {
+	public init(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
 		this.context = canvas.getContext("2d");
 
-		this.designer = designer;
 		this.texCanvas = new TextureCanvas(800, 800);
 
 		this.renderSize = 800;
@@ -87,7 +84,8 @@ export class View2D {
 	}
 
 	public updateTexureCanvas(texture: WebGLTexture) {
-		this.designer.renderTextureToCanvas(texture, this.texCanvas);
+		const renderer = ThumbnailRenderer.getInstance();
+		renderer.renderTextureToCanvas(texture, this.texCanvas);
 	}
 
 	public clearTextureCanvas() {
