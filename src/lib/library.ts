@@ -67,7 +67,7 @@ export class Library {
 		this.addNodeCreator("polygon", NodeType.Generator, Generator.PolygonNode);
 		this.addNodeCreator("gradient", NodeType.Generator, Generator.GradientNode);
 		this.addNodeCreator("cell", NodeType.Generator, Generator.CellNode);
-		// this.addNodeCreator("circle", NodeType.Generator, Generator.CircleNode);
+		this.addNodeCreator("circle", NodeType.Generator, Generator.CircleNode);
 		// filters
 		this.addNodeCreator("invert", NodeType.Filter, Filter.InvertNode);
 		this.addNodeCreator("blend", NodeType.Filter, Filter.BlendNode);

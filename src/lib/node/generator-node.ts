@@ -74,7 +74,7 @@ export class CircleNode extends ShaderNode{
         const outport = new Port(this.uuid,PortType.Out,0,"Output");
         this.addOutput(outport);
         
-        this.addFloatProperty("Radius","Radius",0.4,0.1,0.01);
+        this.addFloatProperty("Radius","Radius",0.2,0.1,0.4,0.01);
         this.addEnumProperty("ColorGen","ColorGeneration",[
             "Flat","Linea","Exponent"
         ]);
