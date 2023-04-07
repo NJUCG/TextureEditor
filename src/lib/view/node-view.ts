@@ -45,7 +45,7 @@ export class NodeView extends BaseView {
 	 */
 	public move(dx: number, dy: number) {
 		this.area.move(dx, dy);
-		for (const port of this.ports)
+		for (const port of this.ports) 
 			port.move(dx, dy);
 	}
 

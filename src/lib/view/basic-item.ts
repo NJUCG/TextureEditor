@@ -151,3 +151,55 @@ export class Circle extends Shape {
 		return this.r;
 	}
 }
+
+export class Line {
+	public sx: number;
+	public sy: number;
+	public ex: number;
+	public ey: number;
+	private bbox: { min: { x: number, y: number }, max: { x: number, y: number } };
+
+	constructor(sx: number = 0, sy: number = 0, ex: number = 0, ey: number = 0) {
+		this.sx = sx;
+		this.sy = sy;
+		this.ex = ex;
+		this.ey = ey;
+		this.bbox = {
+			min: {
+				x: Math.min(sx, ex) - 5, y: Math.min(sy, ey) - 5
+			},
+			max: {
+				x: Math.max(sx, ex) + 5, y: Math.max(sy, ey) + 5
+			}
+		};
+	}
+
+	public isPointInside(px: number, py: number): boolean {
+		if (px < this.bbox.min.x || px > this.bbox.max.x || py < this.bbox.min.y || py > this.bbox.max.y)
+			return false;
+		// Ax + By + C = 0
+		const A = this.ey - this.sy;
+		const B = this.sx - this.ex;
+		const C = this.ex * this.sy - this.sx * this.ey;
+
+		const upper = A * px + B * py + C;
+
+		return upper * upper <= 25 * (A * A + B * B);
+	}
+
+	public move(dsx: number, dsy: number, dex: number, dey: number) {
+		this.sx += dsx;
+		this.sy += dsy;
+		this.ex += dex;
+		this.ey += dey;
+
+		this.bbox = {
+			min: {
+				x: Math.min(this.sx, this.ex) - 5, y: Math.min(this.sy, this.ey) - 5
+			},
+			max: {
+				x: Math.max(this.sx, this.ex) + 5, y: Math.max(this.sy, this.ey) + 5
+			}
+		};
+	}
+}

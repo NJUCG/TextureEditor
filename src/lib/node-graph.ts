@@ -143,7 +143,8 @@ export class NodeGraph {
 			const outPort = outNode.outPorts[conn.outPortIndex];
 
 			const connView = new ConnectionView(conn.uuid, inPort, outPort, graph);
-			connView.in.connection = connView;
+			connView.in.connections[0] = connView;
+			connView.out.addConnection(connView);
 			// link in/out ports
 			graph.conns.set(conn.uuid, connView);
 		});
@@ -178,8 +179,8 @@ export class NodeGraph {
 
 	public removeNodeView(node: NodeView) {
 		for (const port of node.inPorts)
-			if (port.connection)
-				this.removeConnectionView(port.connection);
+			if (!port.emptyConnection())
+				this.removeConnectionView(port.connections[0]);
 		
 		node.setGraph(null);
 		this.nodes.delete(node.uuid);
@@ -191,7 +192,8 @@ export class NodeGraph {
 	public addConnectionView(conn: ConnectionView) {
 		conn.setGraph(this);
 		// link in/out ports
-		conn.in.connection = conn;
+		conn.in.connections[0] = conn;
+		conn.out.addConnection(conn);
 		this.conns.set(conn.uuid, conn);
 
 		// callback
@@ -201,7 +203,8 @@ export class NodeGraph {
 
 	public removeConnectionView(conn: ConnectionView) {
 		conn.setGraph(null);
-		conn.in.connection = null;
+		conn.in.removeConnection(conn);
+		conn.out.removeConnection(conn);
 		this.conns.delete(conn.uuid);
 
 		// callback
@@ -242,9 +245,9 @@ export class NodeGraph {
 			const toNode = expanding.pop();
 
 			for (const portView of toNode.inPorts) {
-				if (portView.connection == null)
+				if (portView.emptyConnection())
 					continue;
-				const fromNode = portView.connection.out.node;
+				const fromNode = portView.connections[0].out.node;
 
 				if (fromNode == inNode)
 					return false;
@@ -363,7 +366,6 @@ export class NodeGraph {
 		const hitItem = this.getHitItem(pos.x, pos.y);
 		// moving: mouse over event
 		if (hitItem == null) {
-			this.view.canvas.style.cursor = "default";
 			if (this.hoveredItem) {
 				this.hoveredItem.hovered = false;
 				this.hoveredItem.mouseOut(null);
@@ -428,11 +430,13 @@ export class NodeGraph {
 				return node;
 		}
 
-		// // 2. check connections
-		// for (const conn of this.conns) {
-		// 	if (conn.isPointInside(x, y))
-		// 		return conn;
-		// }
+		// 2. check connections
+		for (const conn of this.conns.values()) {
+			if (conn.isPointInside(x, y)) {
+				// console.log("hit connection");
+				return conn;
+			}
+		}
 
 		return null;
 	}

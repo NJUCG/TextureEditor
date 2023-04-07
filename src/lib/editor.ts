@@ -36,9 +36,6 @@ export class Editor {
     public mappingNodes: Map<number, string>;
     private store: any;
 
-    // callbacks
-    public onConnectionSelected: (conn: Connection) => void;
-
     constructor(library: Library, designer: Designer, graph: NodeGraph) {
         this.canvas = null;
         this.library = library;
@@ -210,9 +207,6 @@ export class Editor {
             
             const conn = this.designer.conns[connView.uuid];
             this.selectedConn = conn;
-            
-            if (this.onConnectionSelected)
-                this.onConnectionSelected(conn);
         }
 
         this.graph.onConnectionViewCreated = (connView: ConnectionView) => {

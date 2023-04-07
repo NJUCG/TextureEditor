@@ -18,7 +18,7 @@ export class PortView extends BaseView {
     public port: Port;
     public node: NodeView;
     // 只有In Port存储对应的Connection
-    private conn: ConnectionView;
+    private conns: ConnectionView[];
     private mouseDraggingX: number;
     private mouseDraggingY: number;
 
@@ -27,7 +27,7 @@ export class PortView extends BaseView {
         this.area = new Circle(x, y, r);
         this.port = port;
         this.node = node;
-        this.conn = null;
+        this.conns = [];
         this.mouseDraggingX = 0;
         this.mouseDraggingY = 0;
     }
@@ -77,16 +77,42 @@ export class PortView extends BaseView {
             this.drawDashStyleConnection(ctx);
     }
 
+    /**
+	 * move this port and its conns
+	 * @param dx 
+	 * @param dy 
+	 */
+	public move(dx: number, dy: number) {
+		this.area.move(dx, dy);
+		for (const conn of this.conns) {
+            if (conn.in == this) {
+                conn.inLine.move(dx, dy, dx, dy);
+                conn.midLine.move(dx, dy, 0, 0);
+            } else {
+                conn.outLine.move(dx, dy, dx, dy);
+                conn.midLine.move(0, 0, dx, dy);
+            }
+        }
+	}
+
     public setCenter(x: number, y: number) {
         (this.area as Circle).setCenter(x, y);
     }
 
-    public get connection() {
-        return this.conn;
+    public addConnection(conn: ConnectionView) {
+        this.conns.push(conn);
     }
 
-    public set connection(conn: ConnectionView) {
-        this.conn = conn;
+    public removeConnection(conn: ConnectionView) {
+        this.conns.splice(this.conns.indexOf(conn), 1);
+    }
+
+    public emptyConnection(): boolean {
+        return this.conns.length == 0;
+    }
+
+    public get connections() {
+        return this.conns;
     }
 
     public get centerX() {
@@ -129,22 +155,21 @@ export class PortView extends BaseView {
             // 3. create and link the new connection
             if (stillDAG && this.graph.connectionValid(this, targetPort)) {
                 const uuid = newUUID();
-                const conn = new ConnectionView(uuid);
-
+                let inPort = null, outPort = null;
+                
                 if (this.port.type == PortType.Out) {
-                    conn.in = targetPort;
-                    conn.out = this;
-                    
-                    // remove the existing connection of 'targetPort' 
-                    if (targetPort.conn)
-                        this.graph.removeConnectionView(targetPort.conn);
+                    inPort = targetPort;
+                    outPort = this;
                 } else {
-                    conn.in = this;
-                    conn.out = targetPort; 
-
-                    if (this.conn) 
-                        this.graph.removeConnectionView(this.conn);
+                    inPort = this;
+                    outPort = targetPort;
                 }
+
+                // remove the existing connection of 'targetPort' 
+                if (inPort.conns[0])
+                    this.graph.removeConnectionView(inPort.conns[0]);
+
+                const conn = new ConnectionView(uuid, inPort, outPort, this.graph);
 
                 this.graph.addConnectionView(conn);
             }
