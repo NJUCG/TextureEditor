@@ -189,8 +189,4 @@ export class NodeView extends BaseView {
 
 	public mouseOut(evt: MouseOutEvent) {
 	}
-
-	public onDeleteDown(evt: KeyboardEvent) {
-		
-	}
 }

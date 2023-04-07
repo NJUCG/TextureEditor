@@ -17,7 +17,6 @@ import { Circle } from "./basic-item";
 export class PortView extends BaseView {
     public port: Port;
     public node: NodeView;
-    // 只有In Port存储对应的Connection
     private conns: ConnectionView[];
     private mouseDraggingX: number;
     private mouseDraggingY: number;

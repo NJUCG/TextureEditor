@@ -87,6 +87,7 @@ export class NodeGraph {
 		canvas.addEventListener("mousedown", this.mouseDownHandler);
 		canvas.addEventListener("mousemove", this.mouseMoveHandler);
 		canvas.addEventListener("mouseup", this.mouseUpHandler);
+		canvas.tabIndex = 1;				// old trick to make any element focusable
 		canvas.addEventListener("keydown", this.keyDownHanlder);
 	}
 
@@ -178,9 +179,11 @@ export class NodeGraph {
 	}
 
 	public removeNodeView(node: NodeView) {
-		for (const port of node.inPorts)
-			if (!port.emptyConnection())
-				this.removeConnectionView(port.connections[0]);
+		for (const port of node.ports) {
+			for (const conn of port.connections) {
+				this.removeConnectionView(conn);
+			}
+		}
 		
 		node.setGraph(null);
 		this.nodes.delete(node.uuid);
@@ -383,23 +386,27 @@ export class NodeGraph {
 	}
 
 	private onKeyDown(evt: KeyboardEvent) {
+		console.log("onKeyDown...");
 		if (this.selectedItem == null)
 			return;
 
-		let selectedItem = null;
 		switch (true) {
 			case this.selectedItem instanceof NodeView:
-				selectedItem = <NodeView>this.selectedItem;
+				const nodeView = <NodeView>this.selectedItem;
+				if (evt.key == "Delete") {
+					this.removeNodeView(nodeView);
+				}
 				break;
 			case this.selectedItem instanceof ConnectionView:
-				selectedItem = <ConnectionView>this.selectedItem;
+				const connView = <ConnectionView>this.selectedItem;
+				if (evt.key == "Delete") {
+					this.removeConnectionView(connView);
+				}
 				break;
 			default:
+				console.log("NodeGraph --- onKeyDown: Unexpected Selection Type!");
 				break;
 		}
-
-		if (evt.key == "Delete")
-			selectedItem.onKeyDown(evt);
 	}
 
 	private getScenePos(evt: MouseEvent): Vector2 {
