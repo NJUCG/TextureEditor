@@ -68,12 +68,13 @@ export class Library {
 		this.addNodeCreator("gradient", NodeType.Generator, Generator.GradientNode);
 		this.addNodeCreator("cell", NodeType.Generator, Generator.CellNode);
 		this.addNodeCreator("circle", NodeType.Generator, Generator.CircleNode);
+		this.addNodeCreator("solidCell", NodeType.Generator, Generator.SolidCellNode);
 		// filters
 		this.addNodeCreator("invert", NodeType.Filter, Filter.InvertNode);
 		this.addNodeCreator("blend", NodeType.Filter, Filter.BlendNode);
 		this.addNodeCreator("blur", NodeType.Filter, Filter.BlurNode);
 		this.addNodeCreator("transform2D",NodeType.Filter,Filter.Transform2DNode);
-		
+		this.addNodeCreator("warp", NodeType.Filter, Filter.WarpNode);
 	}
 
 	/** 用于建立节点库

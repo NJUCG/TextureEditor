@@ -244,3 +244,49 @@ export  class BlurNode extends ShaderNode {
         this.buildShader(processShaderSource);
     }
 }
+
+//create warp node
+export class WarpNode extends ShaderNode {
+    //create init function
+    public initNode(name: string) {
+        this.name = name;
+        this.title = "Warp";
+        this.type = NodeType.Filter;
+
+        // inputs and outputs
+        const inPort1 = new Port(this.uuid, PortType.In, 0, "Color");
+        const inPort2 = new Port(this.uuid, PortType.In, 1, "Height");
+        this.addInput(inPort1);
+        this.addInput(inPort2);
+        const outPort = new Port(this.uuid, PortType.Out, 0, "Output");
+        this.addOutput(outPort);
+
+        // properties
+        // this.addFloatProperty("Intensity", "Intensity", 0.5, 0, 1, 0.01);
+        this.addFloatProperty("Intensity", "Intensity", 0.1, -1.0, 1.0, 0.01);
+
+        // set process function
+        const processShaderSource = `
+        vec4 process(vec2 uv) {
+            // vec4 color = vec4(0.0);
+            // vec2 ps = vec2(1.0, 1.0) / uTexSize;
+            // vec2 offset = vec2(0.0, 0.0);
+            // offset.x = sin(uv.y * 10.0) * propIntensity;
+            // offset.y = sin(uv.x * 10.0) * propIntensity;
+            // color = texture(inputColor, uv + offset * ps);
+            // return color;
+
+            vec2 step = vec2(1.0,1.0)/uTexSize;
+            vec4 warpCol = texture(inputHeight, uv);
+            float warp = (warpCol.r + warpCol.g + warpCol.b) / 3.0;
+
+            vec4 color = texture(inputColor, uv + (vec2(warp) - 0.5) * vec2(1.0, -1.0) * propIntensity);
+
+            return color;
+        }
+        `;
+
+        this.buildShader(processShaderSource);
+    }
+
+}
